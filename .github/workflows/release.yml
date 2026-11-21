@@ -122,6 +122,25 @@ jobs:
           cp "$ARM32" out/vox-arm32-foss.apk
           ls -lh out
 
+      # A build that silently lost its signingConfig produced an unsigned APK that
+      # Android refuses to install ("package appears to be invalid"). Verify every
+      # artifact here so that failure can never reach a release again.
+      - name: Verify test APK signatures
+        if: env.IS_RELEASE != 'true'
+        run: |
+          BT=$(ls -d "${ANDROID_HOME:-$ANDROID_SDK_ROOT}"/build-tools/* | sort -V | tail -1)
+          for apk in out/*.apk; do
+            echo "== $apk"
+            "$BT/apksigner" verify --verbose --print-certs "$apk" | tee /tmp/apksigner.log
+            grep -q 'Verified using v1 scheme (JAR signing): true' /tmp/apksigner.log \
+              || { echo "$apk has no v1 signature" >&2; exit 1; }
+            grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/apksigner.log \
+              || { echo "$apk has no v2 signature" >&2; exit 1; }
+            "$BT/zipalign" -c -v 4 "$apk" > /dev/null
+            "$BT/aapt2" dump badging "$apk" | grep -q "package: name='com.vox.music'" \
+              || { echo "$apk has no valid package manifest" >&2; exit 1; }
+          done
+
       - name: Upload test APKs
         if: env.IS_RELEASE != 'true'
         uses: actions/upload-artifact@v4
@@ -151,6 +170,17 @@ jobs:
             --output updater.json \
             "${IMAGE_ARGS[@]}" vox-universal-foss.apk
           ls -lh vox-universal-foss.apk "vox-${TAG}.apk" updater.json
+
+      - name: Verify release APK signature
+        if: env.IS_RELEASE == 'true'
+        run: |
+          BT=$(ls -d "${ANDROID_HOME:-$ANDROID_SDK_ROOT}"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify --verbose --print-certs vox-universal-foss.apk | tee /tmp/apksigner.log
+          grep -q 'Verified using v1 scheme (JAR signing): true' /tmp/apksigner.log \
+            || { echo "Universal APK has no v1 signature" >&2; exit 1; }
+          grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/apksigner.log \
+            || { echo "Universal APK has no v2 signature" >&2; exit 1; }
+          "$BT/zipalign" -c -v 4 vox-universal-foss.apk > /dev/null
 
       - name: Create release with notes
         if: env.IS_RELEASE == 'true'

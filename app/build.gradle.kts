@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
+import java.io.File
 
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
@@ -17,6 +18,10 @@ val appVersionPatch = versionProps.getProperty("VERSION_PATCH").toInt()
 // The source version uses two decimal digits each for MINOR and PATCH; updater builds reserve four low digits for the channel run.
 val appVersionCode = appVersionMajor * 10_000 + appVersionMinor * 100 + appVersionPatch
 val appVersionName = "$appVersionMajor.$appVersionMinor.$appVersionPatch"
+
+// Set by the release signingConfig below. A release build must never fall back to
+// an unsigned APK: Android then rejects it with "package appears to be invalid".
+var releaseSigningReady = false
 
 plugins {
     id("com.android.application")
@@ -127,13 +132,39 @@ android {
             //
             // KEYSTORE_FILE lets CI point at a decoded keystore outside the module;
             // locally it falls back to app/keystore/release.keystore.
+            //
+            // file() resolves against this module (app/), but CI exports a path
+            // relative to the repository root, so a bare file() looked for
+            // app/app/keystore/... and silently produced an UNSIGNED release APK.
+            // Resolve against the module, then the root project, then the working
+            // directory, and use the first path that actually exists.
             val keystorePath = localProperties.getProperty("KEYSTORE_FILE")
                 ?: System.getenv("KEYSTORE_FILE")
                 ?: "keystore/release.keystore"
-            storeFile = file(keystorePath)
+            val keystoreCandidates = listOf(
+                file(keystorePath),
+                rootProject.file(keystorePath),
+                File(keystorePath)
+            )
+            val keystore = keystoreCandidates.firstOrNull { it.isFile } ?: keystoreCandidates.first()
+            storeFile = keystore
             storePassword = localProperties.getProperty("STORE_PASSWORD") ?: System.getenv("STORE_PASSWORD")
             keyAlias = localProperties.getProperty("KEY_ALIAS") ?: System.getenv("KEY_ALIAS")
             keyPassword = localProperties.getProperty("KEY_PASSWORD") ?: System.getenv("KEY_PASSWORD")
+
+            // Both schemes on purpose: v1 (JAR) is still required by some older
+            // OEM ROMs (Oppo/ColorOS among them) and by anything that inspects
+            // META-INF/MANIFEST.MF, v2 covers Android 7+ and is what modern
+            // devices check first. v3 is left on for key rotation.
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+            enableV4Signing = false
+
+            releaseSigningReady = keystore.isFile &&
+                !storePassword.isNullOrBlank() &&
+                !keyAlias.isNullOrBlank() &&
+                !keyPassword.isNullOrBlank()
         }
         getByName("debug") {
             keyAlias = "androiddebugkey"
@@ -153,7 +184,17 @@ android {
             isShrinkResources = fullR8
             isCrunchPngs = false
             isDebuggable = false
-            if (signingConfigs.getByName("release").storeFile?.exists() == true) {
+            // Fail instead of quietly shipping an unsigned APK when signing is
+            // configured but unusable (CI, or an explicit KEYSTORE_FILE).
+            val signingRequested = !System.getenv("KEYSTORE_FILE").isNullOrBlank() ||
+                System.getenv("GITHUB_ACTIONS") == "true"
+            if (signingRequested) {
+                check(releaseSigningReady) {
+                    "Release signing is unusable: keystore, STORE_PASSWORD, KEY_ALIAS " +
+                        "or KEY_PASSWORD is missing. Refusing to build an unsigned APK."
+                }
+            }
+            if (releaseSigningReady) {
                 signingConfig = signingConfigs.getByName("release")
             }
             proguardFiles(
