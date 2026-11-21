@@ -37,7 +37,7 @@ kotlin {
         getByName("desktopTest").dependencies {
             implementation(kotlin("test-junit"))
             implementation("junit:junit:4.13.2")
-            implementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+            implementation("com.squareup.okhttp3:mockwebserver:5.5.1")
         }
     }
 }
