@@ -49,11 +49,15 @@ internal fun foldGeometry(
     return FoldGeometry(
         height = rowHeight + rowY,
         rowY = rowY,
-        navWidth = mix(mix(width.toFloat(), circle.toFloat(), s), circle.toFloat(), p).roundToInt().coerceIn(circle, width),
+        // Folded, the tab surface is gone entirely — what is left is the player on the
+        // left and the detached Search circle on the right, nothing between them.
+        navWidth = mix(mix(width.toFloat(), circle.toFloat(), s), 0f, p).roundToInt().coerceIn(0, width),
         searchWidth = searchWidth,
         searchX = mix(detachedSearchX, (width - searchWidth).toFloat(), s).roundToInt(),
         selectedX = mix(inset + tabWidth * (selectedIndex + 0.5f) - circle / 2f, 0f, maxOf(p, s)).roundToInt(),
-        playerX = mix(0f, (circle + spacing).toFloat(), p).roundToInt(),
-        playerY = (rowY - mix((playerHeight + spacing).toFloat(), (playerHeight - rowHeight) / 2f, p)).roundToInt(),
+        // The player always starts at the leading edge and grows to fill whatever the
+        // Search circle leaves, so it is never squeezed between two tabs.
+        playerX = 0,
+        playerY = (rowY - mix((playerHeight + spacing).toFloat(), 0f, p)).roundToInt(),
     )
 }

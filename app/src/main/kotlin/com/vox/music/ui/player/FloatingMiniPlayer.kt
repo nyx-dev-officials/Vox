@@ -64,6 +64,7 @@ import com.vox.music.designsystem.VoxDesignTokens
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -196,6 +197,7 @@ fun FloatingMiniPlayer(
         isSelected = false,
     )
     val context = LocalContext.current
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
     val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
     val playbackSnapshot by playerConnection.playbackSnapshot.collectAsStateWithLifecycle()
@@ -266,11 +268,10 @@ fun FloatingMiniPlayer(
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
-            // Same tanh-damped stretch as the search pill, draw-only.
-            // Wide pills (expanded accessory, tab-view pill) run 2x so the
-            // travel reads at pill size -- same as bar pills elsewhere.
-            // Toned down from 1x/2x (user: touch stretch "way too much").
-            .graphicsLayer(elasticStretchLayerBlock(glow, magnitude = if (isInline) 0.6f else 1.2f))
+            // No scale on the pill: the press used to warp the title and icons with
+            // it. Bounds only — the glow layer still follows the finger, the content
+            // keeps its own type size at every width.
+            .graphicsLayer { clip = true }
             // Hide the whole pill while the shared card draws its plate during the morph.
             .graphicsLayer {
                 // Hidden through the close landing too: the morph card carries the landing
@@ -412,7 +413,13 @@ fun FloatingMiniPlayer(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = tryOpenPlayer,
-                onLongClick = onLongClick,
+                // A crisp tick on hold, then the preview card takes over.
+                onLongClick = onLongClick?.let { open ->
+                    {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        open()
+                    }
+                },
             )
     ) {
         // Only the tablet pill changes height, so only it scales content to its measured height.

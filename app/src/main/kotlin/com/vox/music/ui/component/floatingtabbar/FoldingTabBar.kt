@@ -75,13 +75,11 @@ fun FoldingTabBar(
 
     val fold = remember { Animatable(if (isInline) 1f else 0f) }
     LaunchedEffect(isInline) {
+        // One spring for both directions: bounded container movement only, so the
+        // mini player's text and icons are never scaled by the fold.
         fold.animateTo(
             if (isInline) 1f else 0f,
-            if (isInline) {
-                tween(CollapseMorphMs, easing = FoldCollapseSpring)
-            } else {
-                tween(ExpandMorphMs, easing = BarMotion.BarSurfaceExpandSpring)
-            },
+            spring(dampingRatio = 0.85f, stiffness = 380f),
         )
     }
     val search = remember { Animatable(if (inSearch) 1f else 0f) }
@@ -143,7 +141,12 @@ fun FoldingTabBar(
             Box(
                 Modifier
                     .graphicsLayer(elasticStretchLayerBlock(selectedGlow))
-                    .graphicsLayer { alpha = maxOf(fold.value, search.value).coerceIn(0f, 1f) }
+                    // Folded, there is no tab pill at all: the bar is the player plus
+                    // a single Search circle, exactly as the collapsed state reads.
+                    .graphicsLayer {
+                        alpha = (maxOf(fold.value, search.value) * (1f - fold.value.coerceIn(0f, 1f)))
+                            .coerceIn(0f, 1f)
+                    }
                     .then(
                         if (foldedOrSearching) {
                             Modifier.then(selectedGlow.gestureModifier).clickable(noTap, null) {
@@ -224,9 +227,18 @@ fun FoldingTabBar(
         val openHeight = lerp(expandedHeight.toFloat(), SearchRowHeight.toPx(), search.value.coerceIn(0f, 1f))
         val height = lerp(openHeight, compactHeight.toFloat(), p).roundToInt().coerceAtLeast(1)
         val circle = height.coerceAtMost(width)
-        val playerWidth = lerp(width.toFloat(), (width - 2 * (compactHeight + spacing)).coerceAtLeast(0).toFloat(), p)
+        // Folded: everything except the Search circle. Idle: the full bar width. The
+        // player's height never changes, so its rows never reflow as it widens.
+        val playerWidth = lerp(width.toFloat(), (width - compactHeight - spacing).coerceAtLeast(0).toFloat(), p)
             .roundToInt().coerceIn(0, width)
-        val player = children[6].measure(Constraints(minWidth = playerWidth, maxWidth = playerWidth))
+        val player = children[6].measure(
+            Constraints(
+                minWidth = playerWidth,
+                maxWidth = playerWidth,
+                minHeight = compactHeight,
+                maxHeight = compactHeight,
+            ),
+        )
         val geometry = foldGeometry(
             width = width,
             expandedRowHeight = openHeight.roundToInt(),
@@ -268,7 +280,9 @@ class FoldingTab(
     val onLongClick: ((androidx.compose.ui.geometry.Rect) -> Unit)?,
 )
 
-private val InlineRowHeight = 48.dp
+// The collapsed row is exactly the mini player's own height, so folding moves the pill
+// into the row instead of squashing it to fit a shorter one.
+private val InlineRowHeight = com.vox.music.designsystem.VoxDesignTokens.Metrics.MiniPlayerHeight
 private val SearchRowHeight = 48.dp
 
 /** Collapse lands with a deeper overshoot than the expand. */

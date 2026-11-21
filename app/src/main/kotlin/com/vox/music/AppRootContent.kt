@@ -175,6 +175,7 @@ import com.vox.music.ui.ios.foundation.LocalIosBackdrop
 import com.vox.music.ui.menu.PlayerMenu
 import com.vox.music.ui.menu.YouTubeSongMenu
 import com.vox.music.ui.player.BottomSheetPlayer
+import com.vox.music.ui.player.MiniPlayerPreview
 import com.vox.music.ui.player.InstallPlayerMorphLayers
 import com.vox.music.ui.screens.Screens
 import com.vox.music.ui.screens.SettingDialoge
@@ -307,6 +308,12 @@ internal fun AppRootContent(
             val darkGlassEffectConfig = rememberGlassConfigState(artworkChromeDark = true).config
             // Gate backdrop capture once for devices that cannot render glass.
             val glassAllowed = isGlassAllowed()
+
+            // The held mini player (long-press). Kept here because its menu needs the
+            // nav controller and the player sheet, neither of which the pill owns.
+            var miniPreviewMetadata by remember {
+                mutableStateOf<com.vox.music.models.MediaMetadata?>(null)
+            }
 
             // Share one blurred backdrop across glass surfaces to avoid duplicate effect passes.
             val glassPoolBackdrop = rememberGlassPool()
@@ -1205,22 +1212,12 @@ internal fun AppRootContent(
                                         playerBottomSheetState.expandSoft()
                                         playerConnection?.requestShowQueue?.value = true
                                     },
-                                    // Long-press the mini bar for the same quick-actions menu a
-                                    // long-pressed row opens elsewhere (reference: menu pop up.jpg).
+                                    // Long-press the mini bar to lift it into the preview
+                                    // card: blurred frozen page, big art, scrubber, the
+                                    // line playing now, transport, and the menu beneath.
                                     onAccessoryLongClick = {
-                                        val metadata = playerConnection?.mediaMetadata?.value
-                                        if (metadata != null) {
-                                            menuState.show {
-                                                PlayerMenu(
-                                                    mediaMetadata = metadata,
-                                                    navController = navController,
-                                                    playerBottomSheetState = playerBottomSheetState,
-                                                    onShowDetailsDialog = {
-                                                        bottomSheetPageState.showFloating { ShowMediaInfo(metadata.id) }
-                                                    },
-                                                    onDismiss = menuState::dismiss,
-                                                )
-                                            }
+                                        playerConnection?.mediaMetadata?.value?.let { metadata ->
+                                            miniPreviewMetadata = metadata
                                         }
                                     },
                                     tabContextMenu = { screen -> navTabContextMenu(screen, navController) },
@@ -1237,11 +1234,33 @@ internal fun AppRootContent(
                                                 hiddenOffset
                                             } else {
                                                 hiddenOffset * (1 - navBarHeightPx / NavigationBarHeight.toPx())
-                                            }
-
+                                                                                        }
                                         }
                                 )
                             }
+                            }
+
+                            miniPreviewMetadata?.let { previewMetadata ->
+                                MiniPlayerPreview(
+                                    metadata = previewMetadata,
+                                    onDismiss = { miniPreviewMetadata = null },
+                                    onOpenPlayer = {
+                                        miniPreviewMetadata = null
+                                        playerBottomSheetState.expandSoft()
+                                    },
+                                    onGoToAlbum = { albumId, art ->
+                                        miniPreviewMetadata = null
+                                        navController.navigate(com.vox.music.ui.utils.albumRoute(albumId, art))
+                                    },
+                                    onGoToArtist = { artistId, art ->
+                                        miniPreviewMetadata = null
+                                        navController.navigate(com.vox.music.ui.utils.artistRoute(artistId, art))
+                                    },
+                                    onListenTogether = {
+                                        miniPreviewMetadata = null
+                                        navController.navigate(Screens.ListenTogether.route)
+                                    },
+                                )
                             }
                         }
                     } else {

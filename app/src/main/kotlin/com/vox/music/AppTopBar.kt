@@ -128,16 +128,20 @@ fun AppTopBar(
                     leadingInset = if (showRail) 12.dp else 16.dp,
                     largeTitle = !showRail,
                     leading = {
-                        // SF Pro Text is wider than Apple's Display face at this size.
-                        Text(
-                            text = titleRes?.let { stringResource(it) } ?: "",
-                            // Chillax, not the system face: the route title is the
-                            // first thing that has to read as Vox and not as iOS.
-                            style = com.vox.music.ui.theme.VoxType.TopBarTitle,
-                            color = topBarTitleColor,
-                            maxLines = 1,
-                            modifier = if (showRail) Modifier else Modifier.height(36.dp),
-                        )
+                        // Home names itself in the feed's own masthead ("Good
+                        // evening"), so the bar carries no route title there — two
+                        // headings stacked on one page was the double-title seam.
+                        if (effectiveRoute != Screens.Home.route) {
+                            Text(
+                                text = titleRes?.let { stringResource(it) } ?: "",
+                                // Chillax, not the system face: the route title is the
+                                // first thing that has to read as Vox and not as iOS.
+                                style = com.vox.music.ui.theme.VoxType.TopBarTitle,
+                                color = topBarTitleColor,
+                                maxLines = 1,
+                                modifier = if (showRail) Modifier else Modifier.height(36.dp),
+                            )
+                        }
                     },
                     actions = {
                         if (effectiveRoute == Screens.Library.route) {
