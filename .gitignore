@@ -98,9 +98,11 @@ output-metadata.json
 # VS Code
 .vscode/
 
-# Binary files and core dumps
-/core
+# Binary files and core dumps. (`core/` itself is the Gradle module tree and IS
+# tracked — only its build output and anything named core.<pid> are ignored.)
 /core.*
+core/**/build/
+core/**/.gradle/
 *.so
 *.bin
 .env
