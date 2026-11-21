@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -57,7 +58,6 @@ import com.composables.sfsymbols.monochrome.SFMusicNote
 import com.composables.sfsymbols.monochrome.SFXmark
 import com.vox.music.R
 import com.vox.music.models.MediaMetadata
-import com.vox.music.ui.component.ArtworkBlurMesh
 import com.vox.music.ui.component.LocalItemPrefs
 import com.vox.music.ui.component.NavigationTitle
 import com.vox.music.ui.component.YouTubeGridItem
@@ -65,10 +65,13 @@ import com.vox.music.ui.component.flipAndMultiply
 import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Icon
+import com.vox.music.ui.ios.compat.LocalContentColor
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.ui.screens.library.apple.Cover
+import com.vox.music.ui.theme.AppleTokens
 import com.vox.music.ui.theme.LocalPageMetrics
+import com.vox.music.ui.theme.VoxType
 import com.vox.music.ui.utils.rememberGridSpacing
 import com.vox.music.ui.utils.sharedArtworkSource
 import com.music.innertube.models.AlbumItem
@@ -172,10 +175,12 @@ internal fun LazyListScope.figmaRail(
         CompositionLocalProvider(LocalItemPrefs provides prefs.copy(gridCardHeightOverrideDp = (154.dp + gs).value.toInt())) {
             LazyRow(
                 state = railState,
+                // One gutter for the whole page: a rail starts on the same 20dp
+                // line as the headers above it instead of its own 16dp inset.
                 contentPadding = PaddingValues(
-                    horizontal = if (hero) 16.dp else (20.dp - gs / 2).coerceAtLeast(0.dp),
+                    horizontal = if (hero) 20.dp else (20.dp - gs / 2).coerceAtLeast(0.dp),
                 ).plusStart(deps.sideInset),
-                horizontalArrangement = Arrangement.spacedBy(if (hero) 10.dp else (14.dp - gs).coerceAtLeast(0.dp)),
+                horizontalArrangement = Arrangement.spacedBy(if (hero) 12.dp else (14.dp - gs).coerceAtLeast(0.dp)),
                 modifier = Modifier.fillMaxWidth().bleedStart(deps.sideInset),
             ) {
                 items(items, key = { it.id }, contentType = { if (hero) "figma_hero" else "figma_card" }) { item ->
@@ -202,6 +207,64 @@ internal fun LazyListScope.figmaRail(
             }
         }
         }
+    }
+}
+
+/**
+ * The Home masthead.
+ *
+ * One display-size line that names the moment ("Good evening") over a small
+ * champagne eyebrow carrying the brand and the day. It replaces the generic
+ * "here is a feed" opening with an editorial one, and it is the only place on
+ * Home that uses the display face at masthead size.
+ */
+@Composable
+internal fun HomeMasthead(modifier: Modifier = Modifier) {
+    val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
+    val greeting = when (hour) {
+        in 5..11 -> R.string.home_masthead_morning
+        in 12..17 -> R.string.home_masthead_afternoon
+        else -> R.string.home_masthead_evening
+    }
+    val weekday = remember {
+        java.text.SimpleDateFormat("EEEE", java.util.Locale.getDefault())
+            .format(java.util.Date())
+            .uppercase(java.util.Locale.getDefault())
+    }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                start = LocalPageMetrics.current.gutter,
+                end = LocalPageMetrics.current.gutter,
+                top = 4.dp,
+                bottom = 2.dp,
+            ),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(7.dp),
+        ) {
+            Box(
+                Modifier
+                    .size(4.dp)
+                    .clip(CircleShape)
+                    .background(AppleTokens.AccentGold),
+            )
+            Text(
+                text = "VOX · $weekday",
+                style = VoxType.Eyebrow,
+                color = AppleTokens.AccentGold.copy(alpha = 0.8f),
+                maxLines = 1,
+            )
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = stringResource(greeting),
+            style = VoxType.Masthead,
+            color = AppTheme.colorScheme.onSurface,
+            maxLines = 1,
+        )
     }
 }
 
@@ -312,16 +375,20 @@ internal fun FigmaTopPickCard(
     val request = remember(thumbnail) {
         ImageRequest.Builder(context).data(thumbnail).crossfade(false).build()
     }
-    Column(modifier = modifier.width(242.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    // Vox featured card: the cover runs edge to edge inside its corner and the
+    // type lives outside it, on the page. Type over artwork was the old card's
+    // weak point — it needed a frosted footer and still washed out on a bright
+    // cover. A scrim now only settles the artwork into the page.
+    Column(modifier = modifier.width(242.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Box(
             Modifier
-                .height(323.dp)
+                .height(300.dp)
                 .fillMaxWidth()
                 .shadow(
-                    elevation = 20.dp,
+                    elevation = 18.dp,
                     shape = shape,
-                    ambientColor = Color.Black.copy(alpha = 0.16f),
-                    spotColor = Color.Black.copy(alpha = 0.16f),
+                    ambientColor = Color.Black.copy(alpha = 0.22f),
+                    spotColor = Color.Black.copy(alpha = 0.22f),
                 )
                 .clip(shape),
         ) {
@@ -332,13 +399,13 @@ internal fun FigmaTopPickCard(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .sharedArtworkSource(artworkKey, thumbnail)
-                        .size(242.dp),
+                        .matchParentSize(),
                 )
             } else {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(242.dp)
+                        .matchParentSize()
                         .background(AppTheme.colorScheme.surfaceContainerHigh),
                 ) {
                     SymbolIcon(
@@ -349,62 +416,41 @@ internal fun FigmaTopPickCard(
                     )
                 }
             }
+            // Bottom scrim: keeps the card from ending on a hard bright edge
+            // against the obsidian page, and gives the corner a place to sit.
             Box(
                 Modifier
-                    .align(Alignment.BottomStart)
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .height(81.dp),
-            ) {
-                ArtworkBlurMesh(
-                    model = thumbnail,
-                    modifier = Modifier.matchParentSize(),
-                    // Warm grey, not neutral: multiplying by equal channels greys the
-                    // artwork's hue out, and the frost would sit on the warm canvas as a
-                    // cold rectangle. Same luminance, shifted toward stone.
-                    finish = { bitmap -> flipAndMultiply(bitmap, android.graphics.Color.rgb(0xC7, 0xBF, 0xB4)) },
-                    finishKey = "topPickFrost",
+                    .height(120.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            0f to Color.Transparent,
+                            1f to Color.Black.copy(alpha = 0.55f),
+                        ),
+                    ),
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Text(
+                text = title,
+                style = VoxType.TileTitle.copy(fontSize = 16.sp, lineHeight = 21.sp),
+                color = LocalContentColor.current,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            val sub = listOfNotNull(label, detail).joinToString("  ·  ")
+            if (sub.isNotEmpty()) {
+                Text(
+                    text = sub,
+                    style = AppTheme.typography.bodySmall.copy(fontFamily = VoxType.Body),
+                    fontSize = 12.5f.sp,
+                    lineHeight = 17.sp,
+                    color = AppleTokens.Metadata.copy(alpha = 0.8f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-                Column(
-                    modifier = Modifier.matchParentSize().padding(horizontal = 8.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = title,
-                        fontSize = 15.sp,
-                        lineHeight = 20.sp,
-                        letterSpacing = (-0.23).sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center,
-                    )
-                    if (label != null) {
-                        Text(
-                            text = label,
-                            fontSize = 13.sp,
-                            lineHeight = 18.sp,
-                            letterSpacing = (-0.08).sp,
-                            color = Color.White,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                    if (detail != null) {
-                        Text(
-                            text = detail,
-                            fontSize = 13.sp,
-                            lineHeight = 18.sp,
-                            letterSpacing = (-0.08).sp,
-                            color = Color.White,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
             }
         }
     }

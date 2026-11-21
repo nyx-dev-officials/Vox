@@ -84,21 +84,24 @@ fun <T> ChipsRow(
     sideInset: Dp = 0.dp,
 ) {
     val isDark = AppTheme.colorScheme.surface.luminance() <= 0.5f
-    val defaultContainerColor = com.vox.music.ui.theme.GlassTintTokens.baseSurfaceColor(isDark).copy(
-        alpha = if (isDark) com.vox.music.ui.theme.GlassTintTokens.NavPillFillOpacityDark else com.vox.music.ui.theme.GlassTintTokens.NavPillFillOpacityLight
-    )
-    val defaultSelectedContainerColor = com.vox.music.ui.theme.GlassTintTokens.baseSurfaceColor(isDark).copy(
-        alpha = if (isDark) com.vox.music.ui.theme.GlassTintTokens.PillSelectedFillOpacityDark else com.vox.music.ui.theme.GlassTintTokens.PillSelectedFillOpacityLight
-    )
+    // Vox chips are an outline system, not a stack of grey discs: unselected is
+    // bare type inside a hairline, selected is a solid champagne pill. That
+    // removes the frosted blob look the old translucent fills produced over
+    // artwork and makes the applied filter obvious at a glance.
+    val defaultContainerColor = Color.Transparent
+    val champagne = com.vox.music.ui.theme.GlassTintTokens.selectedGoldColor(isDark)
+    val defaultSelectedContainerColor = champagne
     val defaultLabelColor = com.vox.music.ui.theme.GlassTintTokens.glassContentColor(
         isDark = isDark,
         isSelected = false,
+    ).copy(alpha = 0.8f)
+    // Type on the champagne fill: ink on light gold, white on bronze.
+    val defaultSelectedLabelColor =
+        if (champagne.luminance() > 0.5f) com.vox.music.designsystem.VoxDesignTokens.Colors.Background else Color.White
+    val pillBorder = androidx.compose.foundation.BorderStroke(
+        1.dp,
+        com.vox.music.ui.theme.GlassTintTokens.borderColor(isDark),
     )
-    val defaultSelectedLabelColor = com.vox.music.ui.theme.GlassTintTokens.glassContentColor(
-        isDark = isDark,
-        isSelected = false, // Ambient tint for applied filter chip
-    )
-    val pillBorder = androidx.compose.foundation.BorderStroke(1.dp, com.vox.music.ui.theme.GlassTintTokens.borderColor(isDark))
 
     val effectiveContainerColor = if (containerColor != AppTheme.colorScheme.surfaceContainer) containerColor else defaultContainerColor
     val effectiveSelectedContainerColor = if (selectedContainerColor != AppTheme.colorScheme.secondaryContainer) selectedContainerColor else defaultSelectedContainerColor
@@ -121,7 +124,7 @@ fun <T> ChipsRow(
 
             val cornerRadius by animateDpAsState(
                 // Selected chips expand into a full pill.
-                targetValue = if (isSelected) 100.dp else 8.dp,
+                targetValue = if (isSelected) 100.dp else 10.dp,
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessMedium

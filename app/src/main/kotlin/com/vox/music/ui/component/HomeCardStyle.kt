@@ -48,4 +48,4 @@ fun rememberHomeCardShape(): Shape {
 // stroked rim -- the bulk of Home's per-frame draw ops against a flat-carded list.
 fun Modifier.homeCardRim(shape: Shape): Modifier =
     graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-        .rimLight(shape = shape, strength = 0.28f)
+        .rimLight(shape = shape, strength = 0.16f)

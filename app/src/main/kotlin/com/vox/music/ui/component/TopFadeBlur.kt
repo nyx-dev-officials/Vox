@@ -80,7 +80,11 @@ fun TopFadeBlur(
     /** Width of the side bar docked at the start edge; the strip fades out before it instead of ending abruptly. */
     startFade: Dp = sideBarStartInset(),
 ) {
-    val reduceDynamicBlur by rememberPreference(ReduceDynamicBlurKey, false)
+    // Vox default: no live backdrop blur on a scrolling surface. A real-time blur
+    // here re-captures the list underneath on every frame, which is the single
+    // biggest source of jank on Home; the bar is a warm-obsidian strip with a
+    // hairline instead. Real blur is reserved for static modal overlays.
+    val reduceDynamicBlur by rememberPreference(ReduceDynamicBlurKey, true)
     // The caller uses a solid bar when dynamic blur is disabled.
     if (reduceDynamicBlur) return
 

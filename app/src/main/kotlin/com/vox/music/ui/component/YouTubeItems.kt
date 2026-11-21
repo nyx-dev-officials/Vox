@@ -40,6 +40,7 @@ import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.theme.AppleTokens
+import com.vox.music.ui.theme.VoxType
 import com.vox.music.ui.utils.additiveChrome
 import com.vox.music.ui.utils.resize
 import com.vox.music.utils.joinByBullet
@@ -236,10 +237,10 @@ fun YouTubeGridItem(
     title = {
         Text(
             text = item.title,
-            style = AppTheme.typography.bodyMedium,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Normal,
-            letterSpacing = (-0.23).sp,
+            // Vox tile titles are set in the display face: one face names
+            // everything, another one only writes sentences.
+            style = VoxType.TileTitle,
+            color = com.vox.music.ui.ios.compat.LocalContentColor.current,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = if (item is ArtistItem) TextAlign.Center else TextAlign.Start,
@@ -256,12 +257,14 @@ fun YouTubeGridItem(
         if (subtitle != null) {
             Text(
                 text = subtitle,
-                style = AppTheme.typography.bodySmall,
-                fontSize = 15.sp,
-                lineHeight = 20.sp,
-                color = AppleTokens.Metadata,
+                style = AppTheme.typography.bodySmall.copy(fontFamily = VoxType.Body),
+                fontSize = 12.5f.sp,
+                lineHeight = 17.sp,
+                letterSpacing = 0.1.sp,
+                color = AppleTokens.Metadata.copy(alpha = 0.75f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                textAlign = if (item is ArtistItem) TextAlign.Center else TextAlign.Start,
             )
         }
     },

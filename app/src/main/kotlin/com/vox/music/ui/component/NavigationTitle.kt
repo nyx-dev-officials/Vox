@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import com.vox.music.designsystem.VoxDesignTokens
+import com.vox.music.ui.theme.VoxType
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -34,7 +38,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import com.vox.music.R
 
 import com.vox.music.LocalAmbientBackgroundColor
@@ -85,6 +88,17 @@ fun NavigationTitle(
     ) {
         thumbnail?.invoke()
 
+        // The Vox section mark: a short champagne rule that opens every header.
+        // It is the one place the accent appears in the scrolling feed, so the
+        // page has a repeatable signature instead of a plain text label.
+        Box(
+            Modifier
+                .padding(end = 10.dp)
+                .size(VoxDesignTokens.Metrics.HeaderRuleWidth, VoxDesignTokens.Metrics.HeaderRuleHeight)
+                .clip(RoundedCornerShape(2.dp))
+                .background(AppleTokens.AccentGold.copy(alpha = 0.9f)),
+        )
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
@@ -95,19 +109,17 @@ fun NavigationTitle(
             ) {
                 label?.let { label ->
                     Text(
-                        text = label,
-                        style = AppTheme.typography.labelLarge,
-                        color = contentColor.copy(alpha = 0.6f),
+                        text = label.uppercase(),
+                        style = VoxType.Eyebrow,
+                        color = contentColor.copy(alpha = 0.55f),
                         overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                     )
                 }
 
                 Text(
                     text = title,
-                    fontSize = AppleTokens.SectionHeader,
-                    lineHeight = AppleTokens.SectionHeaderLineHeight,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = (-0.01).em,
+                    style = VoxType.SectionHeader,
                     color = contentColor,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -118,7 +130,7 @@ fun NavigationTitle(
                 // SF chevron.right at Title2 bold: a short heavy stroke about the
                 // title's cap height. The monochrome SF vector is the regular weight
                 // and reads thin and oversized beside a bold header, so draw it.
-                val chevronColor = AppTheme.colorScheme.onSurfaceVariant
+                val chevronColor = AppleTokens.AccentGold.copy(alpha = 0.75f)
                 Canvas(Modifier.padding(start = 6.dp, top = 1.dp).size(width = 9.dp, height = 15.dp)) {
                     val stroke = 2.6.dp.toPx()
                     val inset = stroke / 2
@@ -140,11 +152,9 @@ fun NavigationTitle(
             Text(
                 text = stringResource(
                     if (onPlayAllClick != null) R.string.play_all else R.string.see_all
-                ),
-                fontSize = AppleTokens.ItemTitle,
-                lineHeight = AppleTokens.ItemTitleLineHeight,
-                fontWeight = FontWeight.Normal,
-                color = contentColor.copy(alpha = 0.6f),
+                ).uppercase(),
+                style = VoxType.Eyebrow,
+                color = AppleTokens.AccentGold.copy(alpha = 0.85f),
                 maxLines = 1,
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))

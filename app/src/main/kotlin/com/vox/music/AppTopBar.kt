@@ -131,16 +131,12 @@ fun AppTopBar(
                         // SF Pro Text is wider than Apple's Display face at this size.
                         Text(
                             text = titleRes?.let { stringResource(it) } ?: "",
-                            style = AppTheme.typography.titleLarge.copy(
-                                fontFamily = SfProFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 34.sp,
-                                lineHeight = 41.sp,
-                                letterSpacing = (-0.6).sp,
-                            ),
+                            // Chillax, not the system face: the route title is the
+                            // first thing that has to read as Vox and not as iOS.
+                            style = com.vox.music.ui.theme.VoxType.TopBarTitle,
                             color = topBarTitleColor,
                             maxLines = 1,
-                            modifier = if (showRail) Modifier else Modifier.height(41.dp),
+                            modifier = if (showRail) Modifier else Modifier.height(36.dp),
                         )
                     },
                     actions = {

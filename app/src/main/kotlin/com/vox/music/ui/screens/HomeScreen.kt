@@ -525,6 +525,21 @@ fun HomeScreen(
                         .background(pageBackground)
                 )
                 HomeImageBackground(contentLoaded = homePage != null)
+                // Vox signature wash: one warm champagne bloom settling from the
+                // top of the page. A static gradient, not a live blur — it costs
+                // nothing per frame while the feed scrolls.
+                if (!hasCustomHomeBackground()) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    0f to AppleTokens.AccentGold.copy(alpha = 0.06f),
+                                    0.38f to Color.Transparent,
+                                ),
+                            ),
+                    )
+                }
                 if (!hasCustomHomeBackground()) {
                     HomeChipBackdrop(
                         url = homePage?.background?.takeIf { selectedChip != null && pendingChip == null },
@@ -586,6 +601,12 @@ fun HomeScreen(
                                 onDismiss = { setSignInCardDismissed(true) },
                                 modifier = Modifier.animateItem(),
                             )
+                        }
+                    }
+
+                    if (selectedChip == null) {
+                        item(key = "home_masthead", contentType = "masthead") {
+                            HomeMasthead(modifier = Modifier.animateItem())
                         }
                     }
 

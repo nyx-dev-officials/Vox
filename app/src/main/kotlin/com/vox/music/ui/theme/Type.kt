@@ -135,6 +135,71 @@ val PlusJakartaSansFontFamily = FontFamily(
     )
 )
 
+/**
+ * Vox's two-voice type system.
+ *
+ * [Display] is Chillax — geometric, warm, slightly narrow — and it is used for
+ * everything that names a thing: the Home masthead, section headers, tile
+ * titles, the top-bar route title. [Body] is a clean readable grotesque kept
+ * for running copy, artist lines and metadata, where a display face would cost
+ * legibility at 12–13sp.
+ *
+ * The split is the point: one face for nouns, another for sentences. That is
+ * what stops the app reading as a system-UI clone even before colour.
+ */
+object VoxType {
+    /** Chillax. Headers, masthead, tile titles, wordmark. */
+    val Display = ChillaxFontFamily
+
+    /** Plus Jakarta Sans. Body copy, subtitles, metadata. */
+    val Body = PlusJakartaSansFontFamily
+
+    /** Route title in the top bar. */
+    val TopBarTitle = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 30.sp,
+        lineHeight = 36.sp,
+        letterSpacing = (-0.2).sp,
+    )
+
+    /** Home masthead greeting — the one display-size line on the page. */
+    val Masthead = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 30.sp,
+        lineHeight = 34.sp,
+        letterSpacing = (-0.4).sp,
+    )
+
+    /** Section header ("Top Picks For You"). */
+    val SectionHeader = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = AppleTokens.SectionHeader,
+        lineHeight = AppleTokens.SectionHeaderLineHeight,
+        letterSpacing = (-0.1).sp,
+    )
+
+    /** Tile and shelf-card title. */
+    val TileTitle = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.5f.sp,
+        lineHeight = 19.sp,
+        letterSpacing = 0.sp,
+    )
+
+    /** Small uppercase eyebrow — "VOX · SATURDAY", "FEATURED". */
+    val Eyebrow = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 10.sp,
+        lineHeight = 14.sp,
+        letterSpacing = 1.6.sp,
+    )
+}
+
 // TODO: Use M3 Expressive font families when the app adopts that type scale.
 
 // Uses the selected app font and applies tighter tracking to large display styles.

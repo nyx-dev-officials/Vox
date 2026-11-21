@@ -794,4 +794,7 @@
     <string name="jam_audio_unavailable">Audio unavailable on this device. The party continues.</string>
     <string name="jam_locally_paused">Paused on this device</string>
     <string name="jam_retry_audio">Retry audio</string>
+    <string name="home_masthead_morning">Good morning</string>
+    <string name="home_masthead_afternoon">Good afternoon</string>
+    <string name="home_masthead_evening">Good evening</string>
 </resources>
