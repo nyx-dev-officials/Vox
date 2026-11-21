@@ -79,7 +79,7 @@ The maintainer triages every issue with labels:
 | `status: in progress` | Someone is working on it. |
 | `status: fixed in nightly` | Fixed in the latest nightly, not yet in stable. |
 
-Please test against the latest [nightly build](https://github.com/nyx-dev-officials/Vox/releases/tag/2.0.0-nightly) before reporting. Issues with no activity for 60 days are marked stale and closed a week later.
+Please test against the latest [build](https://github.com/nyx-dev-officials/Vox/releases/latest) before reporting. Issues with no activity for 60 days are marked stale and closed a week later.
 
 ## Branches and commits
 

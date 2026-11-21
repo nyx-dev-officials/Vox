@@ -13,8 +13,8 @@ with Liquid Glass surfaces, Cupertino-style controls and one champagne accent.
 
 <br>
 
-<a href="https://github.com/nyx-dev-officials/Vox/releases/tag/2.0.4-nightly">
-  <img src="https://img.shields.io/badge/DOWNLOAD-NIGHTLY%202.0.4-E5C697?style=for-the-badge&labelColor=0E0D0C&logo=android&logoColor=E5C697" alt="Download Vox Nightly 2.0.4">
+<a href="https://github.com/nyx-dev-officials/Vox/releases/latest">
+  <img src="https://img.shields.io/badge/DOWNLOAD-2.0.5-E5C697?style=for-the-badge&labelColor=0E0D0C&logo=android&logoColor=E5C697" alt="Download Vox 2.0.5">
 </a>
 <a href="https://github.com/nyx-dev-officials/Vox/releases">
   <img src="https://img.shields.io/badge/RELEASES-ALL%20BUILDS-1B1917?style=for-the-badge&labelColor=0E0D0C&logo=github&logoColor=F6F3EE" alt="All Vox releases">
@@ -40,10 +40,9 @@ with Liquid Glass surfaces, Cupertino-style controls and one champagne accent.
 
 </div>
 
-> [!WARNING]
-> **The current Stable release is outdated and not working.** Use [Nightly 2.0.4](https://github.com/nyx-dev-officials/Vox/releases/tag/2.0.4-nightly) from GitHub while the remaining issues are fixed. A refreshed Stable release will follow once they are.
->
-> The project website is being reworked, so download from GitHub Releases for now.
+> [!NOTE]
+> **2.0.5 is a debug build straight from this repository** — the first Vox build of the
+> glass redesign. Grab the APK from [Releases](https://github.com/nyx-dev-officials/Vox/releases/latest).
 
 <br>
 
@@ -80,17 +79,18 @@ tints from whatever the album art gives it, but never past the ceiling.
 
 ## Download
 
-| Channel | Status |
+| Channel | Build |
 | :-- | :-- |
-| **Nightly 2.0.4** | [Download from GitHub Releases](https://github.com/nyx-dev-officials/Vox/releases/tag/2.0.4-nightly). Pre-release builds; may be unstable. |
-| **Stable** | Outdated and not working. A refreshed build follows the remaining fixes. |
+| **2.0.5** | [Download the APK from GitHub Releases](https://github.com/nyx-dev-officials/Vox/releases/latest) — `app-universal-foss-debug.apk`, built from this repo. |
 
-On a 32-bit-only phone (for example Galaxy A13) that says *app not compatible*,
-download the `arm32` APK from the same release.
+The universal build covers 64-bit phones (`arm64-v8a`) and emulators (`x86_64`).
+A 32-bit-only phone (for example Galaxy A13) needs a separate `arm32` build, which
+`./gradlew :app:assembleArm32FossDebug` produces.
 
 Vox supports **Android 8.0 (API 26)** and later. Install APKs only from sources
 you trust — Android may ask you to allow installation from the app you used to
-download it.
+download it. This is a debug build: it is signed with the debug key and installs
+alongside nothing else, so uninstall any earlier copy first.
 
 <br>
 
