@@ -15,10 +15,15 @@ on:
   workflow_dispatch:
     inputs:
       label:
-        description: 'Label for this test build'
+        description: 'Label for this build (use the version, e.g. 2.0.7, when release=true)'
         required: false
         default: 'test'
         type: string
+      release:
+        description: 'Run the R8 release lane and publish the GitHub release instead of test APKs'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -33,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TAG: ${{ github.event.inputs.label || github.ref_name }}
-      IS_RELEASE: ${{ github.event_name == 'push' }}
+      IS_RELEASE: ${{ github.event_name == 'push' || inputs.release }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -115,8 +120,10 @@ jobs:
         if: env.IS_RELEASE != 'true'
         run: |
           mkdir -p out
-          ARM64=$(find app/build/outputs/apk/arm64 -name '*.apk' | head -1)
-          ARM32=$(find app/build/outputs/apk/arm32 -name '*.apk' | head -1)
+          # AGP 8+ nests output per flavor+variant (outputs/apk/arm64Foss/release/),
+          # so match on the path anywhere below outputs/apk instead of guessing.
+          ARM64=$(find app/build/outputs/apk -path '*arm64*' -name '*.apk' | head -1)
+          ARM32=$(find app/build/outputs/apk -path '*arm32*' -name '*.apk' | head -1)
           test -s "$ARM64" && test -s "$ARM32"
           cp "$ARM64" out/vox-arm64-foss.apk
           cp "$ARM32" out/vox-arm32-foss.apk
@@ -157,7 +164,7 @@ jobs:
           VERSION=$(sed -n 's/^VERSION_MAJOR=//p' version.properties).$(sed -n 's/^VERSION_MINOR=//p' version.properties).$(sed -n 's/^VERSION_PATCH=//p' version.properties)
           test "${TAG}" = "$VERSION" || { echo "Tag $TAG does not match version.properties $VERSION" >&2; exit 1; }
           VERSION_CODE=$(python3 -c 'import sys; a,b,c=(int(v) for v in sys.argv[1].split(".")); print((a*10000+b*100+c)*10000+9999)' "$VERSION")
-          APK=$(find app/build/outputs/apk/universal -name '*.apk' | head -1)
+          APK=$(find app/build/outputs/apk -path '*universal*' -name '*.apk' | head -1)
           test -s "$APK" || { echo "No universal APK produced" >&2; exit 1; }
           cp "$APK" vox-universal-foss.apk
           cp "$APK" "vox-${TAG}.apk"
