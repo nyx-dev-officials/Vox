@@ -43,7 +43,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -100,7 +99,7 @@ import com.vox.music.ui.component.rememberHeroSource
 import com.vox.music.ui.component.rememberHeroTopBlur
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import com.vox.music.ui.component.rememberHeroTint
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.menu.YouTubeAlbumMenu
 import com.vox.music.ui.menu.YouTubeArtistMenu
 import com.vox.music.ui.menu.YouTubePlaylistMenu
@@ -291,7 +290,7 @@ internal fun EditorialCard(item: YTItem) {
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1.5f)
-                .clip(ContinuousRoundedRectangle(10.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(colors.secondarySystemFill),
         )
     }
@@ -301,7 +300,7 @@ internal fun EditorialCard(item: YTItem) {
 @Composable
 internal fun ShelfCard(item: YTItem) {
     val colors = IosTheme.colors
-    val shape = if (item is ArtistItem) androidx.compose.foundation.shape.CircleShape else ContinuousRoundedRectangle(10.dp)
+    val shape = if (item is ArtistItem) androidx.compose.foundation.shape.CircleShape else RoundedCornerShape(10.dp)
     Column(Modifier.width(154.dp)) {
         AsyncImage(
             model = item.thumbnail,

@@ -87,7 +87,7 @@ import com.vox.music.constants.DynamicThemeKey
 import com.vox.music.constants.PureBlackHeroBackgroundKey
 import com.vox.music.constants.ReduceDynamicBlurKey
 import com.vox.music.constants.SelectedThemeColorKey
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.theme.AppleTokens
 import com.vox.music.ui.theme.DefaultThemeColor
 import com.vox.music.ui.theme.LocalAccentColor

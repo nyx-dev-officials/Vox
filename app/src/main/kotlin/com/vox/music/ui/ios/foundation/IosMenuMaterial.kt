@@ -5,6 +5,7 @@
 
 package com.vox.music.ui.ios.foundation
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,16 +60,10 @@ object IosMenuMaterial {
     /** Opaque charcoal used when a menu surface cannot show the page through it. */
     val DarkPanelFill = Color(0xFF1C1C1E)
 
-    /** Menu panel corner radius. */
-    val CornerRadius = 32.dp
+    /** Menu panel corner radius. Cut, not pillowed. */
+    val CornerRadius = 12.dp
 
-    /** Smoothed panel silhouette. */
-    val PanelShape = com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(
-        CornerRadius,
-        continuity = com.vox.music.ui.component.shapes.continuities.G2Continuity(
-            profile = com.vox.music.ui.component.shapes.continuities.G2ContinuityProfile.figmaSmoothing(0.6),
-        ),
-    )
+    val PanelShape = RoundedCornerShape(CornerRadius)
     val Width = 238.dp
 
     /** Separator hairline inset from the panel edges (iOS 27 clip: ~16pt). */

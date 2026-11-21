@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.offline.Download
 import com.vox.music.R
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.utils.makeTimeString
 
@@ -90,7 +90,7 @@ fun LazyGridScope.GridMenuItem(
     item {
         Column(
             modifier = modifier
-                .clip(ContinuousRoundedRectangle(18.dp))
+                .clip(RoundedCornerShape(18.dp))
                 .height(GridMenuItemHeight)
                 .clickable(
                     enabled = enabled,
@@ -173,7 +173,7 @@ fun LazyGridScope.SleepTimerGridMenu(
     item {
         Column(
             modifier = modifier
-                .clip(ContinuousRoundedRectangle(18.dp))
+                .clip(RoundedCornerShape(18.dp))
                 .height(GridMenuItemHeight)
                 .clickable(
                     onClick = onClick

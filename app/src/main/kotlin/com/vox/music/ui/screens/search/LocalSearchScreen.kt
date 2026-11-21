@@ -86,7 +86,7 @@ import com.vox.music.ui.component.LocalGlassEffectConfig
 import com.vox.music.ui.component.withFixedStyle
 import com.vox.music.ui.component.isGlassAllowed
 import com.vox.music.ui.component.liquidGlass
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
 import com.vox.music.ui.component.PlaylistListItem
 import com.vox.music.ui.component.SongListItem
@@ -185,7 +185,7 @@ fun LocalSearchScreen(
       // already no-ops when no custom image is set.
       HomeImageBackground(withGradient = true)
       HeroTintedContent(tint = tint, backdrop = heroBackdrop) {
-        val chromeShape = ContinuousRoundedRectangle(percent = 50)
+        val chromeShape = RoundedCornerShape(percent = 50)
         val chromeBackgroundModifier = if (useGlass) {
             Modifier.chromeShadow(chromeShape).liquidGlass(config = glassConfig, shape = chromeShape)
         } else {

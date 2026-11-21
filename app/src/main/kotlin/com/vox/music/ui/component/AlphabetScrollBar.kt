@@ -53,7 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -194,7 +194,7 @@ fun AlphabetScrollBar(
                         color = AppTheme.colorScheme.surfaceVariant.copy(
                             alpha = trackAlpha,
                         ),
-                        shape = ContinuousRoundedRectangle(RailWidth / 2),
+                        shape = RoundedCornerShape(RailWidth / 2),
                     )
                     // The rail is a scrub surface, not 28 buttons. Announcing every
                     // letter would bury the list itself in the accessibility tree, and
@@ -426,7 +426,7 @@ private fun AlphabetIndicator(section: String?, visible: Boolean) {
                 .size(64.dp)
                 .background(
                     color = AppTheme.colorScheme.secondaryContainer.copy(alpha = 0.92f),
-                    shape = ContinuousRoundedRectangle(32.dp),
+                    shape = RoundedCornerShape(32.dp),
                 ),
             contentAlignment = Alignment.Center,
         ) {

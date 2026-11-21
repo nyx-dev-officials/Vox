@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.AppTheme
 
 internal class FloatingTabBarScopeImpl : FloatingTabBarScope {
@@ -176,14 +176,14 @@ object FloatingTabBarDefaults {
      */
     @Composable
     fun shapes(
-        // ContinuousRoundedRectangle(percent = 50) instead of RoundedCornerShape/
+        // RoundedCornerShape(percent = 50) instead of RoundedCornerShape/
         // CircleShape: same capsule/circle silhouette, but Kyant0/Capsule's
         // continuous (superellipse) corners instead of Android's circular-arc
         // ones — smoother, and lerp-able for the puck's drag-to-search morph.
-        tabBarShape: Shape = ContinuousRoundedRectangle(percent = 50),
-        tabShape: Shape = ContinuousRoundedRectangle(percent = 50),
-        standaloneTabShape: Shape = ContinuousRoundedRectangle(percent = 50),
-        accessoryShape: Shape = ContinuousRoundedRectangle(percent = 50),
+        tabBarShape: Shape = RoundedCornerShape(percent = 50),
+        tabShape: Shape = RoundedCornerShape(percent = 50),
+        standaloneTabShape: Shape = RoundedCornerShape(percent = 50),
+        accessoryShape: Shape = RoundedCornerShape(percent = 50),
     ): FloatingTabBarShapes = FloatingTabBarShapes(
         tabBarShape = tabBarShape,
         tabShape = tabShape,

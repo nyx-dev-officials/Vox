@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 /*
  * iOS shapes.
@@ -29,11 +29,11 @@ val IosCircle: Shape = CircleShape
 
 /** A section's first row: rounded on top, square joins at the bottom. */
 fun TopRoundedShape(radius: Dp): Shape =
-    ContinuousRoundedRectangle(topStart = radius, topEnd = radius)
+    RoundedCornerShape(topStart = radius, topEnd = radius)
 
 /** A section's last row: square joins on top, rounded at the bottom. */
 fun BottomRoundedShape(radius: Dp): Shape =
-    ContinuousRoundedRectangle(bottomEnd = radius, bottomStart = radius)
+    RoundedCornerShape(bottomEnd = radius, bottomStart = radius)
 
 /**
  * SwiftUI's ConcentricRectangle — a rounded rect whose radius follows the container
@@ -43,7 +43,7 @@ fun BottomRoundedShape(radius: Dp): Shape =
  *   instead of shrinking with the inset.
  */
 fun ConcentricRectangle(containerRadius: Dp, inset: Dp, uniform: Boolean = false): Shape =
-    ContinuousRoundedRectangle(
+    RoundedCornerShape(
         if (uniform) containerRadius else (containerRadius - inset).coerceAtLeast(0.dp)
     )
 
@@ -53,7 +53,7 @@ fun ConcentricRectangle(containerRadius: Dp, inset: Dp, uniform: Boolean = false
  */
 @Immutable
 data class IosContainerShape(val radius: Dp) {
-    val shape: Shape get() = ContinuousRoundedRectangle(radius)
+    val shape: Shape get() = RoundedCornerShape(radius)
 
     /** The shape a child inset by [inset] should take to stay concentric. */
     fun relative(inset: Dp): Shape = ConcentricRectangle(radius, inset)

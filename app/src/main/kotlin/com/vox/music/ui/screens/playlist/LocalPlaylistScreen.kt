@@ -178,7 +178,6 @@ import com.vox.music.LocalAmbientBackgroundColor
 import com.vox.music.ui.component.asSoftIconTint
 import com.vox.music.ui.utils.additiveChrome
 import com.vox.music.ui.component.liquidGlass
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.menu.CustomThumbnailMenu
 import com.vox.music.ui.component.ExpandableText
 import com.vox.music.ui.menu.LocalPlaylistMenu
@@ -548,7 +547,7 @@ fun LocalPlaylistScreen(
     // Keep top-bar glass fixed; the global preference controls the nav bar and mini player.
     val glassConfig = LocalGlassEffectConfig.current.withFixedStyle()
     val useGlass = glassConfig.isEnabledFor(GlassComponent.NAV_BAR) && isGlassAllowed()
-    val chromeShape = ContinuousRoundedRectangle(percent = 50)
+    val chromeShape = RoundedCornerShape(percent = 50)
     val chromeContentColor = if (useGlass) glassConfig.resolvedTextColor() else onTint
 
     // Keep the hero capture unattached so glass chrome cannot sample itself.

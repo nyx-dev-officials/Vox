@@ -138,7 +138,6 @@ import com.vox.music.LocalAmbientBackgroundColor
 import com.vox.music.ui.component.asSoftIconTint
 import com.vox.music.ui.utils.additiveChrome
 import com.vox.music.ui.component.liquidGlass
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.component.LocalAppBackdrop
 import com.vox.music.ui.component.backdrop.backdrops.layerBackdrop
 import com.vox.music.ui.component.backdrop.backdrops.rememberBackdropFreeze
@@ -311,7 +310,7 @@ fun TopPlaylistScreen(
             .background(tint)
     ) {
         HeroTintedContent(tint = tint, backdrop = heroBackdrop) {
-        val chromeShape = ContinuousRoundedRectangle(percent = 50)
+        val chromeShape = RoundedCornerShape(percent = 50)
         val chromeBackgroundModifier = if (useGlass) {
             Modifier.chromeShadow(chromeShape).liquidGlass(config = glassConfig, shape = chromeShape)
         } else {

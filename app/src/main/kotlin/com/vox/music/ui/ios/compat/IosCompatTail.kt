@@ -40,7 +40,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.compose.ui.platform.LocalView
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -153,7 +153,7 @@ fun ModalBottomSheet(
             modifier = modifier,
             sheetState = sheetState,
             sheetMaxWidth = sheetMaxWidth,
-            shape = shape ?: ContinuousRoundedRectangle(topStart = 28.dp, topEnd = 28.dp),
+            shape = shape ?: RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
             containerColor = if (containerColor.isSpecified) containerColor else colors.secondarySystemGroupedBackground,
             contentColor = if (contentColor.isSpecified) contentColor else colors.label,
             scrimColor = if (scrimColor.isSpecified) scrimColor else Color.Black.copy(alpha = 0.12f),
@@ -188,7 +188,7 @@ fun PlainTooltip(
     val colors = IosTheme.colors
     Box(
         modifier
-            .clip(shape ?: ContinuousRoundedRectangle(10.dp))
+            .clip(shape ?: RoundedCornerShape(10.dp))
             .background(
                 if (containerColor.isSpecified) containerColor else colors.label.copy(alpha = 0.92f)
             )

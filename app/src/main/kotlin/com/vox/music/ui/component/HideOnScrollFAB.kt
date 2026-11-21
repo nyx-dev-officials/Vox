@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.vox.music.LocalPlayerAwareWindowInsets
 import com.vox.music.R
 import com.vox.music.designsystem.VoxDesignTokens
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.theme.AppleTokens
 import com.vox.music.ui.utils.bounceClick
@@ -59,7 +59,7 @@ private fun FabDock(
     onClick: () -> Unit,
     onRecognitionClick: (() -> Unit)?,
 ) {
-    val shape = ContinuousRoundedRectangle(26.dp)
+    val shape = RoundedCornerShape(26.dp)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp),

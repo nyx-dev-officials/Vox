@@ -40,7 +40,7 @@ import com.composables.sfsymbols.monochrome.SFECircle
 import com.composables.sfsymbols.monochrome.SFShuffle
 import com.vox.music.R
 import com.vox.music.constants.EnableTidalStreamingKey
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.ios.compat.LocalContentColor
@@ -92,7 +92,7 @@ fun DetailArtworkCard(
     widthFraction: Float = DetailArtworkFraction,
     overlay: @Composable BoxScope.() -> Unit = {},
 ) {
-    val shape = ContinuousRoundedRectangle(AppleTokens.CardCorner)
+    val shape = RoundedCornerShape(AppleTokens.CardCorner)
     val hasArtwork = model != null && (model !is String || model.isNotBlank())
     Box(
         modifier = modifier
@@ -227,7 +227,7 @@ fun DetailActionRow(
             modifier = Modifier
                 .weight(1f)
                 .height(DetailActionHeight)
-                .clip(ContinuousRoundedRectangle(percent = 50))
+                .clip(RoundedCornerShape(percent = 50))
                 .background(onTint)
                 .bounceClick(onClick = onPlay),
         ) {

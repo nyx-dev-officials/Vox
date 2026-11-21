@@ -155,7 +155,7 @@ import com.vox.music.ui.component.rememberHeroSource
 import com.vox.music.ui.component.ZeroScrollProgress
 import com.vox.music.ui.component.rememberHeroTopBlur
 import com.vox.music.ui.component.resolvedTextColor
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.component.withFixedStyle
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Checkbox
@@ -295,7 +295,7 @@ fun OnlinePlaylistScreen(
     // Keep top-bar glass fixed; the global preference controls the nav bar and mini player.
     val glassConfig = LocalGlassEffectConfig.current.withFixedStyle()
     val useGlass = glassConfig.isEnabledFor(GlassComponent.NAV_BAR) && isGlassAllowed()
-    val chromeShape = ContinuousRoundedRectangle(percent = 50)
+    val chromeShape = RoundedCornerShape(percent = 50)
     val chromeContentColor = if (useGlass) glassConfig.resolvedTextColor() else AppTheme.colorScheme.onSurface
 
     // Unattached backdrop (never .layerBackdrop'd): glass chrome sampling it

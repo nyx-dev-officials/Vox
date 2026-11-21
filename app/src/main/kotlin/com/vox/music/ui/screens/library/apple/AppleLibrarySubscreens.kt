@@ -5,6 +5,7 @@
 
 package com.vox.music.ui.screens.library.apple
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.utils.sharedArtworkSource
 
 import com.vox.music.ui.component.sf
@@ -343,7 +344,7 @@ private fun ArtRow(
             .then(if (onClick != null) Modifier.iosRowPress(onClick = onClick) else Modifier)
             .padding(start = 16.dp),
     ) {
-        val shape = if (circle) CircleShape else com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(radius)
+        val shape = if (circle) CircleShape else androidx.compose.foundation.shape.RoundedCornerShape(radius)
         AsyncImage(
             model = art,
             onSuccess = com.vox.music.ui.utils.sharedArtworkImageListener(

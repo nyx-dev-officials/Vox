@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vox.music.constants.PlayerArtworkStyle
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 /** How a cover joins a page change: its bounds travel into the header, or both dissolve in place. */
 internal enum class CoverMorph { SHARED, FADE }
@@ -57,7 +57,7 @@ internal object CardCoverStyle : PlayerCoverStyle {
     override val spins = false
     override val artSpinsWithShape = true
     @Composable
-    override fun shape(cornerRadius: Dp): Shape = ContinuousRoundedRectangle(cornerRadius)
+    override fun shape(cornerRadius: Dp): Shape = RoundedCornerShape(cornerRadius)
 
     @Composable
     override fun Decoration(modifier: Modifier) = Unit

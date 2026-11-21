@@ -149,7 +149,6 @@ import com.vox.music.ui.component.liquidGlass
 import com.vox.music.ui.component.backdrop.backdrops.layerBackdrop
 import com.vox.music.ui.component.backdrop.backdrops.rememberBackdropFreeze
 import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.menu.AutoPlaylistMenu
 import com.vox.music.ui.menu.SelectionSongMenu
 import com.vox.music.ui.menu.SongMenu
@@ -315,7 +314,7 @@ fun AutoPlaylistScreen(
             .background(tint)
     ) {
         HeroTintedContent(tint = tint, backdrop = heroBackdrop) {
-            val chromeShape = ContinuousRoundedRectangle(percent = 50)
+            val chromeShape = RoundedCornerShape(percent = 50)
 
             Box(modifier = Modifier.fillMaxSize()) {
                 // Capture through a plain Box; LazyColumn's recycled item layers do not flatten reliably.

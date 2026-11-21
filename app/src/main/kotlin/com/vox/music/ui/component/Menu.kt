@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.vox.music.ui.component.backdrop.catalog.utils.InteractiveHighlight
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.sp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.ProvideTextStyle
 import com.vox.music.ui.ios.foundation.IosMetrics
 import com.vox.music.ui.ios.foundation.IosMenuMaterial
@@ -94,7 +94,7 @@ fun IosMenuGroup(
                 translationY = enterOffset.value
                 alpha = enterAlpha.value
             }
-            .iosMenuSurface(ContinuousRoundedRectangle(MenuGroupCornerRadius), bloom, frosted = false)
+            .iosMenuSurface(RoundedCornerShape(MenuGroupCornerRadius), bloom, frosted = false)
             .menuVibrancy()
             .animateContentSize()
     ) {

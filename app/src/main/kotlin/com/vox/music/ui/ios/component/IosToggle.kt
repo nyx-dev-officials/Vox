@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosCapsule
 import com.vox.music.ui.ios.foundation.IosCircle
 import com.vox.music.ui.ios.foundation.IosTheme
@@ -84,12 +84,12 @@ fun IosToggle(
             Box(
                 modifier = Modifier
                     .size(22.dp)
-                    .clip(ContinuousRoundedRectangle(6.dp))
+                    .clip(RoundedCornerShape(6.dp))
                     .background(if (checked) onColor else Color.Transparent)
                     .border(
                         width = if (checked) 0.dp else 1.5.dp,
                         color = colors.tertiaryLabel,
-                        shape = ContinuousRoundedRectangle(6.dp),
+                        shape = RoundedCornerShape(6.dp),
                     ),
                 contentAlignment = Alignment.Center,
             ) {

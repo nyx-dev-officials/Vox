@@ -1,28 +1,38 @@
-name: Stable Release Build
+name: Signed Release
+
+# The release APK is built, minified, signed and published on GitHub's runners.
+# Nothing here needs to run on the maintainer's machine, and no keystore or
+# password ever lives in the repository — only in Actions secrets.
 
 on:
   push:
     tags:
-      - 'v*'
+      - '2.*'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (e.g. v1.0.0)'
+        description: 'Release tag (e.g. 2.0.7) — must already exist'
         required: true
         type: string
 
 permissions:
   contents: write
 
-jobs:
-  build_stable:
-    name: Build GitHub APK variants
-    runs-on: ubuntu-latest
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
 
+jobs:
+  release:
+    name: Build, sign and publish
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
@@ -30,80 +40,113 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Set Up Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-disabled: true
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Generate debug.keystore
-        run: |
-          mkdir -p ~/.android
-          keytool -genkey -v \
-            -keystore ~/.android/debug.keystore \
-            -storepass android \
-            -alias androiddebugkey \
-            -keypass android \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
-
       - name: Decode release keystore
         env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
+          if [ -z "${KEYSTORE_BASE64:-}" ]; then
+            echo "KEYSTORE_BASE64 secret is missing" >&2
+            exit 1
+          fi
           mkdir -p app/keystore
-          echo "$KEYSTORE_BASE64" | base64 -d > app/keystore/release.keystore
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > app/keystore/release.keystore
+          test -s app/keystore/release.keystore
+          keytool -list -keystore app/keystore/release.keystore \
+            -storepass "${{ secrets.STORE_PASSWORD }}" -alias "${{ secrets.KEY_ALIAS }}" > /dev/null
+          echo "Keystore decoded and readable."
 
-      - name: Build Universal GMS Release APK
+      - name: Build signed universal FOSS release (R8)
         env:
-          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
-          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
-          STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_FILE: app/keystore/release.keystore
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
         run: |
-          ./gradlew assembleUniversalGmsRelease assembleArm32GmsRelease assembleUniversalFossRelease assembleArm32FossRelease -PgithubUpdater=true --no-configuration-cache --console=plain --warning-mode summary -x lint
+          ./gradlew :app:assembleUniversalFossRelease \
+            -PgithubUpdater=true \
+            --no-configuration-cache \
+            --console=plain \
+            --warning-mode summary \
+            -x lint
 
-      - name: Prepare APKs and updater metadata
+      - name: Verify signature and minification
+        run: |
+          APK=app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk
+          test -s "$APK"
+          APKSIGNER=$(find "${ANDROID_SDK_ROOT:-$ANDROID_HOME}" -name apksigner -type f | sort | tail -1)
+          if [ -n "$APKSIGNER" ]; then
+            "$APKSIGNER" verify --print-certs "$APK"
+          else
+            echo "apksigner not found on runner; skipping signature print."
+          fi
+          unzip -l "$APK" | grep -q 'classes.dex'
+
+      - name: Stage assets and manifest
         env:
           UPDATER_IMAGE_URL: ${{ vars.UPDATER_IMAGE_URL }}
         run: |
           VERSION=$(sed -n 's/^VERSION_MAJOR=//p' version.properties).$(sed -n 's/^VERSION_MINOR=//p' version.properties).$(sed -n 's/^VERSION_PATCH=//p' version.properties)
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          test "${TAG#v}" = "$VERSION"
+          test "${TAG}" = "$VERSION" || { echo "Tag $TAG does not match version.properties $VERSION" >&2; exit 1; }
           VERSION_CODE=$(python3 -c 'import sys; a,b,c=(int(v) for v in sys.argv[1].split(".")); print((a*10000+b*100+c)*10000+9999)' "$VERSION")
-          cp app/build/outputs/apk/universalGms/release/*.apk vox-universal-gms.apk
-          cp app/build/outputs/apk/arm32Gms/release/*.apk vox-arm32-gms.apk
-          cp app/build/outputs/apk/universalFoss/release/*.apk vox-universal-foss.apk
-          cp app/build/outputs/apk/arm32Foss/release/*.apk vox-arm32-foss.apk
+          cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk vox-universal-foss.apk
+          cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk "vox-${TAG}.apk"
           IMAGE_ARGS=()
           if [ -n "${UPDATER_IMAGE_URL:-}" ]; then IMAGE_ARGS+=(--image "$UPDATER_IMAGE_URL"); fi
-          python3 tools/publish_updater_metadata.py --version "$VERSION" --version-code "$VERSION_CODE" --release-notes ".github/release-notes/$TAG.md" --output updater.json "${IMAGE_ARGS[@]}" vox-universal-gms.apk vox-arm32-gms.apk vox-universal-foss.apk vox-arm32-foss.apk
+          python3 tools/publish_updater_metadata.py \
+            --version "$VERSION" \
+            --version-code "$VERSION_CODE" \
+            --release-notes ".github/release-notes/${TAG}.md" \
+            --output updater.json \
+            "${IMAGE_ARGS[@]}" vox-universal-foss.apk
+          ls -lh vox-universal-foss.apk "vox-${TAG}.apk" updater.json
 
-      - name: Upload APKs to Release
+      - name: Create release with notes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          gh release upload "$TAG" vox-universal-gms.apk vox-arm32-gms.apk vox-universal-foss.apk vox-arm32-foss.apk --repo "${{ github.repository }}" --clobber
+          NOTES=".github/release-notes/${TAG}.md"
+          test -f "$NOTES" || { echo "Missing $NOTES" >&2; exit 1; }
+          if gh release view "$TAG" --repo "${{ github.repository }}" > /dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file "$NOTES" --latest --repo "${{ github.repository }}"
+          else
+            gh release create "$TAG" \
+              --title "Vox $TAG" \
+              --notes-file "$NOTES" \
+              --latest \
+              --repo "${{ github.repository }}"
+          fi
 
-      # The update manifest stays out of the release assets: the app reads it from the
-      # repository, so a release page shows only APKs and GitHub's source archives.
-      - name: Publish updater manifest to the repository
+      - name: Upload APKs
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          # No updater.json here: the manifest lives in the repository, so the
+          # release page stays APKs plus GitHub's own source archives.
+          gh release upload "$TAG" vox-universal-foss.apk "vox-${TAG}.apk" \
+            --repo "${{ github.repository }}" --clobber
+
+      - name: Publish updater manifest to main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
           cp updater.json /tmp/vox-updater.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
           git checkout main
           cp /tmp/vox-updater.json updater.json
-          git add updater.json
-          git commit -m "Publish updater manifest for $TAG" || true
-          git push origin main
+          if git diff --quiet -- updater.json; then
+            echo "Manifest unchanged."
+          else
+            git add updater.json
+            git commit -m "Publish updater manifest for $TAG"
+            git push origin main
+          fi

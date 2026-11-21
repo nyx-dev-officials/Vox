@@ -129,7 +129,6 @@ import com.vox.music.ui.theme.AppleTokens
 import com.vox.music.ui.theme.HeroTintedContent
 
 import com.vox.music.ui.component.LocalNavSearchState
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.component.backdrop.backdrops.layerBackdrop
 import com.vox.music.ui.component.backdrop.backdrops.rememberBackdropFreeze
 import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop

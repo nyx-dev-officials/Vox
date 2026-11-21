@@ -32,8 +32,17 @@ data class IosTypography(
     val caption2: TextStyle,
 )
 
-fun iosTypography(fontFamily: FontFamily = FontFamily.Default): IosTypography {
-    fun style(size: Int, lineHeight: Int, weight: FontWeight, tracking: Float) = TextStyle(
+/**
+ * @param fontFamily the body voice — whatever the reader picked in settings.
+ * @param displayFamily the display voice used for titles, headers and numerals.
+ *        Vox pairs a geometric display face with a readable grotesque, so the
+ *        two never fight over the same line of text.
+ */
+fun iosTypography(
+    fontFamily: FontFamily = FontFamily.Default,
+    displayFamily: FontFamily = fontFamily,
+): IosTypography {
+    fun style(size: Float, lineHeight: Float, weight: FontWeight, tracking: Float) = TextStyle(
         fontFamily = fontFamily,
         fontSize = size.sp,
         lineHeight = lineHeight.sp,
@@ -41,28 +50,28 @@ fun iosTypography(fontFamily: FontFamily = FontFamily.Default): IosTypography {
         letterSpacing = tracking.sp,
     )
 
-    // Use stronger weights, tighter large-title tracking, and explicit line height
-    // to keep Apple Music-style titles distinct and readable.
-    fun display(size: Int, weight: FontWeight, tracking: Float) = TextStyle(
-        fontFamily = fontFamily,
+    // Display sizes run on the display face, tight tracking, no extrabold. A
+    // newspaper sets its headline in one weight and lets scale do the shouting.
+    fun display(size: Float, weight: FontWeight, tracking: Float) = TextStyle(
+        fontFamily = displayFamily,
         fontSize = size.sp,
-        lineHeight = (size * 1.2f).sp,
+        lineHeight = (size * 1.12f).sp,
         fontWeight = weight,
         letterSpacing = tracking.sp,
     )
 
     return IosTypography(
-        largeTitle = display(34, FontWeight.W800, -0.8f),
-        title = display(28, FontWeight.W800, -0.7f),
-        title2 = display(22, FontWeight.W700, -0.4f),
-        title3 = display(20, FontWeight.W700, -0.3f),
-        headline = display(16, FontWeight.W600, -0.2f),
-        subheadline = style(15, 20, FontWeight.Normal, -0.24f),
-        // Neutral body text lets weight and spacing carry the hierarchy.
-        body = display(16, FontWeight.W400, 0f),
-        callout = display(14, FontWeight.W400, 0f),
-        footnote = style(13, 18, FontWeight.Normal, -0.08f),
-        caption = style(12, 16, FontWeight.Normal, 0f),
-        caption2 = style(11, 13, FontWeight.W600, 0f),
+        largeTitle = display(38f, FontWeight.SemiBold, -1.1f),
+        title = display(29f, FontWeight.SemiBold, -0.8f),
+        title2 = display(22f, FontWeight.SemiBold, -0.5f),
+        title3 = display(19f, FontWeight.Medium, -0.3f),
+        headline = display(16f, FontWeight.SemiBold, -0.2f),
+        subheadline = style(14f, 19f, FontWeight.Medium, 0f),
+        body = style(15f, 21f, FontWeight.Normal, 0.1f),
+        callout = style(14f, 19f, FontWeight.Medium, 0.1f),
+        footnote = style(12.5f, 17f, FontWeight.Normal, 0.2f),
+        caption = style(11.5f, 15f, FontWeight.Normal, 0.3f),
+        // Micro-label: uppercase eyebrows and index numbers live here.
+        caption2 = style(10f, 13f, FontWeight.SemiBold, 1.8f),
     )
 }

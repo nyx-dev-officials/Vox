@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.music.innertube.models.YTItem
 import com.vox.music.R
 import com.vox.music.constants.ThumbnailRoundedShape
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.theme.AppleTokens
 
 @Composable
@@ -41,7 +41,7 @@ fun SpeedDialGridItem(
     // caption underneath rather than text burned into a scrim. These were circles,
     // which made Speed Dial the one shelf on Home with its own corner vocabulary.
     val shape =
-        if (cornerRadiusDp > 0) ContinuousRoundedRectangle(cornerRadiusDp.dp) else ThumbnailRoundedShape
+        if (cornerRadiusDp > 0) RoundedCornerShape(cornerRadiusDp.dp) else ThumbnailRoundedShape
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,

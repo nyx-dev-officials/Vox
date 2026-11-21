@@ -5,6 +5,7 @@
 
 package com.vox.music.ui.screens
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import android.app.Activity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -794,7 +795,7 @@ private fun NavGraphBuilder.sharedComposable(
         ) {
             if (collection) {
                 val corner = com.vox.music.ui.player.rememberScreenCornerRadius()
-                val shape = remember(corner) { com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(corner) }
+                val shape = remember(corner) { androidx.compose.foundation.shape.RoundedCornerShape(corner) }
                 val pageTransition = transition
                 androidx.compose.foundation.layout.Box(
                     Modifier.fillMaxSize().graphicsLayer {

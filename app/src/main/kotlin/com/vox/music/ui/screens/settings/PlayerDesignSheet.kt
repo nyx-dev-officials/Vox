@@ -79,7 +79,7 @@ import com.vox.music.constants.SliderStyleKey
 import com.vox.music.constants.UseAppleMusicPlayerKey
 import com.vox.music.ui.component.LocalMenuState
 import com.vox.music.ui.component.MenuState
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.HorizontalDivider
 import com.vox.music.ui.ios.compat.Switch
 import com.vox.music.ui.ios.compat.Text
@@ -457,7 +457,7 @@ private fun LayoutChoice(label: String, selected: Boolean, onClick: () -> Unit, 
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.clickable(interactionSource = null, indication = null, onClick = onClick),
     ) {
-        Box(Modifier.border(2.5.dp, ring, ContinuousRoundedRectangle(18.dp)).padding(5.dp)) { content() }
+        Box(Modifier.border(2.5.dp, ring, RoundedCornerShape(18.dp)).padding(5.dp)) { content() }
         Spacer(Modifier.height(8.dp))
         Text(
             label,
@@ -480,9 +480,9 @@ private fun PickTile(label: String, selected: Boolean, onClick: () -> Unit, cont
     ) {
         Box(
             Modifier
-                .border(2.5.dp, ring, ContinuousRoundedRectangle(16.dp))
+                .border(2.5.dp, ring, RoundedCornerShape(16.dp))
                 .padding(4.dp)
-                .clip(ContinuousRoundedRectangle(12.dp)),
+                .clip(RoundedCornerShape(12.dp)),
         ) { content() }
         Spacer(Modifier.height(6.dp))
         Text(
@@ -508,7 +508,7 @@ private fun OptionSection(title: String?, content: @Composable ColumnScope.() ->
         Column(
             Modifier
                 .fillMaxWidth()
-                .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+                .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
                 .background(IosTheme.colors.secondarySystemGroupedBackground),
             content = content,
         )

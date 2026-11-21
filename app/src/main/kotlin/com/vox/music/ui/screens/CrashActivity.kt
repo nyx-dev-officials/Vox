@@ -57,7 +57,7 @@ import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.ui.ios.foundation.IosControlSize
 import com.vox.music.ui.ios.component.IosButton
 import com.vox.music.ui.ios.component.IosButtonStyle
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.theme.SfProFontFamily
 import com.vox.music.utils.CrashHandler
 import java.io.File
@@ -189,7 +189,7 @@ fun CrashScreen(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .clip(ContinuousRoundedRectangle(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
                     .background(if (colors.isDark) colors.systemGray5 else colors.secondarySystemBackground)
                     .padding(16.dp),
             ) {

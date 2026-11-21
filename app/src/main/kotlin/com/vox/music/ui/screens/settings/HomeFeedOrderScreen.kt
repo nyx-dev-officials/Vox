@@ -43,7 +43,7 @@ import com.vox.music.R
 import com.vox.music.constants.HomeSectionOrderKey
 import com.vox.music.constants.HomeSectionHiddenKey
 import com.vox.music.constants.RandomizeHomeOrderKey
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.theme.AppleTokens
 import com.vox.music.utils.rememberPreference
 import sh.calvin.reorderable.ReorderableItem
@@ -163,7 +163,7 @@ fun HomeFeedOrderScreen(
                     val elevation by animateDpAsState(if (dragging) 8.dp else 0.dp, label = "lift")
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = ContinuousRoundedRectangle(AppleTokens.Control),
+                        shape = RoundedCornerShape(AppleTokens.Control),
                         color = AppTheme.colorScheme.surfaceContainer,
                         tonalElevation = elevation,
                         shadowElevation = elevation,

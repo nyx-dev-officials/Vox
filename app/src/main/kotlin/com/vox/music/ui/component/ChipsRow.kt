@@ -89,15 +89,15 @@ fun <T> ChipsRow(
     // removes the frosted blob look the old translucent fills produced over
     // artwork and makes the applied filter obvious at a glance.
     val defaultContainerColor = Color.Transparent
-    val champagne = com.vox.music.ui.theme.GlassTintTokens.selectedGoldColor(isDark)
-    val defaultSelectedContainerColor = champagne
+    val signal = com.vox.music.designsystem.VoxDesignTokens.Colors.AccentSignal
+    val defaultSelectedContainerColor = signal
     val defaultLabelColor = com.vox.music.ui.theme.GlassTintTokens.glassContentColor(
         isDark = isDark,
         isSelected = false,
     ).copy(alpha = 0.8f)
-    // Type on the champagne fill: ink on light gold, white on bronze.
-    val defaultSelectedLabelColor =
-        if (champagne.luminance() > 0.5f) com.vox.music.designsystem.VoxDesignTokens.Colors.Background else Color.White
+    // Type on the signal fill is always ink: the accent is a mid-lightness
+    // vermilion, so white on it would sit at about 3:1.
+    val defaultSelectedLabelColor = com.vox.music.designsystem.VoxDesignTokens.Colors.OnAccentSignal
     val pillBorder = androidx.compose.foundation.BorderStroke(
         1.dp,
         com.vox.music.ui.theme.GlassTintTokens.borderColor(isDark),

@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtMost
 import androidx.compose.ui.util.lerp
 import com.vox.music.ui.component.backdrop.catalog.utils.InteractiveHighlight
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.utils.additiveChrome
 import dev.chrisbanes.haze.ExperimentalHazeApi
 import dev.chrisbanes.haze.HazeInputScale
@@ -51,7 +51,7 @@ import kotlin.math.tanh
 // Kyant0/Capsule's continuous (superellipse) circle instead of CircleShape's
 // circular-arc corners — same reasoning as the floating nav bar/search pill:
 // smoother, and it's what liquidGlass's lens effect is tuned against.
-private val GlassCircleShape = ContinuousRoundedRectangle(percent = 50)
+private val GlassCircleShape = RoundedCornerShape(percent = 50)
 
 /**
  * Same tanh-damped press/drag-out scale+translate distortion as

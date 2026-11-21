@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.graphics.ColorUtils
 import androidx.palette.graphics.Palette
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -595,7 +595,7 @@ class VoxWidgetManager(
         cornerRadius: Float,
         paint: Paint,
     ) {
-        val outline = ContinuousRoundedRectangle(cornerRadius).createOutline(
+        val outline = RoundedCornerShape(cornerRadius).createOutline(
             size = Size(width, height),
             layoutDirection = LayoutDirection.Ltr,
             density = Density(1f),

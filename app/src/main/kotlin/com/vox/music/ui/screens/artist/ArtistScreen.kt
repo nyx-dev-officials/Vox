@@ -1312,7 +1312,7 @@ private val ArtistWordmarkMaxWidth = 286.dp
 /** Gap between the wordmark box and the hero foot. */
 private val ArtistWordmarkFootInset = 4.dp
 
-private val ArtistCapsuleShape = com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(percent = 50)
+private val ArtistCapsuleShape = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
 
 private fun com.music.innertube.pages.ArtistSection.isFeaturedLatest(): Boolean =
     title.contains("Latest", ignoreCase = true) && items.firstOrNull() is AlbumItem
@@ -1455,7 +1455,7 @@ private fun FeaturedReleaseCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(22.dp)
+    val shape = androidx.compose.foundation.shape.RoundedCornerShape(22.dp)
     com.vox.music.ui.utils.ArtworkSourceHost(modifier) { sourceModifier ->
     Row(
         verticalAlignment = Alignment.CenterVertically,

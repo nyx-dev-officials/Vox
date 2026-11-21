@@ -32,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.component.IosButtonRole
 import com.vox.music.ui.ios.foundation.IosCapsule
 import com.vox.music.ui.ios.foundation.IosMetrics
@@ -107,7 +107,7 @@ fun Surface(
 @Composable
 fun IosCard(
     modifier: Modifier = Modifier,
-    shape: Shape = ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius),
+    shape: Shape = RoundedCornerShape(IosMetrics.GroupedCornerRadius),
     color: Color = Color.Unspecified,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -146,7 +146,7 @@ fun IosAlertDialog(
         Column(
             modifier = modifier
                 .width(300.dp)
-                .clip(ContinuousRoundedRectangle(30.dp))
+                .clip(RoundedCornerShape(30.dp))
                 .background(colors.systemBackground)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -270,7 +270,7 @@ fun IosTextField(
         singleLine = singleLine,
         textStyle = textStyle,
         placeholder = placeholder?.let { { Text(it, style = textStyle) } },
-        shape = ContinuousRoundedRectangle(12.dp),
+        shape = RoundedCornerShape(12.dp),
         paddingValues = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
     )
 }

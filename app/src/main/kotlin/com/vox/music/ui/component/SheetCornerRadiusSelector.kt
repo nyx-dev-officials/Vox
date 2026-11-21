@@ -34,7 +34,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlin.math.roundToInt
 import com.vox.music.R
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.utils.rimLight
 
 /**
@@ -112,7 +111,7 @@ fun SheetCornerRadiusModal(
                             .background(AppTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.BottomCenter,
                     ) {
-                        val previewShape = remember(cornerRadius) { ContinuousRoundedRectangle(cornerRadius.dp) }
+                        val previewShape = remember(cornerRadius) { RoundedCornerShape(cornerRadius.dp) }
                         Column(
                             modifier = Modifier
                                 .padding(horizontal = 20.dp, vertical = 12.dp)

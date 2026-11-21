@@ -110,7 +110,6 @@ import com.vox.music.constants.HidePlayerThumbnailKey
 import com.vox.music.constants.PlayerBackgroundStyle
 import com.vox.music.constants.PlayerBackgroundStyleKey
 import com.vox.music.constants.PlayerHorizontalPadding
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.constants.PlayerArtworkStyle
 import com.vox.music.constants.PlayerArtworkStyleKey
 import androidx.compose.foundation.shape.CircleShape

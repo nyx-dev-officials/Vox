@@ -72,7 +72,7 @@ import com.vox.music.ui.component.NyXSignature
 import com.vox.music.ui.component.SymbolIcon
 import com.vox.music.ui.component.sf
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.ui.ios.foundation.iosRowPress
@@ -82,14 +82,8 @@ import com.vox.music.utils.rememberPreference
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.ios.compat.Switch
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.background
 import androidx.compose.ui.res.painterResource
 import com.vox.music.viewmodels.HomeViewModel
 
@@ -283,7 +277,7 @@ private fun LocalOnlyRow() {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+            .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
             .background(IosTheme.colors.secondarySystemGroupedBackground)
             .clickable { setLocalOnly(!localOnly) }
             .defaultMinSize(minHeight = 56.dp)
@@ -291,7 +285,7 @@ private fun LocalOnlyRow() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            Modifier.size(30.dp).clip(ContinuousRoundedRectangle(7.dp)).background(IosTheme.colors.systemOrange),
+            Modifier.size(30.dp).clip(RoundedCornerShape(7.dp)).background(IosTheme.colors.systemOrange),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.music_note), null, tint = Color.White, modifier = Modifier.size(18.dp))
@@ -315,7 +309,7 @@ private fun ProfileCard(accountName: String, accountImageUrl: String?, onClick: 
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(ContinuousRoundedRectangle(20.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(IosTheme.colors.secondarySystemGroupedBackground)
             .iosRowPress(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),

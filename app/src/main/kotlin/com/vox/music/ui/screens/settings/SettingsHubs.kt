@@ -34,7 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.vox.music.ui.component.SymbolIcon
 import com.vox.music.ui.component.sf
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.HorizontalDivider
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.ios.compat.Text
@@ -338,7 +338,7 @@ fun SettingsLinkCard(
         Column(
             Modifier
                 .fillMaxWidth()
-                .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+                .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
                 .background(IosTheme.colors.secondarySystemGroupedBackground),
         ) {
             links.forEachIndexed { i, link ->
@@ -367,7 +367,7 @@ fun SettingsLinkRow(link: SettingsLink, trailing: String?, selected: Boolean, on
         Box(
             Modifier
                 .size(30.dp)
-                .clip(ContinuousRoundedRectangle(7.dp))
+                .clip(RoundedCornerShape(7.dp))
                 .background(link.tint(IosTheme.colors)),
             contentAlignment = Alignment.Center,
         ) {

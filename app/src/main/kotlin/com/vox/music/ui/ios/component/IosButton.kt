@@ -33,7 +33,7 @@ import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosCapsule
 import com.vox.music.ui.ios.foundation.IosCircle
 import com.vox.music.ui.ios.foundation.IosControlSize
@@ -115,7 +115,7 @@ fun IosButton(
         IosButtonBorderShape.Capsule -> IosCapsule
         IosButtonBorderShape.Circle -> IosCircle
         is IosButtonBorderShape.RoundedRectangle ->
-            ContinuousRoundedRectangle(borderShape.radius ?: metrics.radius)
+            RoundedCornerShape(borderShape.radius ?: metrics.radius)
     }
 
     val interactionSource = remember { MutableInteractionSource() }

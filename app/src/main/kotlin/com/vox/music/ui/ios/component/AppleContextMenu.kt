@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.ui.ios.foundation.LocalIosContentColor
 import com.vox.music.ui.ios.foundation.LocalIosTextStyle
@@ -320,7 +320,7 @@ private fun AppleContextMenuOverlay(
                                     translationY = (anchor.top - padPx * s0 - menu.placed[1]) * (1f - v) + d.y * v
                                     alpha = menu.previewAlpha(v)
                                 }
-                                .clip(ContinuousRoundedRectangle(22.dp))
+                                .clip(RoundedCornerShape(22.dp))
                                 .drawBehind { drawRect(cardColor, alpha = p.value.coerceIn(0f, 1f)) }
                                 .pointerInput(onPreviewClick) {
                                     detectTapGestures {

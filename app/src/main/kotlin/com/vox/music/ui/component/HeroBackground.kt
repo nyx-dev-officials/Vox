@@ -49,7 +49,7 @@ import coil3.compose.AsyncImage
 import coil3.request.crossfade
 import com.vox.music.R
 import com.vox.music.constants.PureBlackHeroBackgroundKey
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.theme.AppleTokens
@@ -362,9 +362,9 @@ fun HeroCardHeader(
     actions: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     val shape = if (circular) {
-        ContinuousRoundedRectangle(percent = 50)
+        RoundedCornerShape(percent = 50)
     } else {
-        ContinuousRoundedRectangle(16.dp)
+        RoundedCornerShape(16.dp)
     }
     Row(
         modifier = modifier

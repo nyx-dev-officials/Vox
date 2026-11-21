@@ -15,8 +15,10 @@ import androidx.core.graphics.ColorUtils
 /** Theme and component-specific glass color tokens and calculations. */
 object GlassTintTokens {
     // §1. Base Surface Tokens
-    val SurfaceBaseDark = Color(0xFF1B1917)        // #1B1917, Smoked Espresso
-    val SurfaceBaseLight = Color(0xFFF5F5F7)       // #F5F5F7, rgb: 245, 245, 247
+    // The glass base is the ink card, not a warm brown: Liquid Glass should read as
+    // a pane of smoked glass over ink, and a brown base muddied every artwork tint.
+    val SurfaceBaseDark = Color(0xFF16161A)
+    val SurfaceBaseLight = Color(0xFFFCFAF4)
 
     // §3.3. Neutral Tint Tokens (Fallback / non-hero screens)
     // Dark: the white lift is carried by the glass base below (measured), not a second wash.
@@ -31,8 +33,8 @@ object GlassTintTokens {
     // §4.4. Selected / active tokens. Dark uses the champagne accent directly; light
     // mode needs the same hue pushed down to bronze, because champagne on #F5F5F7
     // reads at about 1.4:1 and selection would disappear.
-    val AccentSelectedGoldDark = Color(0xFFE5C697)  // #E5C697, Champagne Gold
-    val AccentSelectedGoldLight = Color(0xFF7F6439) // #7F6439, bronze, 5.0:1 on #F5F5F7
+    val AccentSelectedGoldDark = Color(0xFFFF5C38)  // Signal
+    val AccentSelectedGoldLight = Color(0xFFB33516) // Signal pushed down to 5:1 on paper
 
     // Light Mode Opaque Blackish Tokens (with NO transparency for high contrast on glass)
     val IconOpaqueBlackishLight = Color(0xFF111111) // #111111, opaque blackish (alpha = 1.0f)
@@ -48,8 +50,8 @@ object GlassTintTokens {
     const val PluckAlphaHeroLight = 0.55f
 
     // §2 & §5B. Border / Stroke Tokens
-    val BorderDark = Color(0xFFFFFFFF).copy(alpha = 0.10f) // rgba(255, 255, 255, 0.10), 1pt hairline
-    val BorderLight = Color(0xFF000000).copy(alpha = 0.08f) // rgba(0, 0, 0, 0.08), 1pt hairline
+    val BorderDark = Color(0xFFFFFFFF).copy(alpha = 0.12f) // 1pt hairline
+    val BorderLight = Color(0xFF000000).copy(alpha = 0.10f) // 1pt hairline
 
     // §4.1 & §5B. Dim Opacity Values (Used in dark mode)
     const val IconDimOpacity = 0.85f
@@ -62,17 +64,17 @@ object GlassTintTokens {
     // Warm typography. Fixed rather than derived from the artwork: the glass behind
     // the text already carries the cover's colour, and a second tint on the type is
     // what made long lists tiring to read.
-    val OnSurfaceDark = Color(0xFFF6F3EE)   // #F6F3EE, Warm Alabaster
-    val SecondaryLabelDark = Color(0xFF9E968D) // #9E968D, Warm Stone
+    val OnSurfaceDark = Color(0xFFF4F2EC)   // Bone
+    val SecondaryLabelDark = Color(0xFF9C9993) // Warm stone
 
     // Per-theme glass defaults.
-    val DefaultSurfaceDark = Color(0xFF1B1917)
+    val DefaultSurfaceDark = Color(0xFF16161A)
     const val DefaultSurfaceOpacityDark = 0.68f
-    val DefaultPuckDark = Color(0xFF262320)
+    val DefaultPuckDark = Color(0xFF232329)
     const val DefaultPuckOpacityDark = 0.55f
     val DefaultHighlightDark = Color(0xFFE8E8E8)
     const val DefaultHighlightOpacityDark = 0.33f
-    val DefaultSurfaceLight = Color(0xFFFBFBFB)
+    val DefaultSurfaceLight = Color(0xFFFCFAF4)
     const val DefaultSurfaceOpacityLight = 0.40f
     val DefaultPuckLight = Color(0xFFD1D1D1)
     const val DefaultPuckOpacityLight = 0.67f

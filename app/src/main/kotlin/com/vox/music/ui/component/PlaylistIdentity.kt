@@ -1,5 +1,6 @@
 package com.vox.music.ui.component
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.component.sf
 import com.vox.music.ui.utils.sharedArtworkTarget
 import androidx.compose.foundation.background
@@ -47,7 +48,7 @@ fun PlaylistIdentity(
     val coverSize = minOf(maxWidth * .68f, 300.dp)
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
-            Modifier.sharedArtworkTarget().size(coverSize).clip(com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(12.dp))
+            Modifier.sharedArtworkTarget().size(coverSize).clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
                 .background(colors.secondarySystemGroupedBackground),
             contentAlignment = Alignment.Center,
         ) {
@@ -88,7 +89,7 @@ fun PlaylistPlaybackActions(
         for (shuffle in listOf(false, true)) {
             Row(
                 Modifier.weight(1f).height(48.dp)
-                    .clip(com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(12.dp))
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
                     .background(fill)
                     .clickable(enabled = enabled, role = Role.Button, onClick = if (shuffle) onShuffle else onPlay),
                 horizontalArrangement = Arrangement.Center,

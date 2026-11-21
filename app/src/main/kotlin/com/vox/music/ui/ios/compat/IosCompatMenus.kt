@@ -71,7 +71,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import com.vox.music.ui.component.backdrop.catalog.utils.InteractiveHighlight
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosMenuMaterial
 import com.vox.music.ui.ios.foundation.iosMenuSurface
 import com.vox.music.ui.ios.foundation.menuVibrancy

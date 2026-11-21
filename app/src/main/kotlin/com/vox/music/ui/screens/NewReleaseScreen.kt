@@ -82,7 +82,7 @@ import com.vox.music.ui.component.rememberHeroSource
 import com.vox.music.ui.component.rememberHeroTopBlur
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import com.vox.music.ui.component.rememberHeroTint
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.component.shimmer.GridItemPlaceHolder
 import com.vox.music.ui.component.shimmer.ShimmerHost
 import com.vox.music.ui.component.YouTubeGridItem
@@ -138,7 +138,7 @@ fun NewReleaseScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
       HeroTintedContent(tint = tint, backdrop = heroBackdrop) {
-        val chromeShape = ContinuousRoundedRectangle(percent = 50)
+        val chromeShape = RoundedCornerShape(percent = 50)
         val hazeState = androidx.compose.runtime.remember { dev.chrisbanes.haze.HazeState() }
 
         Box(modifier = Modifier.fillMaxSize()) {

@@ -59,7 +59,7 @@ import com.vox.music.ui.ios.component.IosTabRole
 import com.vox.music.ui.ios.component.IosText
 import com.vox.music.ui.ios.component.IosToggle
 import com.vox.music.ui.ios.component.IosToggleStyle
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosCapsule
 import com.vox.music.ui.ios.foundation.IosControlSize
 import com.vox.music.ui.ios.foundation.IosMetrics
@@ -410,7 +410,7 @@ private fun SheetCatalog() {
             Modifier
                 .fillMaxWidth()
                 .height(420.dp)
-                .clip(ContinuousRoundedRectangle(20.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(IosTheme.colors.systemBackground)
         ) {
             IosSheet(
@@ -450,7 +450,7 @@ private fun ColorCatalog() {
             swatches.chunked(6).forEach { chunk ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     chunk.forEach { (_, color) ->
-                        Box(Modifier.size(40.dp).clip(ContinuousRoundedRectangle(10.dp)).background(color))
+                        Box(Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)).background(color))
                     }
                 }
             }

@@ -39,7 +39,12 @@ object MotionTokens {
 
     fun <T> sharedArtwork(): FiniteAnimationSpec<T> = tween(SharedArtworkMillis, easing = ArtworkEasing)
 
-    fun <T> push(): FiniteAnimationSpec<T> = tween(PushMillis, easing = PushEasing)
+    /**
+     * A pushed page. Spring rather than a fixed tween: two screens of different
+     * heights then settle together instead of ending on a visible seam, and a
+     * gesture that interrupts mid-flight keeps its velocity.
+     */
+    fun <T> push(): FiniteAnimationSpec<T> = spring(dampingRatio = 0.96f, stiffness = 420f)
 
     fun <T> playerMorph(): FiniteAnimationSpec<T> = spring(
         dampingRatio = Spring.DampingRatioNoBouncy,
@@ -76,6 +81,35 @@ object MotionTokens {
     fun <T> tabMorph(): FiniteAnimationSpec<T> = spring(dampingRatio = 0.85f, stiffness = 380f)
 
     fun <T> tabPuck(): FiniteAnimationSpec<T> = spring(dampingRatio = 0.6f, stiffness = 380f)
+
+    // ---- Vox motion family -------------------------------------------------
+    // Everything that moves a surface in this app picks one of the four specs
+    // below. Ad-hoc tweens with default easings are what make a Compose app feel
+    // stitched together; one physical family is what makes it feel machined.
+
+    /** A surface changing size or place. No bounce: a page has mass, not spring toys. */
+    fun <T> settle(): FiniteAnimationSpec<T> = spring(dampingRatio = 0.92f, stiffness = 340f)
+
+    /** Immediate feedback on touch — press, toggle, selection. Fast enough to feel direct. */
+    fun <T> snap(): FiniteAnimationSpec<T> = spring(dampingRatio = 0.82f, stiffness = 640f)
+
+    /** Content arriving: expo-out, one long clean deceleration. */
+    fun <T> reveal(): FiniteAnimationSpec<T> = tween(
+        durationMillis = 520,
+        easing = CubicBezierEasing(0.16f, 1f, 0.3f, 1f),
+    )
+
+    /** Content leaving. Always ~30% faster than [reveal]. */
+    fun <T> dismiss(): FiniteAnimationSpec<T> = tween(
+        durationMillis = 180,
+        easing = CubicBezierEasing(0.4f, 0f, 1f, 1f),
+    )
+
+    /** Delay between siblings in a staggered entrance. */
+    const val StaggerMillis = 28
+
+    /** Travel for a reveal: 12dp of lift, no scale warping of text. */
+    val RevealTravel = androidx.compose.ui.unit.Dp(12f)
 
     fun parallaxOffset(fullWidth: Int): Int = -(fullWidth * PushParallax).toInt()
 

@@ -85,40 +85,49 @@ fun iosColorScheme(colors: IosColors): ColorScheme {
 }
 
 /**
- * Material typography adapted to the app's iOS palette. Display titles use the
- * heavier weights and tighter tracking used by Apple Music; other iOS typography
- * remains unchanged.
+ * Material typography built from the Vox scale: display sizes run on the display
+ * face with tight tracking, body sizes on the reader's chosen family. Nothing here
+ * inherits an Apple text style; the only Apple idea the product keeps is Liquid
+ * Glass, and type is not glass.
  */
 @Stable
-fun iosMaterialTypography(fontFamily: FontFamily = FontFamily.Default): Typography {
-    val t = iosTypography(fontFamily)
+fun iosMaterialTypography(
+    fontFamily: FontFamily = FontFamily.Default,
+    displayFamily: FontFamily = fontFamily,
+): Typography {
+    val t = iosTypography(fontFamily, displayFamily)
 
-    // Line height is set at ~1.2x rather than left to the font: a two-line album title
-    // at -0.8 tracking and W800 sets very tight by default, and the second line ends up
-    // touching the first.
-    fun display(size: Int, weight: FontWeight, tracking: Float) = TextStyle(
-        fontFamily = fontFamily,
+    // Explicit line height: a two-line title at -1.2 tracking collides with itself
+    // when Compose derives leading from the font metrics.
+    fun display(size: Float, weight: FontWeight, tracking: Float) = TextStyle(
+        fontFamily = displayFamily,
         fontSize = size.sp,
-        lineHeight = (size * 1.2f).sp,
+        lineHeight = (size * 1.12f).sp,
         fontWeight = weight,
         letterSpacing = tracking.sp,
     )
 
     return Typography(
-        displayLarge = display(34, FontWeight.W800, -0.8f),
-        displayMedium = display(30, FontWeight.W800, -0.7f),
-        displaySmall = display(26, FontWeight.W700, -0.5f),
-        headlineLarge = display(30, FontWeight.W800, -0.7f),
-        headlineMedium = display(22, FontWeight.W700, -0.4f),
-        headlineSmall = display(20, FontWeight.W700, -0.3f),
-        titleLarge = display(20, FontWeight.W700, -0.3f),
-        titleMedium = display(16, FontWeight.W600, -0.2f),
+        displayLarge = display(40f, FontWeight.SemiBold, -1.3f),
+        displayMedium = display(34f, FontWeight.SemiBold, -1.0f),
+        displaySmall = display(28f, FontWeight.SemiBold, -0.7f),
+        headlineLarge = display(30f, FontWeight.SemiBold, -0.8f),
+        headlineMedium = display(23f, FontWeight.SemiBold, -0.5f),
+        headlineSmall = display(19f, FontWeight.Medium, -0.3f),
+        titleLarge = display(20f, FontWeight.SemiBold, -0.4f),
+        titleMedium = display(16f, FontWeight.SemiBold, -0.2f),
         titleSmall = t.subheadline,
-        bodyLarge = display(16, FontWeight.W400, 0f),
-        bodyMedium = display(14, FontWeight.W400, 0f),
+        bodyLarge = t.body,
+        bodyMedium = t.callout,
         bodySmall = t.footnote,
         labelLarge = t.headline,
-        labelMedium = display(12, FontWeight.W600, 0f),
-        labelSmall = display(11, FontWeight.W600, 0f),
+        labelMedium = TextStyle(
+            fontFamily = fontFamily,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.5.sp,
+        ),
+        labelSmall = t.caption2,
     )
 }

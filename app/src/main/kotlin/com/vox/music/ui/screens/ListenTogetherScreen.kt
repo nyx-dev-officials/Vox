@@ -115,7 +115,6 @@ import com.vox.music.listentogether.MIN_ROOM_CODE_LENGTH
 import com.vox.music.listentogether.SuggestionReceivedPayload
 import com.vox.music.listentogether.UserInfo
 import com.vox.music.ui.component.IconButton
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.utils.backToMain
 import com.vox.music.utils.rememberPreference
 import kotlinx.coroutines.launch
@@ -403,7 +402,7 @@ fun ListenTogetherScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(ContinuousRoundedRectangle(percent = 50))
+                            .clip(RoundedCornerShape(percent = 50))
                             .background(AppTheme.colorScheme.surfaceContainerHigh)
                             .bounceClick(onClick = { listenTogetherManager.leaveRoom() })
                             .padding(vertical = 15.dp),
@@ -1111,7 +1110,7 @@ private fun EntryField(
         ),
         trailingIcon = trailing,
         singleLine = true,
-        shape = ContinuousRoundedRectangle(16.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
@@ -1133,7 +1132,7 @@ private fun PrimaryAction(label: String, enabled: Boolean, onClick: () -> Unit) 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(ContinuousRoundedRectangle(percent = 50))
+            .clip(RoundedCornerShape(percent = 50))
             .background(bg)
             .then(if (enabled) Modifier.bounceClick(onClick = onClick) else Modifier)
             .padding(vertical = 17.dp),
@@ -1160,7 +1159,7 @@ private fun SecondaryAction(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(ContinuousRoundedRectangle(percent = 50))
+            .clip(RoundedCornerShape(percent = 50))
             .background(AppTheme.colorScheme.surfaceContainerHigh)
             .then(if (enabled) Modifier.bounceClick(onClick = onClick) else Modifier)
             .padding(vertical = 16.dp),

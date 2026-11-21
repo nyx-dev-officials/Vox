@@ -48,7 +48,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.vox.music.ui.utils.youtubeBrowseRoute
 import coil3.compose.AsyncImage
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.foundation.iosRowPress
 import com.vox.music.ui.screens.library.apple.SfStyle
@@ -176,7 +176,7 @@ internal fun CategoryTile(
     onClick: () -> Unit,
 ) {
     val ground = color.copy(alpha = 1f)
-    val shape = ContinuousRoundedRectangle(15.dp)
+    val shape = RoundedCornerShape(15.dp)
     Box(
         modifier = modifier
             .aspectRatio(181f / 105f)

@@ -39,7 +39,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.AlertDialog
 import com.vox.music.ui.ios.compat.Button
 import androidx.compose.material3.ButtonDefaults
@@ -506,7 +506,7 @@ fun PlayerMenu(
                                     SymbolIcon(symbol = sf("person.2.fill"), contentDescription = null, size = 24.dp)
                                     if (pendingSuggestions.isNotEmpty()) {
                                         Surface(
-                                            shape = ContinuousRoundedRectangle(12.dp),
+                                            shape = RoundedCornerShape(12.dp),
                                             color = AppTheme.colorScheme.primary,
                                             modifier = Modifier
                                                 .offset(x = 8.dp, y = (-6).dp)
@@ -864,7 +864,7 @@ fun ListenTogetherDialog(
                             selectedUserForMenu = null
                             selectedUsername = null
                         },
-                    shape = ContinuousRoundedRectangle(12.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = AppTheme.colorScheme.errorContainer
                 ) {
                     Row(
@@ -907,7 +907,7 @@ fun ListenTogetherDialog(
                             selectedUserForMenu = null
                             selectedUsername = null
                         },
-                    shape = ContinuousRoundedRectangle(12.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = AppTheme.colorScheme.surfaceVariant
                 ) {
                     Row(
@@ -947,7 +947,7 @@ fun ListenTogetherDialog(
                             selectedUserForMenu = null
                             selectedUsername = null
                         },
-                    shape = ContinuousRoundedRectangle(12.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = AppTheme.colorScheme.primaryContainer
                 ) {
                     Row(
@@ -1056,7 +1056,7 @@ fun ListenTogetherDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                shape = ContinuousRoundedRectangle(16.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = when (connectionState) {
                     ConnectionState.CONNECTED -> AppTheme.colorScheme.primary.copy(alpha = 0.15f)
                     ConnectionState.CONNECTING, ConnectionState.RECONNECTING -> AppTheme.colorScheme.secondary.copy(alpha = 0.15f)
@@ -1174,7 +1174,7 @@ fun ListenTogetherDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
-                        shape = ContinuousRoundedRectangle(16.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = AppTheme.colorScheme.primary.copy(alpha = 0.1f)
                     ) {
                         Column(
@@ -1393,7 +1393,7 @@ fun ListenTogetherDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp),
-                            shape = ContinuousRoundedRectangle(12.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = AppTheme.colorScheme.secondary.copy(alpha = 0.15f)
                         ) {
                             Row(
@@ -1469,7 +1469,7 @@ fun ListenTogetherDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp),
-                            shape = ContinuousRoundedRectangle(12.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = AppTheme.colorScheme.secondary.copy(alpha = 0.15f)
                         ) {
                             Row(
@@ -1561,7 +1561,7 @@ fun ListenTogetherDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    shape = ContinuousRoundedRectangle(16.dp),
+                    shape = RoundedCornerShape(16.dp),
                     color = AppTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                 ) {
                     Column(
@@ -1591,7 +1591,7 @@ fun ListenTogetherDialog(
                                 }
                             },
                             singleLine = true,
-                            shape = ContinuousRoundedRectangle(12.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = AppTheme.colorScheme.primary,
                                 unfocusedBorderColor = AppTheme.colorScheme.outline,
@@ -1629,7 +1629,7 @@ fun ListenTogetherDialog(
                                 )
                             },
                             singleLine = true,
-                            shape = ContinuousRoundedRectangle(12.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = AppTheme.colorScheme.primary,
                                 unfocusedBorderColor = AppTheme.colorScheme.outline,
@@ -1663,7 +1663,7 @@ fun ListenTogetherDialog(
                         joinErrorMessage?.let { msg ->
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = ContinuousRoundedRectangle(8.dp),
+                                shape = RoundedCornerShape(8.dp),
                                 color = AppTheme.colorScheme.error.copy(alpha = 0.1f)
                             ) {
                                 Row(

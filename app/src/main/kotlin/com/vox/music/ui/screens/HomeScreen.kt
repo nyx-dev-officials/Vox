@@ -40,7 +40,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.border
 import com.vox.music.constants.GridCardArtShape
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.component.LocalItemPrefs
 import com.vox.music.ui.component.BlurredBackdropImage
 import com.vox.music.ui.component.flipAndMultiply
@@ -72,7 +72,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Button
 import androidx.compose.material3.ButtonDefaults
 import com.vox.music.ui.ios.compat.Card
@@ -834,7 +833,7 @@ internal fun HomeEmptyOrOfflineCard(
     modifier: Modifier = Modifier,
 ) {
     val colors = IosTheme.colors
-    val shape = ContinuousRoundedRectangle(20.dp)
+    val shape = RoundedCornerShape(20.dp)
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -888,7 +887,7 @@ internal fun HomeEmptyOrOfflineCard(
             ) {
                 Button(
                     onClick = onRetry,
-                    shape = ContinuousRoundedRectangle(12.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colors.accent,
                         contentColor = Color.White,
@@ -902,7 +901,7 @@ internal fun HomeEmptyOrOfflineCard(
                 }
                 Button(
                     onClick = onExplore,
-                    shape = ContinuousRoundedRectangle(12.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colors.tertiarySystemFill,
                         contentColor = colors.label,

@@ -40,7 +40,7 @@ import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vox.music.ui.ios.foundation.BottomRoundedShape
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosMetrics
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.ui.ios.foundation.LocalIosContentColor
@@ -239,7 +239,7 @@ private fun IosListRowContainer(
     } else {
         // Only the outer corners of a section round; the joins between rows stay square.
         when {
-            isFirst && isLast -> ContinuousRoundedRectangle(radius)
+            isFirst && isLast -> RoundedCornerShape(radius)
             isFirst -> TopRoundedShape(radius)
             isLast -> BottomRoundedShape(radius)
             else -> RectangleShape
@@ -325,7 +325,7 @@ fun IosNavigationRow(
             Box(
                 modifier = Modifier
                     .size(IosMetrics.IconTileSize)
-                    .clip(ContinuousRoundedRectangle(IosMetrics.IconTileRadius))
+                    .clip(RoundedCornerShape(IosMetrics.IconTileRadius))
                     .background(if (iconBackground.isSpecified) iconBackground else IosTheme.tint),
                 contentAlignment = Alignment.Center,
             ) {

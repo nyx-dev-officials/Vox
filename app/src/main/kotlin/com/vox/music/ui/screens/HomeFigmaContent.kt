@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
@@ -62,7 +63,6 @@ import com.vox.music.ui.component.LocalItemPrefs
 import com.vox.music.ui.component.NavigationTitle
 import com.vox.music.ui.component.YouTubeGridItem
 import com.vox.music.ui.component.flipAndMultiply
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.ios.compat.LocalContentColor
@@ -280,7 +280,7 @@ internal fun HomeSignInCard(onGetStarted: () -> Unit, onDismiss: () -> Unit, mod
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(ContinuousRoundedRectangle(20.dp))
+            .clip(RoundedCornerShape(4.dp))
             .background(colors.secondarySystemBackground)
             .padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 16.dp),
     ) {
@@ -318,7 +318,7 @@ internal fun HomeSignInCard(onGetStarted: () -> Unit, onDismiss: () -> Unit, mod
                 .padding(end = 4.dp)
                 .fillMaxWidth()
                 .height(44.dp)
-                .clip(ContinuousRoundedRectangle(12.dp))
+                .clip(RoundedCornerShape(3.dp))
                 .background(colors.accent.copy(alpha = 0.12f))
                 .bounceClick(onClick = onGetStarted),
         ) {
@@ -370,7 +370,7 @@ internal fun FigmaTopPickCard(
     artworkKey: String?,
     modifier: Modifier = Modifier,
 ) {
-    val shape = ContinuousRoundedRectangle(20.dp)
+    val shape = RoundedCornerShape(4.dp)
     val context = LocalContext.current
     val request = remember(thumbnail) {
         ImageRequest.Builder(context).data(thumbnail).crossfade(false).build()
@@ -384,12 +384,7 @@ internal fun FigmaTopPickCard(
             Modifier
                 .height(300.dp)
                 .fillMaxWidth()
-                .shadow(
-                    elevation = 18.dp,
-                    shape = shape,
-                    ambientColor = Color.Black.copy(alpha = 0.22f),
-                    spotColor = Color.Black.copy(alpha = 0.22f),
-                )
+                // No drop shadow: a cover is a plate on the page, not a floating card.
                 .clip(shape),
         ) {
             if (thumbnail != null) {

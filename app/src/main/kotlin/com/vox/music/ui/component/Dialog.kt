@@ -31,7 +31,7 @@ import com.vox.music.ui.ios.compat.TextButton
 import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Color
 import com.vox.music.ui.ios.compat.OutlinedTextField as TextField
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -82,9 +82,9 @@ fun DefaultDialog(
                 .border(
                     width = 0.5.dp,
                     color = Color.White.copy(alpha = 0.15f),
-                    shape = ContinuousRoundedRectangle(30.dp)
+                    shape = RoundedCornerShape(30.dp)
                 ),
-            shape = ContinuousRoundedRectangle(30.dp),
+            shape = RoundedCornerShape(30.dp),
             color = IosTheme.colors.secondarySystemGroupedBackground,
         ) {
             Column(
@@ -213,9 +213,9 @@ fun ListDialog(
                 .border(
                     width = 0.5.dp,
                     color = Color.White.copy(alpha = 0.15f),
-                    shape = ContinuousRoundedRectangle(30.dp)
+                    shape = RoundedCornerShape(30.dp)
                 ),
-            shape = ContinuousRoundedRectangle(30.dp),
+            shape = RoundedCornerShape(30.dp),
             color = IosTheme.colors.systemBackground,
         ) {
             Column(

@@ -33,7 +33,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.vox.music.R
 import com.vox.music.constants.ShowAudioQualityBadgeKey
 import com.vox.music.playback.PlayerConnection
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.utils.VibrantChromeInk
 import com.vox.music.ui.utils.vibrantChrome
 import com.vox.music.ui.ios.compat.Icon
@@ -89,11 +89,11 @@ fun AudioQualityBadge(
         modifier = modifier
             .shadow(
                 elevation = 2.dp,
-                shape = ContinuousRoundedRectangle(5.dp),
+                shape = RoundedCornerShape(5.dp),
                 ambientColor = Color.Black.copy(alpha = 0.14f),
                 spotColor = Color.Black.copy(alpha = 0.18f),
             )
-            .clip(ContinuousRoundedRectangle(5.dp))
+            .clip(RoundedCornerShape(5.dp))
             .background(tint.copy(alpha = 0.15f))
             .clickable { showCard = true }
             .padding(horizontal = 8.dp, vertical = 1.dp),
@@ -204,7 +204,7 @@ private fun AudioQualityCard(
             androidx.compose.foundation.layout.Column(
                 modifier = Modifier
                     .width(cardW)
-                    .iosMenuSurface(ContinuousRoundedRectangle(cardW * 0.085f), menuStretch)
+                    .iosMenuSurface(RoundedCornerShape(cardW * 0.085f), menuStretch)
                     .padding(start = edge, end = edge, bottom = edge, top = if (quality.lossless) cardW * 0.13f else cardW * 0.09f),
             ) {
                 if (quality.lossless) {
@@ -257,7 +257,7 @@ private fun AudioQualityCardPill(text: String, height: androidx.compose.ui.unit.
         modifier = Modifier
             .fillMaxWidth()
             .height(height)
-            .clip(ContinuousRoundedRectangle(percent = 50))
+            .clip(RoundedCornerShape(percent = 50))
             .background(fill)
             .clickable(onClick = onClick),
     ) {

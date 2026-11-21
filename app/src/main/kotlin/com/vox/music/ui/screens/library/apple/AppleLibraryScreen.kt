@@ -93,7 +93,7 @@ import com.vox.music.library.LocalPlaylistSongDataSource
 import com.vox.music.playback.DownloadTarget
 import com.vox.music.playback.downloadSongs
 import com.vox.music.playback.queues.ListQueue
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.component.AppleContextMenu
 import com.vox.music.ui.ios.component.rememberAppleMenuController
@@ -313,7 +313,7 @@ internal fun Chevron(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun Cover(model: Any?, radius: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
-    val shape = ContinuousRoundedRectangle(radius)
+    val shape = RoundedCornerShape(radius)
     AsyncImage(
         model = model,
         onSuccess = com.vox.music.ui.utils.sharedArtworkImageListener(

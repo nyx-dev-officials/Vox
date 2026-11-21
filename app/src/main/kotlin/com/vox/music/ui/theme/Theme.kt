@@ -110,12 +110,14 @@ fun VoxTheme(
         IosTheme(
             darkTheme = darkTheme,
             accent = themeColor,
-            typography = remember(appFont) { com.vox.music.ui.ios.foundation.iosTypography(appFont) },
+            // Display voice is always Chillax: the reader chooses the body face, not
+            // the headline face, or the editorial hierarchy falls apart.
+            typography = remember(appFont) { com.vox.music.ui.ios.foundation.iosTypography(appFont, ChillaxFontFamily) },
         ) {
             // Keeps unported screens on the app palette while they still use Material3.
             MaterialTheme(
                 colorScheme = colorScheme,
-                typography = remember(appFont) { iosMaterialTypography(appFont) },
+                typography = remember(appFont) { iosMaterialTypography(appFont, ChillaxFontFamily) },
                 shapes = AppShapes,
                 content = content
             )

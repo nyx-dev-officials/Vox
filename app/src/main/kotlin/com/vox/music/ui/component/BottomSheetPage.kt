@@ -38,7 +38,7 @@ import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.vox.music.constants.SheetCornerRadiusKey
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.component.backdrop.Backdrop
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.utils.rememberPreference
@@ -96,7 +96,7 @@ fun BottomSheetPage(
     )
     val (sheetCornerRadius) = rememberPreference(SheetCornerRadiusKey, MenuSheetCornerRadius.value)
     val sheetShape = remember(sheetCornerRadius) {
-        ContinuousRoundedRectangle(
+        RoundedCornerShape(
             topStart = sheetCornerRadius.dp,
             topEnd = sheetCornerRadius.dp,
             bottomEnd = 0.dp,
@@ -148,12 +148,12 @@ fun BottomSheetPage(
                                         val config = LocalGlassEffectConfig.current
                                         Modifier.liquidGlass(
                                             config = config,
-                                            shape = ContinuousRoundedRectangle(28.dp),
+                                            shape = RoundedCornerShape(28.dp),
                                             blurRadiusDp = if (liquidGlassPlayerMode) 12f else config.blurRadius,
                                             highlightAlpha = 0.16f,
                                         )
                                     } else {
-                                        Modifier.background(resolvedContainerColor, ContinuousRoundedRectangle(28.dp))
+                                        Modifier.background(resolvedContainerColor, RoundedCornerShape(28.dp))
                                     },
                                 )
                                 .clickable(interactionSource = null, indication = null, onClick = {}),

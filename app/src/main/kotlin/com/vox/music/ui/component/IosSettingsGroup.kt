@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.component.IosBadge
 import com.vox.music.ui.ios.component.IosChevron
 import com.vox.music.ui.ios.component.IosText
@@ -72,7 +72,7 @@ fun IosSettingsGroup(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+                .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
                 .background(colors.secondarySystemGroupedBackground)
         ) {
             items.forEachIndexed { index, item ->
@@ -159,7 +159,7 @@ private fun IosSettingsIconTile(icon: Painter, item: IosSettingsItem) {
             Box(
                 modifier = Modifier
                     .size(IosMetrics.IconTileSize)
-                    .clip(item.iconShape ?: ContinuousRoundedRectangle(IosMetrics.IconTileRadius))
+                    .clip(item.iconShape ?: RoundedCornerShape(IosMetrics.IconTileRadius))
                     .background(
                         when {
                             !item.enabled -> colors.systemGray3
@@ -182,7 +182,7 @@ private fun IosSettingsIconTile(icon: Painter, item: IosSettingsItem) {
                 contentDescription = null,
                 modifier = Modifier
                     .size(IosMetrics.IconTileSize)
-                    .clip(item.iconShape ?: ContinuousRoundedRectangle(IosMetrics.IconTileRadius)),
+                    .clip(item.iconShape ?: RoundedCornerShape(IosMetrics.IconTileRadius)),
                 contentScale = ContentScale.Crop,
             )
         }

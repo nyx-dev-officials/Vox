@@ -50,7 +50,7 @@ import com.vox.music.R
 import com.vox.music.listentogether.ListenTogetherEvent
 import com.vox.music.listentogether.ListenTogetherManager
 import com.vox.music.playback.PlayerConnection
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.utils.bounceClick
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -63,7 +63,7 @@ private const val DUCK_RAMP_MS = 220
 /** A queue notice is informational, so it clears itself. */
 private const val NOTICE_DURATION_MS = 4200L
 
-private val SheetShape = ContinuousRoundedRectangle(28.dp)
+private val SheetShape = RoundedCornerShape(28.dp)
 
 /**
  * Room events that must reach the user wherever they are in the app.
@@ -259,7 +259,7 @@ private fun OverlayButton(
 ) {
     Box(
         modifier = modifier
-            .clip(ContinuousRoundedRectangle(percent = 50))
+            .clip(RoundedCornerShape(percent = 50))
             .background(container)
             .bounceClick(onClick = onClick)
             .padding(vertical = 13.dp),

@@ -2,12 +2,7 @@
 
 package com.vox.music
 
-import com.vox.music.ui.component.sf
-import com.vox.music.ui.component.NyXSignature
-import com.vox.music.ui.component.SymbolIcon
 import android.Manifest
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -20,75 +15,58 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.BlurOn
+import androidx.compose.material.icons.rounded.CloudDownload
+import androidx.compose.material.icons.rounded.Comment
+import androidx.compose.material.icons.rounded.Gavel
+import androidx.compose.material.icons.rounded.HighQuality
+import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.SystemUpdate
-import androidx.compose.material.icons.rounded.CloudDownload
-import androidx.compose.material.icons.rounded.HighQuality
-import androidx.compose.material.icons.rounded.Lyrics
-import androidx.compose.material.icons.rounded.Gavel
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Terminal
-import androidx.compose.material.icons.rounded.BlurOn
-import androidx.compose.material.icons.rounded.Forum
-import com.composables.sfsymbols.SfSymbols
-import com.composables.sfsymbols.monochrome.SFEllipsisBubble
-import com.vox.music.ui.ios.compat.Button
-import androidx.compose.material3.ButtonDefaults
-import com.vox.music.ui.ios.compat.Card
-import androidx.compose.material3.CardDefaults
-import com.vox.music.ui.ios.compat.Icon
-import androidx.compose.material3.LargeFloatingActionButton
-import com.vox.music.ui.ios.compat.ListItem
-import com.vox.music.ui.ios.compat.AppTheme
-import com.vox.music.ui.ios.compat.Surface
-import com.vox.music.ui.ios.compat.Switch
-import com.vox.music.ui.ios.compat.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -100,13 +78,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -116,25 +92,21 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.vox.music.constants.IsFirstRunKey
+import com.vox.music.designsystem.MotionTokens
+import com.vox.music.designsystem.VoxDesignTokens
 import com.vox.music.ui.theme.VoxTheme
+import com.vox.music.ui.theme.VoxType
 import com.vox.music.ui.utils.safeOpenUri
 import com.vox.music.utils.dataStore
 import com.vox.music.utils.get
@@ -163,10 +135,7 @@ class WelcomeActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VoxTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = AppTheme.colorScheme.background
-                ) {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     WelcomePagerScreen(onFinished = {
                         lifecycleScope.launch {
                             dataStore.edit { it[IsFirstRunKey] = false }
@@ -191,52 +160,19 @@ class WelcomeActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalTextApi::class)
-val GoogleSansFlex = FontFamily(
-    Font(
-        resId = com.vox.music.R.font.google_sans_flex,
-        weight = FontWeight.Normal,
-        style = FontStyle.Normal,
-        variationSettings = FontVariation.Settings(
-            FontVariation.weight(400),
-            FontVariation.width(100f),
-            FontVariation.Setting("ROND", 100f)
-        )
-    )
-)
-
-@OptIn(ExperimentalTextApi::class)
+/**
+ * Onboarding, set as four pages of a magazine.
+ *
+ * The whole flow is type and rules: an eyebrow, a display headline with the
+ * signal word in vermilion, a hairline-divided list, and one filled bar at the
+ * bottom. There is no card stack, no pastel app-icon grid, and no glass except
+ * the one row surface that needs to sit over content.
+ */
 @Composable
 fun WelcomePagerScreen(onFinished: () -> Unit) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
-    val commonAnimSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
-    val commonDpAnimSpec = tween<Dp>(durationMillis = 200, easing = FastOutSlowInEasing)
-
-    val topCardShape =
-        RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
-    val middleCardShape = RoundedCornerShape(4.dp)
-    val bottomCardShape =
-        RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
-
-    val customWelcomeFontFamily = FontFamily(
-        Font(
-            resId = com.vox.music.R.font.sans_flex,
-            variationSettings = FontVariation.Settings(
-                FontVariation.slant(-9f),
-                FontVariation.width(111f),
-                FontVariation.weight(333),
-                FontVariation.Setting("GRAD", 100f),
-                FontVariation.Setting("ROND", 100f)
-            )
-        )
-    )
-
-    val thinHeaderStyle = TextStyle(
-        fontFamily = customWelcomeFontFamily,
-        fontSize = 48.sp
-    )
 
     var hasNotificationPermission by remember {
         mutableStateOf(
@@ -280,9 +216,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
 
     val notificationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            hasNotificationPermission = isGranted
-        }
+        onResult = { isGranted -> hasNotificationPermission = isGranted }
     )
 
     val installParamsLauncher = rememberLauncherForActivityResult(
@@ -293,418 +227,211 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         }
     }
 
+    val requestNotifications = {
+        if (hasNotificationPermission) {
+            context.startActivity(
+                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     val pages = listOf(
         OnboardingPageInfo(
             content = { _ ->
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Spacer(modifier = Modifier.height(80.dp))
-
-                    Text(
-                        text = stringResource(com.vox.music.R.string.welcome_to),
-                        style = thinHeaderStyle,
-                        color = AppTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = stringResource(com.vox.music.R.string.app_name).uppercase(),
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 48.sp,
-                        color = AppTheme.colorScheme.primary,
-                        lineHeight = 56.sp
+                Column(modifier = Modifier.fillMaxSize()) {
+                    OnboardingHeadline(
+                        eyebrow = "MADE BY NYX",
+                        lead = stringResource(com.vox.music.R.string.welcome_to),
+                        signal = stringResource(com.vox.music.R.string.app_name).uppercase(),
+                        body = stringResource(com.vox.music.R.string.welcome_preparing_subtitle),
                     )
 
-                    val flavorSuffix = if (BuildConfig.FLAVOR.contains("gms", ignoreCase = true)) "Gms Edition" else "Foss Edition"
+                    Spacer(Modifier.weight(1f))
+
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        RotatingShapeContainer(modifier = Modifier.size(232.dp))
+                    }
+
+                    Spacer(Modifier.weight(1f))
+
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 2.dp)
-                    ) {
-                        Text(
-                            text = flavorSuffix,
-                            fontFamily = GoogleSansFlex,
-                            style = AppTheme.typography.titleMedium,
-                            color = AppTheme.colorScheme.secondary
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Surface(
-                            shape = CircleShape,
-                            color = AppTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
-                        ) {
-                            Text(
-                                text = "v${BuildConfig.VERSION_NAME}",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                style = AppTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = AppTheme.colorScheme.onSecondaryContainer
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    NyXSignature(lead = "MADE BY")
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        RotatingShapeContainer(
-                            modifier = Modifier.size(280.dp)
+                        MetaLabel(
+                            if (BuildConfig.FLAVOR.contains("gms", ignoreCase = true)) "GMS EDITION" else "FOSS EDITION"
                         )
-
-                        Spacer(modifier = Modifier.height(32.dp))
-
-                        Text(
-                            text = stringResource(com.vox.music.R.string.welcome_preparing_subtitle),
-                            fontFamily = GoogleSansFlex,
-                            style = AppTheme.typography.bodyLarge,
-                            color = AppTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
-                        )
+                        MetaLabel("v${BuildConfig.VERSION_NAME}")
                     }
-                    Spacer(modifier = Modifier.weight(1.2f))
                 }
             }
         ),
         OnboardingPageInfo(
             content = { _ ->
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Spacer(modifier = Modifier.height(80.dp))
-
-                    Text(
-                        text = stringResource(com.vox.music.R.string.perm_required),
-                        style = thinHeaderStyle,
-                        color = AppTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = stringResource(com.vox.music.R.string.perm_permissions),
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 48.sp,
-                        color = AppTheme.colorScheme.primary,
-                        lineHeight = 56.sp
+                Column(modifier = Modifier.fillMaxSize()) {
+                    OnboardingHeadline(
+                        eyebrow = "BEFORE WE START",
+                        lead = stringResource(com.vox.music.R.string.perm_required),
+                        signal = stringResource(com.vox.music.R.string.perm_permissions),
+                        body = stringResource(com.vox.music.R.string.perm_intro_text),
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(Modifier.height(28.dp))
 
-                    Text(
-                        text = stringResource(com.vox.music.R.string.perm_intro_text),
-                        style = AppTheme.typography.bodyLarge.copy(
-                            fontFamily = GoogleSansFlex
-                        ),
-                        color = AppTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        PermissionCard(
+                    Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                        VoxRow(
                             icon = rememberVectorPainter(Icons.Rounded.Notifications),
-                            iconColor = Color(0xFFffaee4),
-                            iconTint = Color(0xFF8d0053),
                             title = stringResource(com.vox.music.R.string.perm_notif_title),
                             description = stringResource(com.vox.music.R.string.perm_notif_desc),
-                            shape = if (BuildConfig.FLAVOR.contains("gms", ignoreCase = true)) topCardShape else RoundedCornerShape(20.dp),
-                            control = {
+                            onClick = requestNotifications,
+                            trailing = {
                                 Switch(
                                     checked = hasNotificationPermission,
-                                    onCheckedChange = {
-                                        if (hasNotificationPermission) {
-                                            val intent =
-                                                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                                    putExtra(
-                                                        Settings.EXTRA_APP_PACKAGE,
-                                                        context.packageName
-                                                    )
-                                                }
-                                            context.startActivity(intent)
-                                        } else {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                                notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                            }
-                                        }
-                                    }
+                                    onCheckedChange = { requestNotifications() },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = VoxDesignTokens.Colors.OnAccentSignal,
+                                        checkedTrackColor = VoxDesignTokens.Colors.AccentSignal,
+                                        uncheckedThumbColor = VoxDesignTokens.Colors.SecondaryLabel,
+                                        uncheckedTrackColor = Color.Transparent,
+                                    ),
                                 )
                             },
-                            onClick = {
-                                if (hasNotificationPermission) {
-                                    val intent =
-                                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                            putExtra(
-                                                Settings.EXTRA_APP_PACKAGE,
-                                                context.packageName
-                                            )
-                                        }
-                                    context.startActivity(intent)
-                                } else {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                        notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                    }
-                                }
-                            }
                         )
 
                         if (BuildConfig.FLAVOR.contains("gms", ignoreCase = true)) {
-                            Spacer(modifier = Modifier.height(2.dp))
-
-                            PermissionCard(
+                            VoxRow(
                                 icon = rememberVectorPainter(Icons.Rounded.SystemUpdate),
-                                iconColor = Color(0xFFffb683),
-                                iconTint = Color(0xFF753403),
                                 title = stringResource(com.vox.music.R.string.perm_install_title),
                                 description = stringResource(com.vox.music.R.string.perm_install_desc),
-                                shape = bottomCardShape,
-                                control = {
-                                    SymbolIcon(symbol = if (canInstallPackages) sf("checkmark") else sf("chevron.right"), contentDescription = null, tint = if (canInstallPackages) AppTheme.colorScheme.primary else AppTheme.colorScheme.onSurfaceVariant)
-                                },
                                 onClick = {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        val intent =
-                                            Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
-                                                data = Uri.parse("package:${context.packageName}")
-                                            }
-                                        installParamsLauncher.launch(intent)
+                                        installParamsLauncher.launch(
+                                            Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                                                .setData(Uri.parse("package:${context.packageName}"))
+                                        )
                                     }
-                                }
+                                },
+                                trailing = { MetaLabel(if (canInstallPackages) "GRANTED" else "REQUIRED") },
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
             }
         ),
         OnboardingPageInfo(
             content = { _ ->
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Spacer(modifier = Modifier.height(80.dp))
-
-                    Text(
-                        text = "Join our",
-                        style = thinHeaderStyle,
-                        color = AppTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = "Community",
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 48.sp,
-                        color = AppTheme.colorScheme.primary,
-                        lineHeight = 56.sp
+                Column(modifier = Modifier.fillMaxSize()) {
+                    OnboardingHeadline(
+                        eyebrow = "OPEN SOURCE",
+                        lead = "Join our",
+                        signal = "Community",
+                        body = "Vox depends on the people who use it. Star the repository, or come and argue about playback engines with us.",
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(Modifier.height(28.dp))
 
-                    Text(
-                        text = "Vox is open-source and depends on community support to grow. Your help makes a difference!",
-                        style = AppTheme.typography.bodyLarge.copy(
-                            fontFamily = GoogleSansFlex
-                        ),
-                        color = AppTheme.colorScheme.onSurfaceVariant
+                    VoxRow(
+                        icon = rememberVectorPainter(Icons.Rounded.Star),
+                        title = "Star on GitHub",
+                        description = "Help us reach more people by starring the repository.",
+                        onClick = {
+                            uriHandler.safeOpenUri(context, "https://github.com/nyx-dev-officials/Vox")
+                        },
+                        trailing = { MetaLabel("GITHUB") },
                     )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        PermissionCard(
-                            icon = rememberVectorPainter(Icons.Rounded.Star),
-                            iconColor = Color(0xFFfff1a8),
-                            iconTint = Color(0xFF8d6e00),
-                            title = "Star on GitHub",
-                            description = "Help us reach more people by starring our repository.",
-                            shape = topCardShape,
-                            control = {
-                                SymbolIcon(symbol = sf("chevron.right"), contentDescription = null, tint = AppTheme.colorScheme.onSurfaceVariant)
-                            },
-                            onClick = {
-                                uriHandler.safeOpenUri(context, "https://github.com/nyx-dev-officials/Vox")
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        PermissionCard(
-                            icon = rememberVectorPainter(SfSymbols.Monochrome.SFEllipsisBubble),
-                            iconColor = Color(0xFF67d4ff),
-                            iconTint = Color(0xFF004e5d),
-                            title = "Join Discord",
-                            description = "Get the latest updates and chat with the community.",
-                            shape = bottomCardShape,
-                            control = {
-                                SymbolIcon(symbol = sf("chevron.right"), contentDescription = null, tint = AppTheme.colorScheme.onSurfaceVariant)
-                            },
-                            onClick = {
-                                uriHandler.safeOpenUri(context, "https://discord.gg/Ejeb4cmzfd")
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(100.dp))
-                    }
+                    VoxRow(
+                        icon = rememberVectorPainter(Icons.Rounded.Comment),
+                        title = "Join Discord",
+                        description = "Builds, updates and the people who make them.",
+                        onClick = {
+                            uriHandler.safeOpenUri(context, "https://discord.gg/Ejeb4cmzfd")
+                        },
+                        trailing = { MetaLabel("DISCORD") },
+                    )
                 }
             }
         ),
         OnboardingPageInfo(
             content = { onUpdateScroll ->
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Spacer(modifier = Modifier.height(80.dp))
+                Column(modifier = Modifier.fillMaxSize()) {
+                    OnboardingHeadline(
+                        eyebrow = "THE TOUR",
+                        lead = stringResource(com.vox.music.R.string.feat_discover),
+                        signal = stringResource(com.vox.music.R.string.feat_features),
+                        body = stringResource(com.vox.music.R.string.feat_intro),
+                    )
 
-                    Column(modifier = Modifier.padding(bottom = 16.dp)) {
-                        Text(
-                            text = stringResource(com.vox.music.R.string.feat_discover),
-                            style = thinHeaderStyle,
-                            color = AppTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = stringResource(com.vox.music.R.string.feat_features),
-                            fontFamily = GoogleSansFlex,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 48.sp,
-                            color = AppTheme.colorScheme.primary,
-                            lineHeight = 56.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            text = stringResource(com.vox.music.R.string.feat_intro),
-                            style = AppTheme.typography.bodyLarge.copy(
-                                fontFamily = GoogleSansFlex
-                            ),
-                            color = AppTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Spacer(Modifier.height(20.dp))
 
                     Box(modifier = Modifier.weight(1f)) {
                         val scrollState = rememberScrollState()
-
                         val isAtBottom by remember {
                             derivedStateOf {
-                                val layoutInfo = scrollState.maxValue
-                                layoutInfo == 0 || scrollState.value >= (layoutInfo - 20)
+                                val max = scrollState.maxValue
+                                max == 0 || scrollState.value >= (max - 24)
                             }
                         }
-
-                        LaunchedEffect(isAtBottom) {
-                            onUpdateScroll(isAtBottom)
-                        }
+                        LaunchedEffect(isAtBottom) { onUpdateScroll(isAtBottom) }
 
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .verticalScroll(scrollState)
                         ) {
-                            FeatureCard(
+                            VoxRow(
                                 icon = rememberVectorPainter(Icons.Rounded.Lyrics),
-                                iconColor = Color(0xFFffaee4),
-                                iconTint = Color(0xFF8d0053),
                                 title = stringResource(com.vox.music.R.string.feat_lyrics_title),
                                 description = stringResource(com.vox.music.R.string.feat_lyrics_desc),
-                                shape = topCardShape
+                                onClick = null,
                             )
-
-                            Spacer(modifier = Modifier.height(2.dp))
-
-                            FeatureCard(
+                            VoxRow(
                                 icon = rememberVectorPainter(Icons.Rounded.CloudDownload),
-                                iconColor = Color(0xFF80da88),
-                                iconTint = Color(0xFF00522c),
-                                shape = middleCardShape,
                                 title = stringResource(com.vox.music.R.string.feat_download_title),
-                                description = stringResource(com.vox.music.R.string.feat_download_desc)
+                                description = stringResource(com.vox.music.R.string.feat_download_desc),
+                                onClick = null,
                             )
-
-                            Spacer(modifier = Modifier.height(2.dp))
-
-                            FeatureCard(
+                            VoxRow(
                                 icon = rememberVectorPainter(Icons.Rounded.HighQuality),
-                                iconColor = Color(0xFFffb683),
-                                iconTint = Color(0xFF753403),
                                 title = stringResource(com.vox.music.R.string.feat_quality_title),
                                 description = stringResource(com.vox.music.R.string.feat_quality_desc),
-                                shape = middleCardShape
+                                onClick = null,
                             )
-
-                            Spacer(modifier = Modifier.height(2.dp))
-
-                            FeatureCard(
+                            VoxRow(
                                 icon = rememberVectorPainter(Icons.Rounded.BlurOn),
-                                iconColor = Color(0xFFcabeff),
-                                iconTint = Color(0xFF1c0062),
                                 title = stringResource(com.vox.music.R.string.feat_glass_title),
                                 description = stringResource(com.vox.music.R.string.feat_glass_desc),
-                                shape = middleCardShape
+                                onClick = null,
                             )
-
-                            Spacer(modifier = Modifier.height(2.dp))
-
-                            FeatureCard(
-                                icon = rememberVectorPainter(Icons.Rounded.Forum),
-                                iconColor = Color(0xFF67d4ff),
-                                iconTint = Color(0xFF004e5d),
+                            VoxRow(
+                                icon = rememberVectorPainter(Icons.Rounded.Comment),
                                 title = stringResource(com.vox.music.R.string.feat_discord_title),
                                 description = stringResource(com.vox.music.R.string.feat_discord_desc),
-                                shape = middleCardShape
+                                onClick = null,
                             )
-
                             if (BuildConfig.FLAVOR.contains("gms", ignoreCase = true)) {
-                                Spacer(modifier = Modifier.height(2.dp))
-
-                                FeatureCard(
+                                VoxRow(
                                     icon = rememberVectorPainter(Icons.Rounded.SystemUpdate),
-                                    iconColor = Color(0xFF67d4ff),
-                                    iconTint = Color(0xFF004e5d),
                                     title = stringResource(com.vox.music.R.string.feat_update_title),
                                     description = stringResource(com.vox.music.R.string.feat_update_desc),
-                                    shape = middleCardShape
+                                    onClick = null,
                                 )
                             }
-
-                            Spacer(modifier = Modifier.height(2.dp))
-
-                            FeatureCard(
+                            VoxRow(
                                 icon = rememberVectorPainter(Icons.Rounded.Gavel),
-                                iconColor = Color(0xFFb6c6ed),
-                                iconTint = Color(0xFF001b3f),
                                 title = stringResource(com.vox.music.R.string.feat_license_title),
                                 description = stringResource(com.vox.music.R.string.feat_license_desc),
-                                shape = middleCardShape
+                                onClick = null,
                             )
-
-                            Spacer(modifier = Modifier.height(2.dp))
-
-                            FeatureCard(
+                            VoxRow(
                                 icon = rememberVectorPainter(Icons.Rounded.Terminal),
-                                iconColor = Color(0xFFcabeff),
-                                iconTint = Color(0xFF1c0062),
                                 title = stringResource(com.vox.music.R.string.feat_github_title),
                                 description = stringResource(com.vox.music.R.string.feat_github_desc),
-                                shape = bottomCardShape
+                                onClick = null,
                             )
-
-                            Spacer(modifier = Modifier.height(100.dp))
+                            Spacer(Modifier.height(24.dp))
                         }
                     }
                 }
@@ -715,415 +442,378 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val isFirstPage = pagerState.currentPage == 0
     val isLastPage = pagerState.currentPage == pages.size - 1
+    val pageSpec = spring<Float>(dampingRatio = 0.9f, stiffness = 320f)
 
     BackHandler(enabled = !isFirstPage) {
-        scope.launch {
-            pagerState.animateScrollToPage(
-                pagerState.currentPage - 1,
-                animationSpec = commonAnimSpec
-            )
-        }
+        scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1, animationSpec = pageSpec) }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(horizontal = 24.dp)
+            .widthIn(max = 700.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .widthIn(max = 700.dp)
-                .fillMaxSize()
-                .padding(24.dp)
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-                // Four light pages: compose them all up front. With the default (0) the next
-                // page is composed the moment the transition starts, on the UI thread, in the
-                // middle of the animation.
-                beyondViewportPageCount = pages.size - 1,
+        OnboardingRail(
+            step = pagerState.currentPage + 1,
+            total = pages.size,
+            modifier = Modifier.padding(top = 20.dp),
+        )
+
+        HorizontalPager(
+            state = pagerState,
+            userScrollEnabled = false,
+            beyondViewportPageCount = pages.size - 1,
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+        ) { index ->
+            Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) { index ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            // iOS-style crossfade: the outgoing page shrinks slightly and
-                            // slides out while the incoming page does the reverse, driven by
-                            // the pager's own scroll so it plays during animateScrollToPage.
-                            // No RenderEffect blur: a full-page blur per frame blows the budget.
-                            val pageOffset = pagerState.getOffsetDistanceInPages(index)
-                            val absOffset = pageOffset.absoluteValue.coerceIn(0f, 1f)
-                            alpha = 1f - absOffset
-                            translationX = pageOffset * size.width * 0.2f
-                            scaleX = 1f - absOffset * 0.08f
-                            scaleY = 1f - absOffset * 0.08f
+                    .fillMaxSize()
+                    .padding(top = 28.dp)
+                    .graphicsLayer {
+                        val offset = pagerState.getOffsetDistanceInPages(index)
+                        val distance = offset.absoluteValue.coerceIn(0f, 1f)
+                        // Crossfade plus a short horizontal cut. No shrink: scaling a
+                        // page of type is what made the old transition read as a card.
+                        alpha = 1f - distance
+                        translationX = offset * size.width * 0.18f
+                    }
+            ) {
+                pages[index].content { }
+            }
+        }
+
+        StepBar(
+            selected = pagerState.currentPage,
+            total = pages.size,
+            modifier = Modifier.padding(top = 16.dp),
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, bottom = 24.dp)
+                .height(56.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            val backAlpha by animateFloatAsState(
+                targetValue = if (isFirstPage) 0f else 1f,
+                animationSpec = MotionTokens.settle(),
+                label = "backAlpha",
+            )
+            if (backAlpha > 0.01f) {
+                GhostButton(
+                    text = stringResource(com.vox.music.R.string.back_button_desc),
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1, animationSpec = pageSpec)
                         }
-                ) {
-                    pages[index].content { scrolledToEnd ->
-                        if (index == pages.size - 1) {
-                            isLastPageScrolledToEnd = true
+                    },
+                    modifier = Modifier.graphicsLayer { alpha = backAlpha },
+                )
+            }
+
+            val enabled = !isLastPage || isLastPageScrolledToEnd
+            val enabledAlpha by animateFloatAsState(
+                targetValue = if (enabled) 1f else 0.35f,
+                animationSpec = MotionTokens.settle(),
+                label = "nextAlpha",
+            )
+            SignalButton(
+                text = if (isLastPage) {
+                    stringResource(com.vox.music.R.string.get_started)
+                } else {
+                    stringResource(com.vox.music.R.string.next)
+                },
+                onClick = {
+                    if (isLastPage) {
+                        if (isLastPageScrolledToEnd) onFinished()
+                    } else {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1, animationSpec = pageSpec)
                         }
                     }
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                pages.indices.forEach { index ->
-                    val selected = index == pagerState.currentPage
-                    val dotWidth by animateDpAsState(
-                        targetValue = if (selected) 20.dp else 6.dp,
-                        animationSpec = commonDpAnimSpec,
-                        label = "dotWidth"
-                    )
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 3.dp)
-                            .height(6.dp)
-                            .width(dotWidth)
-                            .clip(RoundedCornerShape(50))
-                            .background(
-                                if (selected) AppTheme.colorScheme.primary
-                                else AppTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
-                            )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            val backButtonWeight by animateFloatAsState(
-                targetValue = if (isFirstPage) 0.0001f else 1f,
-                animationSpec = commonAnimSpec,
-                label = "backWeight"
+                },
+                modifier = Modifier.weight(1f).graphicsLayer { alpha = enabledAlpha },
             )
-
-            val spacerWeight by animateFloatAsState(
-                targetValue = if (isFirstPage) 0.0001f else 0.05f,
-                animationSpec = commonAnimSpec,
-                label = "spacerWeight"
-            )
-
-            val alphaBack by animateFloatAsState(
-                targetValue = if (isFirstPage) 0f else 1f,
-                animationSpec = commonAnimSpec,
-                label = "backAlpha"
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp)
-                    .height(64.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(backButtonWeight)
-                        .fillMaxHeight()
-                        .alpha(alphaBack)
-                ) {
-                    WelcomeExpressiveButton(
-                        text = stringResource(com.vox.music.R.string.back_button_desc),
-                        onClick = {
-                            if (!isFirstPage) {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(
-                                        pagerState.currentPage - 1,
-                                        animationSpec = commonAnimSpec
-                                    )
-                                }
-                            }
-                        },
-                        containerColor = Color.Transparent,
-                        contentColor = AppTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.fillMaxSize(),
-                        isOutlined = true
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(spacerWeight))
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                ) {
-                    val isNextEnabled = !isLastPage || isLastPageScrolledToEnd
-
-                    val alphaNext by animateFloatAsState(
-                        targetValue = if (isNextEnabled) 1f else 0.5f,
-                        label = "nextAlpha"
-                    )
-
-                    WelcomeExpressiveButton(
-                        text = if (isLastPage) stringResource(com.vox.music.R.string.get_started) else stringResource(
-                            com.vox.music.R.string.next
-                        ),
-                        onClick = {
-                            if (isLastPage) {
-                                if (isLastPageScrolledToEnd) onFinished()
-                            } else {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(
-                                        pagerState.currentPage + 1,
-                                        animationSpec = commonAnimSpec
-                                    )
-                                }
-                            }
-                        },
-                        containerColor = AppTheme.colorScheme.primary.copy(alpha = alphaNext),
-                        contentColor = AppTheme.colorScheme.onPrimary.copy(alpha = alphaNext),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
         }
     }
 }
 
+/** Eyebrow, display headline with a signal second line, and a body paragraph. */
+@Composable
+private fun OnboardingHeadline(
+    eyebrow: String,
+    lead: String,
+    signal: String,
+    body: String,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = eyebrow,
+            style = VoxType.Eyebrow,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+        )
+        Spacer(Modifier.height(10.dp))
+        Text(
+            text = lead,
+            style = VoxType.Masthead.copy(fontSize = 40.sp, lineHeight = 43.sp),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = signal,
+            style = VoxType.Masthead.copy(fontSize = 40.sp, lineHeight = 45.sp),
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(Modifier.height(14.dp))
+        Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** Step counter, set as a printed folio: "01 / 04" over a progress rail. */
+@Composable
+private fun OnboardingRail(step: Int, total: Int, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(text = "VOX", style = VoxType.Eyebrow, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            text = "${step.toString().padStart(2, '0')} / ${total.toString().padStart(2, '0')}",
+            style = VoxType.Eyebrow,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** Four hairlines; the current one fills with signal. No dots, no capsules. */
+@Composable
+private fun StepBar(selected: Int, total: Int, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        repeat(total) { index ->
+            val color by animateColorAsState(
+                targetValue = if (index == selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.16f)
+                },
+                animationSpec = tween(240),
+                label = "step$index",
+            )
+            Box(
+                Modifier
+                    .weight(if (index == selected) 2.2f else 1f)
+                    .height(2.dp)
+                    .background(color)
+            )
+        }
+    }
+}
+
+/**
+ * A list row on a hairline grid. The glyph is monochrome inside a hairline
+ * square — no pastel tile — so the eye lands on the title, not the decoration.
+ */
+@Composable
+fun VoxRow(
+    icon: Painter,
+    title: String,
+    description: String,
+    onClick: (() -> Unit)?,
+    trailing: @Composable (() -> Unit)? = null,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val wash by animateFloatAsState(
+        targetValue = if (pressed) 1f else 0f,
+        animationSpec = MotionTokens.snap(),
+        label = "rowWash",
+    )
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f * wash)
+                )
+                .clickable(
+                    enabled = onClick != null,
+                    interactionSource = interaction,
+                    indication = null,
+                    onClick = { onClick?.invoke() },
+                )
+                .padding(vertical = 16.dp, horizontal = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                    modifier = Modifier.size(19.dp),
+                )
+            }
+
+            Spacer(Modifier.width(14.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            trailing?.let {
+                Spacer(Modifier.width(12.dp))
+                it()
+            }
+        }
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(VoxDesignTokens.Metrics.Hairline)
+                .background(VoxDesignTokens.Colors.Hairline)
+        )
+    }
+}
+
+/** Small uppercase metadata, the only place tracking goes this wide. */
+@Composable
+private fun MetaLabel(text: String) {
+    Text(
+        text = text.uppercase(),
+        style = VoxType.Eyebrow,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+    )
+}
+
+@Composable
+private fun SignalButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.985f else 1f,
+        animationSpec = MotionTokens.snap(),
+        label = "signalPress",
+    )
+
+    Box(
+        modifier = modifier
+            .height(56.dp)
+            .graphicsLayer { scaleX = scale; scaleY = scale }
+            .clip(RoundedCornerShape(3.dp))
+            .background(MaterialTheme.colorScheme.primary)
+            .clickable(interactionSource = interaction, indication = null, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text.uppercase(),
+            style = VoxType.Eyebrow.copy(letterSpacing = 1.6.sp),
+            color = VoxDesignTokens.Colors.OnAccentSignal,
+        )
+    }
+}
+
+@Composable
+private fun GhostButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .height(56.dp)
+            .clip(RoundedCornerShape(3.dp))
+            .background(Color.Transparent)
+            .then(
+                Modifier.clickable(onClick = onClick)
+            )
+            .padding(horizontal = 22.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text.uppercase(),
+            style = VoxType.Eyebrow.copy(letterSpacing = 1.6.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/**
+ * The Vox mark: a signal rosette rotating under the logo cut out of the canvas.
+ * Slow enough to read as a printed seal rather than a loading spinner.
+ */
 @Composable
 fun RotatingShapeContainer(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition(label = "shapeRotation")
-    val rotation by infiniteTransition.animateFloat(
+    val transition = rememberInfiniteTransition(label = "rosette")
+    val rotation by transition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
-            animation = tween(20000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            animation = tween(32000),
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "rotation"
+        label = "rotation",
     )
+    val ringColor = VoxDesignTokens.Colors.AccentSignal.copy(alpha = 0.22f)
 
-    val primaryColor = AppTheme.colorScheme.primary
-    val backgroundColor = AppTheme.colorScheme.background
-
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(id = com.vox.music.R.drawable.ic_ten_sided_cookie),
-            contentDescription = null,
-            tint = primaryColor,
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer { rotationZ = rotation }
-        )
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Canvas(Modifier.fillMaxSize().graphicsLayer { rotationZ = rotation }) {
+            drawCircle(color = ringColor, radius = size.minDimension * 0.5f, style = Stroke(1.dp.toPx()))
+            drawCircle(color = ringColor, radius = size.minDimension * 0.34f, style = Stroke(1.dp.toPx()))
+            // Twelve ticks, like a press registration mark.
+            repeat(12) { index ->
+                val angle = Math.toRadians((index * 30).toDouble())
+                val inner = size.minDimension * 0.40f
+                val outer = size.minDimension * 0.47f
+                val cx = size.width / 2f
+                val cy = size.height / 2f
+                drawLine(
+                    color = ringColor,
+                    start = Offset(cx + inner * kotlin.math.cos(angle).toFloat(), cy + inner * kotlin.math.sin(angle).toFloat()),
+                    end = Offset(cx + outer * kotlin.math.cos(angle).toFloat(), cy + outer * kotlin.math.sin(angle).toFloat()),
+                    strokeWidth = 1.dp.toPx(),
+                    cap = StrokeCap.Square,
+                )
+            }
+        }
 
         Icon(
             painter = painterResource(com.vox.music.R.drawable.vox_logo),
             contentDescription = null,
-            modifier = Modifier.size(150.dp),
-            tint = backgroundColor
+            tint = VoxDesignTokens.Colors.AccentSignal,
+            modifier = Modifier.size(112.dp),
         )
-    }
-}
-
-@Composable
-fun PermissionCard(
-    icon: Painter,
-    iconColor: Color,
-    iconTint: Color,
-    title: String,
-    description: String,
-    shape: Shape,
-    control: @Composable () -> Unit,
-    onClick: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val pressProgress by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
-        label = "anim_shape"
-    )
-
-    val animatedShape = remember(shape, pressProgress) {
-        if (shape is RoundedCornerShape) {
-            object : Shape {
-                override fun createOutline(
-                    size: Size,
-                    layoutDirection: LayoutDirection,
-                    density: Density
-                ): Outline {
-                    val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) =
-                        (1 - fraction) * start + fraction * stop
-
-                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
-                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
-                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
-                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
-                    return Outline.Rounded(
-                        androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(
-                                0f,
-                                0f,
-                                size.width,
-                                size.height
-                            ),
-                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
-                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
-                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
-                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
-                        )
-                    )
-                }
-            }
-        } else shape
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(animatedShape)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null, 
-                onClick = onClick
-            ),
-        shape = animatedShape,
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = GoogleSansFlex
-                )
-            },
-            supportingContent = {
-                Text(
-                    text = description,
-                    fontFamily = GoogleSansFlex,
-                    color = AppTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            leadingContent = {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = iconColor,
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(
-                            painter = icon,
-                            contentDescription = null,
-                            tint = iconTint,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            },
-            trailingContent = control,
-            colors = androidx.compose.material3.ListItemDefaults.colors(containerColor = Color.Transparent)
-        )
-    }
-}
-
-@Composable
-fun FeatureCard(
-    icon: Painter,
-    iconColor: Color,
-    iconTint: Color,
-    title: String,
-    description: String,
-    shape: Shape
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape),
-        shape = shape,
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = GoogleSansFlex
-                )
-            },
-            supportingContent = {
-                Text(
-                    text = description,
-                    fontFamily = GoogleSansFlex,
-                    color = AppTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            leadingContent = {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = iconColor,
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(
-                            painter = icon,
-                            contentDescription = null,
-                            tint = iconTint,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            },
-            colors = androidx.compose.material3.ListItemDefaults.colors(containerColor = Color.Transparent)
-        )
-    }
-}
-
-@Composable
-fun WelcomeExpressiveButton(
-    text: String,
-    onClick: () -> Unit,
-    containerColor: Color,
-    contentColor: Color,
-    modifier: Modifier = Modifier,
-    isOutlined: Boolean = false
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        label = "buttonScale"
-    )
-
-    Surface(
-        onClick = onClick,
-        modifier = modifier
-            .clip(CircleShape)
-            .then(if (isPressed) Modifier.rotate(0f) else Modifier), // placeholder for scale
-        color = containerColor,
-        contentColor = contentColor,
-        border = if (isOutlined) androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colorScheme.outline.copy(alpha = 0.3f)) else null,
-        shape = CircleShape,
-        interactionSource = interactionSource
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = text,
-                fontWeight = FontWeight.Bold,
-                fontFamily = GoogleSansFlex,
-                fontSize = 18.sp
-            )
-        }
     }
 }

@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.CompositionLocalProvider
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
@@ -73,7 +73,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.progressSemantics
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.material.icons.Icons
@@ -330,7 +329,7 @@ fun AudioDeviceMenu(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .widthIn(max = 520.dp)
                 .heightIn(max = 680.dp)
-                .iosMenuSurface(ContinuousRoundedRectangle(30.dp))
+                .iosMenuSurface(RoundedCornerShape(30.dp))
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 20.dp)
                 .then(modifier)

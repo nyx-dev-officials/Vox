@@ -78,7 +78,7 @@ import com.vox.music.ui.component.backdrop.drawBackdrop
 import com.vox.music.ui.component.backdrop.effects.blur
 import com.vox.music.ui.component.rememberPlaybackFraction
 import com.vox.music.ui.component.sf
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.component.IosGlyph
@@ -90,8 +90,8 @@ import com.vox.music.ui.theme.AppleTokens
 import com.vox.music.ui.theme.VoxType
 import com.vox.music.utils.makeTimeString
 
-private val CardShape = ContinuousRoundedRectangle(24.dp)
-private val ArtShape = ContinuousRoundedRectangle(18.dp)
+private val CardShape = RoundedCornerShape(24.dp)
+private val ArtShape = RoundedCornerShape(18.dp)
 
 /**
  * The mini player, lifted.

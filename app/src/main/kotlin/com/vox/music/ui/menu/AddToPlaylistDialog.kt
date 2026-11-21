@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import com.vox.music.utils.listItemShape
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.ios.compat.IconButton
 import com.vox.music.ui.ios.compat.AppTheme
@@ -163,7 +163,7 @@ fun AddToPlaylistDialog(
                             }
                         },
                         singleLine = true,
-                        shape = ContinuousRoundedRectangle(24.dp),
+                        shape = RoundedCornerShape(24.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = AppTheme.colorScheme.primary,
                             unfocusedBorderColor = AppTheme.colorScheme.outlineVariant,

@@ -25,7 +25,7 @@ import com.vox.music.ui.theme.HeroTintedContent
 import com.vox.music.ui.component.LocalGlassEffectConfig
 import com.vox.music.ui.component.isGlassAllowed
 import com.vox.music.ui.component.liquidGlass
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -226,7 +226,7 @@ fun StatsScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
       HeroTintedContent(tint = tint, backdrop = heroBackdrop) {
-        val chromeShape = ContinuousRoundedRectangle(percent = 50)
+        val chromeShape = RoundedCornerShape(percent = 50)
         val hazeState = androidx.compose.runtime.remember { dev.chrisbanes.haze.HazeState() }
 
         Box(modifier = Modifier.fillMaxSize()) {

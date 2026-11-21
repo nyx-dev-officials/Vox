@@ -66,7 +66,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -357,7 +356,7 @@ fun TrendingAppleMusicSection(
                                         com.vox.music.ui.component.ShimmerBox(Modifier.fillMaxSize())
                                     },
                                     modifier = Modifier
-                                        .clip(com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(AppleTokens.Artwork))
+                                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(AppleTokens.Artwork))
                                         .size(68.dp)
                                 )
                             }

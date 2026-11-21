@@ -72,7 +72,6 @@ import com.vox.music.ui.component.PLAYER_BLUR_MULTIPLIER
 import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
 import com.vox.music.ui.component.isGlassAllowed
 import com.vox.music.ui.component.liquidGlass
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.theme.decodeGradientStops
 import com.vox.music.utils.rememberEnumPreference
 import com.vox.music.utils.rememberPreference
@@ -364,7 +363,7 @@ private fun MockArtwork(style: MockupStyle, isPortrait: Boolean, modifier: Modif
     val shape = if (style.background == PlayerBackgroundStyle.APPLE_MUSIC && isPortrait) {
         RoundedCornerShape(0.dp)
     } else when (style.artwork) {
-        PlayerArtworkStyle.CARD -> ContinuousRoundedRectangle(style.artworkCorner)
+        PlayerArtworkStyle.CARD -> RoundedCornerShape(style.artworkCorner)
         PlayerArtworkStyle.VINYL -> CircleShape
         // The real clover is a four-petal squircle; a heavily rounded square reads the same at
         // mockup scale without duplicating the shape maths.

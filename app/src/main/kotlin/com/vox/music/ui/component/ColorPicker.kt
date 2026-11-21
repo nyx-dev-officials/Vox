@@ -30,7 +30,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.ui.window.Dialog
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.IosTextField
 import com.vox.music.ui.ios.compat.SegmentedButton
@@ -198,7 +197,7 @@ fun ColorPickerDialog(
         Column(
             modifier = Modifier
                 .width(340.dp)
-                .clip(ContinuousRoundedRectangle(30.dp))
+                .clip(RoundedCornerShape(30.dp))
                 .background(iosColors.systemBackground)
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState()),

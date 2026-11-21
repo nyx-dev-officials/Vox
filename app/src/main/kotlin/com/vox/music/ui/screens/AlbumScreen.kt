@@ -54,7 +54,6 @@ import com.vox.music.ui.ios.compat.LocalContentColor
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.ripple
 import com.vox.music.ui.ios.compat.Surface
-import androidx.compose.foundation.shape.CircleShape
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.compat.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
@@ -164,7 +163,6 @@ import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
 import com.vox.music.ui.component.NavigationTitle
 import com.vox.music.ui.component.SongListItem
 import com.vox.music.ui.component.YouTubeGridItem
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.menu.AlbumMenu
 import com.vox.music.ui.menu.SelectionSongMenu
 import com.vox.music.ui.menu.SongMenu
@@ -372,7 +370,7 @@ fun AlbumScreen(
 
     val glassConfig = LocalGlassEffectConfig.current
     val useGlass = glassConfig.isEnabledFor(GlassComponent.NAV_BAR) && isGlassAllowed()
-    val chromeShape = ContinuousRoundedRectangle(percent = 50)
+    val chromeShape = RoundedCornerShape(percent = 50)
     val chromeContentColor = if (useGlass) glassConfig.resolvedTextColor() else AppTheme.colorScheme.onSurface
 
     // The unattached backdrop avoids a RenderNode cycle in the floating chrome.

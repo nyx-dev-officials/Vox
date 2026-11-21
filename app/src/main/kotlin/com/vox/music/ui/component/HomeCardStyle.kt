@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.vox.music.constants.HomeCardCornerRadiusOverrideKey
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.theme.AppleTokens
 import com.vox.music.ui.utils.rimLight
 import com.vox.music.utils.rememberPreference
@@ -31,7 +31,7 @@ import com.vox.music.utils.rememberPreference
 fun rememberHomeCardShape(): Shape {
     val (cornerOverride) = rememberPreference(HomeCardCornerRadiusOverrideKey, 0)
     val corner = if (cornerOverride > 0) cornerOverride.dp else AppleTokens.CardCornerLarge
-    return remember(corner) { ContinuousRoundedRectangle(corner) }
+    return remember(corner) { RoundedCornerShape(corner) }
 }
 
 /**

@@ -40,7 +40,7 @@ import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.OutlinedTextField
 import com.vox.music.ui.ios.compat.Surface
 import com.vox.music.ui.ios.compat.Switch
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.compat.TextButton
 import androidx.compose.runtime.Composable
@@ -312,7 +312,7 @@ fun LyricsMenu(
 
                         Surface(
                             color = AppTheme.colorScheme.secondaryContainer,
-                            shape = ContinuousRoundedRectangle(6.dp),
+                            shape = RoundedCornerShape(6.dp),
                             modifier = Modifier.padding(top = 4.dp)
                         ) {
                             Row(

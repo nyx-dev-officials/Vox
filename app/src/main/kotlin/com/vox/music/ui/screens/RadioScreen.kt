@@ -66,7 +66,6 @@ import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.component.IosGlyph
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.ui.screens.library.apple.AppleSubpage
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.viewmodels.RadioStationViewModel
 import com.vox.music.viewmodels.RadioViewModel
 import com.music.innertube.models.SongItem
@@ -81,7 +80,7 @@ private fun RadioStationCard(
     onClick: () -> Unit,
     onPlay: () -> Unit,
 ) {
-    val shape = ContinuousRoundedRectangle(16.dp)
+    val shape = RoundedCornerShape(16.dp)
     val artist = song.artists.joinToString { it.name }.ifBlank { song.song.title }
 
     Box(
@@ -340,7 +339,7 @@ private fun RadioStationHeader(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp)
-            .clip(ContinuousRoundedRectangle(20.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(IosTheme.colors.secondarySystemBackground)
             .clickable(onClick = onPlay)
             .padding(14.dp),

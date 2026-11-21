@@ -158,18 +158,18 @@ object VoxType {
     val TopBarTitle = TextStyle(
         fontFamily = Display,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 30.sp,
-        lineHeight = 36.sp,
-        letterSpacing = (-0.2).sp,
+        fontSize = 34.sp,
+        lineHeight = 38.sp,
+        letterSpacing = (-0.9).sp,
     )
 
     /** Home masthead greeting — the one display-size line on the page. */
     val Masthead = TextStyle(
         fontFamily = Display,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 30.sp,
-        lineHeight = 34.sp,
-        letterSpacing = (-0.4).sp,
+        fontSize = 38.sp,
+        lineHeight = 41.sp,
+        letterSpacing = (-1.2).sp,
     )
 
     /** Section header ("Top Picks For You"). */
@@ -178,7 +178,7 @@ object VoxType {
         fontWeight = FontWeight.SemiBold,
         fontSize = AppleTokens.SectionHeader,
         lineHeight = AppleTokens.SectionHeaderLineHeight,
-        letterSpacing = (-0.1).sp,
+        letterSpacing = (-0.4).sp,
     )
 
     /** Tile and shelf-card title. */
@@ -187,7 +187,7 @@ object VoxType {
         fontWeight = FontWeight.Medium,
         fontSize = 14.5f.sp,
         lineHeight = 19.sp,
-        letterSpacing = 0.sp,
+        letterSpacing = (-0.1).sp,
     )
 
     /** Small uppercase eyebrow — "VOX · SATURDAY", "FEATURED". */
@@ -195,8 +195,8 @@ object VoxType {
         fontFamily = Display,
         fontWeight = FontWeight.SemiBold,
         fontSize = 10.sp,
-        lineHeight = 14.sp,
-        letterSpacing = 1.6.sp,
+        lineHeight = 13.sp,
+        letterSpacing = 1.9.sp,
     )
 }
 

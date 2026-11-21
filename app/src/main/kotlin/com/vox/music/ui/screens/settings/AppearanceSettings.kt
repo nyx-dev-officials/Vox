@@ -59,7 +59,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.ui.layout.layout
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.ios.foundation.IosMetrics
 import com.vox.music.ui.ios.compat.HorizontalDivider
 import com.vox.music.ui.ios.compat.Switch
@@ -869,7 +868,7 @@ fun ColumnScope.LyricsAnimationSheetContent() {
                     Modifier
                         .fillMaxWidth()
                         .height(360.dp)
-                        .clip(ContinuousRoundedRectangle(24.dp)),
+                        .clip(RoundedCornerShape(24.dp)),
                 ) {
                     com.vox.music.ui.player.NowPlayingBackground(
                         artworkUrl = lyricsTrack?.thumbnailUrl,
@@ -895,7 +894,7 @@ fun ColumnScope.LyricsAnimationSheetContent() {
                     Modifier
                         .fillMaxWidth()
                         .height(168.dp)
-                        .clip(ContinuousRoundedRectangle(24.dp))
+                        .clip(RoundedCornerShape(24.dp))
                         .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(selectedColor.copy(alpha = 0.38f).compositeOver(Color(0xFF111217)), Color(0xFF111217)))),
                 ) {
                     Column(
@@ -1006,7 +1005,7 @@ fun ColumnScope.LyricsAnimationSheetContent() {
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+                    .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
                     .background(IosTheme.colors.secondarySystemGroupedBackground),
             ) {
                 Row(

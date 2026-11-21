@@ -124,7 +124,6 @@ import com.vox.music.ui.component.ColorPickerDialog
 import com.vox.music.ui.component.SwitchPreference
 import com.vox.music.ui.component.SliderPreference
 import com.vox.music.ui.component.IconButton as AppIconButton
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.player.PlayerLayoutRegistry
 import com.vox.music.ui.player.PlayerSlot
 import com.vox.music.ui.theme.DefaultGradientStops
@@ -758,7 +757,7 @@ private fun SlotPreviewBlock(slot: PlayerSlot, artworkUrl: String?) {
             Box(
                 modifier = Modifier
                     .size(56.dp)
-                    .clip(ContinuousRoundedRectangle(10.dp))
+                    .clip(RoundedCornerShape(10.dp))
             ) {
                 AsyncImage(
                     model = artworkUrl,
@@ -933,7 +932,7 @@ private fun PlayerPreview(
         val previewShape = if (background == PlayerBackgroundStyle.APPLE_MUSIC) {
             RoundedCornerShape(0.dp)
         } else when (artworkStyle) {
-            PlayerArtworkStyle.CARD -> ContinuousRoundedRectangle(10.dp)
+            PlayerArtworkStyle.CARD -> RoundedCornerShape(10.dp)
             else -> CircleShape
         }
         Box(

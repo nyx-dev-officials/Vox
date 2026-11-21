@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.component.IosCheckmark
 import zone.ien.hig.CupertinoCheckBox
 import zone.ien.hig.CupertinoAlertDialog
@@ -85,7 +85,7 @@ fun OutlinedTextField(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(ContinuousRoundedRectangle(12.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(iosColors.tertiarySystemFill)
                 .defaultMinSize(minHeight = 44.dp)
                 .padding(horizontal = 12.dp, vertical = 10.dp),
@@ -213,7 +213,7 @@ fun AlertDialog(
             }
         },
         containerColor = if (containerColor.isSpecified) containerColor else colors.systemBackground,
-        shape = shape ?: ContinuousRoundedRectangle(30.dp),
+        shape = shape ?: RoundedCornerShape(30.dp),
         properties = properties,
     ) {
         // Material provides opaque button slots, so the caller's buttons keep handling taps.
@@ -290,7 +290,7 @@ fun OutlinedTextField(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(ContinuousRoundedRectangle(12.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(iosColors.tertiarySystemFill)
                 .defaultMinSize(minHeight = 44.dp)
                 .padding(horizontal = 12.dp, vertical = 10.dp),

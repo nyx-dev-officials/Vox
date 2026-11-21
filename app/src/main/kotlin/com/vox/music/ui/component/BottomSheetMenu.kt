@@ -54,7 +54,6 @@ import zone.ien.hig.rememberCupertinoSheetState
 
 import androidx.compose.ui.Alignment
 import com.vox.music.constants.SheetCornerRadiusKey
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.utils.rememberPreference
 
 val LocalMenuState = compositionLocalOf { MenuState() }
@@ -130,7 +129,7 @@ private fun MenuSheet(
     val isDark = glassUsesDarkAppearance()
     val (sheetCornerRadius) = rememberPreference(SheetCornerRadiusKey, MenuSheetCornerRadius.value)
     val sheetShape = remember(sheetCornerRadius) {
-        ContinuousRoundedRectangle(
+        RoundedCornerShape(
             topStart = sheetCornerRadius.dp,
             topEnd = sheetCornerRadius.dp,
             bottomEnd = 0.dp,

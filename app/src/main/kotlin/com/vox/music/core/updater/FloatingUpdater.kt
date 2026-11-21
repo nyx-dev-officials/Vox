@@ -30,7 +30,7 @@ import com.vox.music.ui.component.backdrop.Backdrop
 import com.vox.music.ui.component.liquidGlass
 import com.vox.music.ui.component.glassUsesDarkAppearance
 import com.vox.music.ui.component.sf
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.foundation.LocalIosBackdrop
 import com.vox.music.ui.ios.foundation.IosMenuMaterial
@@ -66,13 +66,13 @@ private fun FloatingUpdater(visible: Boolean, backdrop: Backdrop, onDetails: () 
                         if (glassUsesDarkAppearance()) config.copy(surfaceTintColor = IosMenuMaterial.DarkPanelFill, surfaceOpacity = 0.82f, blurRadius = 8f)
                         else config.copy(blurRadius = 8f)
                     },
-                        shape = ContinuousRoundedRectangle(28.dp), highlightAlpha = 0.20f)
+                        shape = RoundedCornerShape(28.dp), highlightAlpha = 0.20f)
                     .verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
                         state.release?.let { release ->
                             if (release.imageUrl != null) {
                                 AsyncImage(model = release.imageUrl, contentDescription = null,
-                                    modifier = Modifier.padding(end = 12.dp).size(64.dp).clip(ContinuousRoundedRectangle(16.dp)),
+                                    modifier = Modifier.padding(end = 12.dp).size(64.dp).clip(RoundedCornerShape(16.dp)),
                                     contentScale = ContentScale.Crop)
                             }
                             Column(Modifier.weight(1f)) { UpdateSummary(release, compact = true) }

@@ -98,7 +98,6 @@ import com.vox.music.ui.component.GlassComponent
 import com.vox.music.ui.component.LocalGlassEffectConfig
 import com.vox.music.ui.component.isGlassAllowed
 import com.vox.music.ui.component.liquidGlass
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
 import androidx.compose.ui.text.font.FontWeight
 import com.vox.music.ui.component.GlassCircleButton
@@ -164,7 +163,7 @@ fun ChartsScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
       HeroTintedContent(tint = tint, backdrop = heroBackdrop) {
-        val chromeShape = ContinuousRoundedRectangle(percent = 50)
+        val chromeShape = RoundedCornerShape(percent = 50)
         val hazeState = remember { HazeState() }
 
         Box(modifier = Modifier.fillMaxSize()) {

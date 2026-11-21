@@ -96,7 +96,7 @@ import com.vox.music.ui.component.floatingtabbar.FoldingTabCell
 import com.vox.music.ui.component.floatingtabbar.FoldingTabGroup
 import com.vox.music.ui.component.floatingtabbar.FloatingTabBarScrollConnection
 import com.vox.music.ui.component.floatingtabbar.clipWhilePressed
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.utils.bounceClick
 import com.vox.music.ui.utils.additiveChrome
 import com.vox.music.ui.utils.vibrantChrome
@@ -529,7 +529,7 @@ fun NavBarSearchInputBar(
     }
     val searchRimTint = com.vox.music.ui.theme.GlassTintTokens.pluckColor(isDark, ambientColor)
     val searchHighlightAlpha = com.vox.music.ui.theme.GlassTintTokens.pluckOpacity(isDark, ambientColor.isSpecified && !ambientColor.isHueless())
-    val pillShape = ContinuousRoundedRectangle(percent = 50)
+    val pillShape = RoundedCornerShape(percent = 50)
     val coroutineScope = rememberCoroutineScope()
     // Finger-tracking glow, same as the nav bar puck's InteractiveHighlight: a
     // soft radial light follows the touch point across the glass pill.

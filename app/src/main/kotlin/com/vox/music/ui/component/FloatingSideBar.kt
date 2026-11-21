@@ -74,7 +74,7 @@ import com.vox.music.ui.component.backdrop.effects.blur
 import com.vox.music.ui.component.backdrop.effects.lens
 import com.vox.music.ui.component.backdrop.highlight.Highlight
 import com.vox.music.ui.component.backdrop.shadow.Shadow
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.player.FloatingMiniPlayer
 import com.vox.music.ui.screens.Screens
 import com.vox.music.ui.screens.library.apple.SfStyle
@@ -83,10 +83,10 @@ import com.vox.music.ui.utils.fadingEdge
 import com.vox.music.designsystem.VoxDesignTokens
 
 /** Panel corner. A tall panel, so a rounded rect rather than the phone bar's capsule. */
-private val SideBarShape = ContinuousRoundedRectangle(20.dp)
+private val SideBarShape = RoundedCornerShape(20.dp)
 
 /** Row/puck corner inside the panel: a full capsule. */
-private val SideRowShape = ContinuousRoundedRectangle(percent = 50)
+private val SideRowShape = RoundedCornerShape(percent = 50)
 
 /** Width of the whole floating panel. */
 val SideBarWidth: Dp = VoxDesignTokens.Metrics.SidebarWidth
@@ -485,7 +485,7 @@ fun BoxWithConstraintsScope.AppFloatingNowPlayingPill(
 ) {
     val glassConfig = LocalGlassEffectConfig.current
     val useGlass = glassConfig.isEnabledFor(GlassComponent.SIDE_PANEL) && isGlassAllowed()
-    val pillShape = ContinuousRoundedRectangle(percent = 50)
+    val pillShape = RoundedCornerShape(percent = 50)
 
     val width = maxWidth * FloatingMiniPlayerWidthFraction
     val height = (width * FloatingMiniPlayerAspect)
@@ -637,7 +637,7 @@ private fun SideBarLinkRow(link: SideBarLink, contentColor: Color) {
                     modifier = Modifier
                         .sharedArtworkSource(link.sharedArtworkId, link.thumbnailUrl, artworkOwner)
                         .fillMaxSize()
-                        .clip(ContinuousRoundedRectangle(6.dp)),
+                        .clip(RoundedCornerShape(6.dp)),
                 )
 
                 link.iconRes != null -> Icon(
@@ -680,7 +680,7 @@ fun AppTabViewTopPill(
 ) {
     val glassConfig = LocalGlassEffectConfig.current
     val useGlass = glassConfig.isEnabledFor(GlassComponent.SIDE_PANEL) && isGlassAllowed()
-    val shape = ContinuousRoundedRectangle(percent = 50)
+    val shape = RoundedCornerShape(percent = 50)
     val chrome = com.vox.music.ui.ios.foundation.IosTheme.colors.label
     val accent = com.vox.music.ui.ios.foundation.IosTheme.tint
     val selectedRoute = rememberStickySelectedRoute(currentRoute, navigationItems)

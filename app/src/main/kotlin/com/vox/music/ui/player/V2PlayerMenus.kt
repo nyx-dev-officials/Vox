@@ -5,6 +5,7 @@
 
 package com.vox.music.ui.player
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.iosMenuSurface
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.clickable
@@ -303,7 +304,7 @@ fun V2RoutePopover(
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .width(300.dp)
-                .iosMenuSurface(com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(34.dp), menuStretch)
+                .iosMenuSurface(androidx.compose.foundation.shape.RoundedCornerShape(34.dp), menuStretch)
                 .padding(14.dp),
         ) {
             androidx.compose.foundation.layout.Row(
@@ -316,7 +317,7 @@ fun V2RoutePopover(
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                     modifier = Modifier
                         .size(48.dp)
-                        .clip(com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(7.dp)),
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(7.dp)),
                 )
                 androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
                 androidx.compose.foundation.layout.Column {
@@ -330,7 +331,7 @@ fun V2RoutePopover(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .clip(com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(percent = 50))
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(percent = 50))
                     .background(Color.White.copy(alpha = if (automatic) 0.35f else 0.12f))
                     .clickable {
                         service?.setPreferredAudioDevice(null)
@@ -374,7 +375,7 @@ fun V2RoutePopover(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
-                        .clip(com.vox.music.ui.component.shapes.ContinuousRoundedRectangle(percent = 50))
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(percent = 50))
                         .background(Color.White.copy(alpha = if (selected) 0.35f else 0.12f))
                         .clickable {
                             service?.setPreferredAudioDevice(device.deviceId)

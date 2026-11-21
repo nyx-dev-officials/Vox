@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosColors
 import com.vox.music.ui.ios.foundation.IosTheme
 import com.vox.music.ui.ios.foundation.IosTypography
@@ -150,9 +150,9 @@ class AppTextRoles(private val t: IosTypography) {
 
 /** Material's shape scale, drawn with continuous (superellipse) corners. */
 object AppShapeRoles {
-    val extraSmall: Shape = ContinuousRoundedRectangle(6.dp)
-    val small: Shape = ContinuousRoundedRectangle(10.dp)
-    val medium: Shape = ContinuousRoundedRectangle(14.dp)
-    val large: Shape = ContinuousRoundedRectangle(20.dp)
-    val extraLarge: Shape = ContinuousRoundedRectangle(30.dp)
+    val extraSmall: Shape = RoundedCornerShape(6.dp)
+    val small: Shape = RoundedCornerShape(10.dp)
+    val medium: Shape = RoundedCornerShape(14.dp)
+    val large: Shape = RoundedCornerShape(20.dp)
+    val extraLarge: Shape = RoundedCornerShape(30.dp)
 }

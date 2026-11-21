@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.vox.music.R
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.ios.foundation.IosTheme
 import kotlinx.coroutines.launch
@@ -85,7 +85,7 @@ fun IosPageSheet(
                     .padding(top = statusTop + 10.dp)
                     .fillMaxSize()
                     .graphicsLayer { translationY = offset.value * travel }
-                    .clip(ContinuousRoundedRectangle(topStart = 38.dp, topEnd = 38.dp, bottomEnd = 0.dp, bottomStart = 0.dp))
+                    .clip(RoundedCornerShape(topStart = 38.dp, topEnd = 38.dp, bottomEnd = 0.dp, bottomStart = 0.dp))
                     .background(sheetColor),
             ) {
                 Box(

@@ -147,7 +147,6 @@ import com.vox.music.ui.component.BottomSheetState
 import com.vox.music.ui.component.LocalBottomSheetPageState
 import com.vox.music.ui.component.LocalMenuState
 import com.vox.music.ui.component.MediaMetadataListItem
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.component.thumbnailPx
 import com.vox.music.ui.menu.PlayerMenu
 import com.vox.music.ui.menu.QueueMenu
@@ -1576,7 +1575,7 @@ private fun FlowRowScope.QueuePill(
         modifier = Modifier
             .weight(1f)
             .height(34.dp)
-            .clip(ContinuousRoundedRectangle(percent = 50))
+            .clip(RoundedCornerShape(percent = 50))
             .graphicsLayer { if (checked) compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
             .background(if (checked) QueuePillActiveFill else QueuePillFill)
             .toggleable(

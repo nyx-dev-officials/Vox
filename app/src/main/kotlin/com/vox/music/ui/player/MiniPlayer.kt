@@ -143,7 +143,6 @@ import com.vox.music.constants.PureBlackMiniPlayerKey
 import com.vox.music.constants.SwipeSensitivityKey
 import com.vox.music.constants.SwipeThumbnailKey
 import com.vox.music.constants.ThumbnailCornerRadius
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.constants.UseNewMiniPlayerDesignKey
 import com.vox.music.db.entities.ArtistEntity
 import com.vox.music.listentogether.ListenTogetherManager
@@ -996,7 +995,7 @@ private fun LegacyMiniMediaInfo(
             modifier = Modifier
                 .padding(6.dp)
                 .size(48.dp)
-                .clip(ContinuousRoundedRectangle(ThumbnailCornerRadius))
+                .clip(RoundedCornerShape(ThumbnailCornerRadius))
         ) {
             Box(
                 modifier = Modifier
@@ -1016,7 +1015,7 @@ private fun LegacyMiniMediaInfo(
                 error = rememberNoArtworkPainter(),
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(ContinuousRoundedRectangle(ThumbnailCornerRadius)),
+                    .clip(RoundedCornerShape(ThumbnailCornerRadius)),
             )
 
             androidx.compose.animation.AnimatedVisibility(visible = error != null, enter = fadeIn(), exit = fadeOut()) {
@@ -1025,7 +1024,7 @@ private fun LegacyMiniMediaInfo(
                         .fillMaxSize()
                         .background(
                             color = if (pureBlack) Color.Black else Color.Black.copy(alpha = 0.6f),
-                            shape = ContinuousRoundedRectangle(ThumbnailCornerRadius),
+                            shape = RoundedCornerShape(ThumbnailCornerRadius),
                         ),
                 ) {
                     SymbolIcon(symbol = sf("SFInfoCircle"), contentDescription = null, modifier = Modifier.align(Alignment.Center), tint = AppTheme.colorScheme.error)

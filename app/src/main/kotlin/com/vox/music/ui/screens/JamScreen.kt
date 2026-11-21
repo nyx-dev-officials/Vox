@@ -66,7 +66,7 @@ import com.vox.music.ui.component.AccountAvatar
 import com.vox.music.ui.component.ScreenPage
 import com.vox.music.ui.component.SymbolIcon
 import com.vox.music.ui.component.sf
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Button
 import com.vox.music.ui.ios.compat.CircularProgressIndicator
 import com.vox.music.ui.ios.compat.HorizontalDivider
@@ -134,7 +134,7 @@ private fun Card(modifier: Modifier = Modifier, content: @Composable ColumnScope
     Column(
         modifier
             .fillMaxWidth()
-            .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+            .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
             .background(IosTheme.colors.secondarySystemGroupedBackground),
         content = content,
     )
@@ -171,7 +171,7 @@ private fun Banner(text: String, onDismiss: () -> Unit) {
         Modifier
             .padding(top = 12.dp)
             .fillMaxWidth()
-            .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+            .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
             .background(IosTheme.colors.systemOrange.copy(alpha = 0.16f))
             .padding(start = 16.dp, top = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -487,7 +487,7 @@ private fun InParty(session: JamSession, activity: List<PartyActivity>, viewMode
         Row(
             Modifier
                 .fillMaxWidth()
-                .clip(ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius))
+                .clip(RoundedCornerShape(IosMetrics.GroupedCornerRadius))
                 .background(IosTheme.colors.systemOrange.copy(alpha = 0.16f))
                 .padding(16.dp),
             verticalAlignment = Alignment.Top,
@@ -663,7 +663,7 @@ private fun NowPlaying(session: JamSession) {
         } else {
             Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(
-                    Modifier.size(60.dp).clip(ContinuousRoundedRectangle(12.dp)).background(IosTheme.colors.tertiarySystemFill),
+                    Modifier.size(60.dp).clip(RoundedCornerShape(12.dp)).background(IosTheme.colors.tertiarySystemFill),
                 ) {
                     AsyncImage(
                         model = track.thumbnailUrl,

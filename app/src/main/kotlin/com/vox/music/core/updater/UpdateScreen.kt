@@ -31,7 +31,7 @@ import com.vox.music.BuildConfig
 import com.vox.music.R
 import com.vox.music.ui.component.SymbolIcon
 import com.vox.music.ui.component.sf
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.AppTheme
 import com.vox.music.ui.ios.compat.Text
 import com.vox.music.ui.utils.MenuItemChrome
@@ -83,7 +83,7 @@ fun UpdateScreen(navController: NavHostController, viewModel: UpdateViewModel = 
 
 @Composable
 internal fun UpdateSummary(release: UpdateRelease, compact: Boolean = false) {
-    val shape = ContinuousRoundedRectangle(20.dp)
+    val shape = RoundedCornerShape(20.dp)
     if (!compact) {
         if (release.imageUrl != null) AsyncImage(model = release.imageUrl, contentDescription = null,
             modifier = Modifier.fillMaxWidth().heightIn(max = 260.dp).aspectRatio(16f / 9f).clip(shape), contentScale = ContentScale.Fit)
@@ -141,7 +141,7 @@ internal fun UpdateStatus(state: UpdateUiState) {
     if (label != null) Text(label, style = AppTheme.typography.bodyMedium)
     if (state.phase in setOf(UpdatePhase.DOWNLOADING, UpdatePhase.VERIFYING, UpdatePhase.QUEUED)) {
         val progress = state.progress?.coerceIn(0f, 1f)
-        Box(Modifier.fillMaxWidth().height(5.dp).clip(ContinuousRoundedRectangle(3.dp)).background(AppTheme.colorScheme.surfaceContainerHigh)
+        Box(Modifier.fillMaxWidth().height(5.dp).clip(RoundedCornerShape(3.dp)).background(AppTheme.colorScheme.surfaceContainerHigh)
             .semantics { progressBarRangeInfo = progress?.let { ProgressBarRangeInfo(it, 0f..1f) } ?: ProgressBarRangeInfo.Indeterminate }) {
             if (progress != null) Box(Modifier.fillMaxWidth(progress).fillMaxHeight().background(AppTheme.colorScheme.primary))
         }

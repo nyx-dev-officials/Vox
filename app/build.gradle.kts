@@ -124,7 +124,13 @@ android {
             // unrecoverable compromise of the app's signing identity.
             // Set STORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD before a release build.
             // local.properties is gitignored, so it is a safe place to keep them.
-            storeFile = file("keystore/release.keystore")
+            //
+            // KEYSTORE_FILE lets CI point at a decoded keystore outside the module;
+            // locally it falls back to app/keystore/release.keystore.
+            val keystorePath = localProperties.getProperty("KEYSTORE_FILE")
+                ?: System.getenv("KEYSTORE_FILE")
+                ?: "keystore/release.keystore"
+            storeFile = file(keystorePath)
             storePassword = localProperties.getProperty("STORE_PASSWORD") ?: System.getenv("STORE_PASSWORD")
             keyAlias = localProperties.getProperty("KEY_ALIAS") ?: System.getenv("KEY_ALIAS")
             keyPassword = localProperties.getProperty("KEY_PASSWORD") ?: System.getenv("KEY_PASSWORD")
@@ -143,7 +149,7 @@ android {
             isShrinkResources = true
             isCrunchPngs = false
             isDebuggable = false
-            if (file("keystore/release.keystore").exists()) {
+            if (signingConfigs.getByName("release").storeFile?.exists() == true) {
                 signingConfig = signingConfigs.getByName("release")
             }
             proguardFiles(

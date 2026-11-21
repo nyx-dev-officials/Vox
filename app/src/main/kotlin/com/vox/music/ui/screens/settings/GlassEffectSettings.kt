@@ -114,7 +114,6 @@ import com.vox.music.ui.screens.Screens
 import com.vox.music.ui.component.backdrop.backdrops.layerBackdrop
 import com.vox.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
 import com.vox.music.ui.component.liquidGlass
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
 import com.vox.music.ui.component.IconButton as AppIconButton
 import com.vox.music.ui.component.IosSettingsGroup
 import com.vox.music.ui.component.IosSettingsItem
@@ -1050,7 +1049,7 @@ private fun GlassLivePreview(
     modifier: Modifier = Modifier,
 ) {
     val previewBackdrop = rememberLayerBackdrop()
-    val pillShape = ContinuousRoundedRectangle(percent = 50)
+    val pillShape = RoundedCornerShape(percent = 50)
     val appleMusicUi = LocalAppleMusicUi.current
 
     // Same source PlayerThemeScreen previews from: whatever is actually playing.

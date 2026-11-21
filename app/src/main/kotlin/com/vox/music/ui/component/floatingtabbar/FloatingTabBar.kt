@@ -145,7 +145,7 @@ import com.vox.music.ui.component.backdrop.shadow.InnerShadow
 import com.vox.music.ui.component.backdrop.effects.blur
 import com.vox.music.ui.component.backdrop.effects.lens
 import com.vox.music.ui.component.backdrop.effects.vibrancy
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.player.PlayerMorph
 import com.vox.music.ui.theme.isHueless
 import kotlinx.coroutines.flow.collectLatest

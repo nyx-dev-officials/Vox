@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.foundation.IosMetrics
 import zone.ien.hig.CupertinoTopAppBar
 import zone.ien.hig.CupertinoTopAppBarDefaults
@@ -138,7 +138,7 @@ fun Card(
 ) {
     val fill = colors?.containerColor?.takeIf { it.isSpecified }
         ?: IosTheme.colors.secondarySystemGroupedBackground
-    val resolved = shape ?: ContinuousRoundedRectangle(IosMetrics.GroupedCornerRadius)
+    val resolved = shape ?: RoundedCornerShape(IosMetrics.GroupedCornerRadius)
     Column(
         modifier
             .clip(resolved)

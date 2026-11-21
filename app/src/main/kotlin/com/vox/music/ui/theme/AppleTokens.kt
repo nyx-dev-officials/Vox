@@ -8,7 +8,7 @@ import com.vox.music.designsystem.VoxDesignTokens
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
@@ -189,9 +189,9 @@ val LocalMetadataColor = compositionLocalOf { Color(0xFF9E968D) }
  * names the token directly.
  */
 val AppShapes = Shapes(
-    extraSmall = ContinuousRoundedRectangle(4.dp),
-    small = ContinuousRoundedRectangle(AppleTokens.Artwork),
-    medium = ContinuousRoundedRectangle(AppleTokens.Control),
-    large = ContinuousRoundedRectangle(AppleTokens.CardCorner),
-    extraLarge = ContinuousRoundedRectangle(AppleTokens.CardCornerLarge),
+    extraSmall = RoundedCornerShape(2.dp),
+    small = RoundedCornerShape(AppleTokens.Artwork),
+    medium = RoundedCornerShape(AppleTokens.Control),
+    large = RoundedCornerShape(AppleTokens.CardCorner),
+    extraLarge = RoundedCornerShape(AppleTokens.CardCornerLarge),
 )

@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isFinite
 import com.vox.music.ui.component.shapes.ContinuousCapsule
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.component.IosText
 import com.vox.music.ui.ios.foundation.IosMetrics
 import com.vox.music.ui.ios.foundation.IosTheme
@@ -192,7 +192,7 @@ fun NewActionButton(
 
     Column(
         modifier = modifier
-            .clip(ContinuousRoundedRectangle(18.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(fill)
             .clickable(enabled = enabled) { performAction = true }
             .alpha(if (enabled) 1f else 0.4f)

@@ -74,7 +74,7 @@ import com.vox.music.R
 import com.vox.music.constants.InnerTubeCookieKey
 import com.vox.music.db.entities.PlaylistEntity
 import com.vox.music.extensions.isSyncEnabled
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.vox.music.ui.ios.compat.Icon
 import com.vox.music.ui.ios.compat.Switch
 import com.vox.music.ui.ios.compat.Text
@@ -197,7 +197,7 @@ fun CreatePlaylistDialog(
                     .padding(top = statusTop + 10.dp)
                     .fillMaxSize()
                     .graphicsLayer { translationY = offset.value * travel }
-                    .clip(ContinuousRoundedRectangle(topStart = 38.dp, topEnd = 38.dp, bottomEnd = 0.dp, bottomStart = 0.dp))
+                    .clip(RoundedCornerShape(topStart = 38.dp, topEnd = 38.dp, bottomEnd = 0.dp, bottomStart = 0.dp))
                     .background(sheetColor)
                     .imePadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -240,7 +240,7 @@ fun CreatePlaylistDialog(
                     modifier = Modifier
                         .padding(top = 10.dp)
                         .size(180.dp)
-                        .clip(ContinuousRoundedRectangle(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(colors.tertiarySystemFill)
                         .clickable { pickCover.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 ) {

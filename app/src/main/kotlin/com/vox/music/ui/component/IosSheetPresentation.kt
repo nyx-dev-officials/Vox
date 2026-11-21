@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.vox.music.ui.component.shapes.ContinuousRoundedRectangle
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 /** How far back the presenting screen sits once a sheet is fully open. */
 private const val PresentedScale = 0.91f
@@ -60,7 +60,7 @@ fun Modifier.iosSheetPresentation(progress: Float, topInset: Dp = 12.dp): Modifi
             // pull it in toward the middle.
             transformOrigin = TransformOrigin(0.5f, 0f)
             translationY = topInset.toPx() * p
-            shape = ContinuousRoundedRectangle(PresentedCornerRadius * p)
+            shape = RoundedCornerShape(PresentedCornerRadius * p)
             clip = true
         }
         .drawWithContent {
@@ -94,7 +94,7 @@ fun Modifier.iosSheetPresentation(progressProvider: () -> Float, topInset: Dp = 
             scaleY = scale
             transformOrigin = TransformOrigin(0.5f, 0f)
             translationY = topInset.toPx() * p
-            shape = ContinuousRoundedRectangle(PresentedCornerRadius * p)
+            shape = RoundedCornerShape(PresentedCornerRadius * p)
             clip = p > 0.001f
         }
 }
