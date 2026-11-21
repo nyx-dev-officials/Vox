@@ -59,8 +59,8 @@
   "assets": [
     {
       "name": "vox-universal-foss.apk",
-      "size": 124647049,
-      "sha256": "bd271b20470d0f4e2f030b95816c56f433f8eccdda9395e2012990eeecca978d",
+      "size": 124723310,
+      "sha256": "7040f1663886b44ef63c2ec52c3710d6ecbe648b7db0b199ca6e55c3dc754835",
       "versionCode": 200079999,
       "variant": "foss",
       "abis": [
