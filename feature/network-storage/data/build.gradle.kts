@@ -28,7 +28,7 @@ kotlin {
         val jvmSharedMain by creating {
             dependsOn(commonMain.get())
             dependencies {
-                api("com.squareup.okhttp3:okhttp:4.12.0")
+                api("com.squareup.okhttp3:okhttp:5.5.1")
                 implementation("com.hierynomus:smbj:0.15.0")
             }
         }

@@ -18,7 +18,7 @@ kotlin { jvmToolchain(21) }
 dependencies {
     api(project(":network-storage-transports"))
     api(libs.media3.okhttp)
-    api("com.squareup.okhttp3:okhttp:4.12.0")
+    api("com.squareup.okhttp3:okhttp:5.5.1")
     implementation("io.coil-kt.coil3:coil-core:${libs.versions.coil.get()}")
     implementation(libs.kotlinx.serialization.json)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.coroutinesGuava.get()}")
