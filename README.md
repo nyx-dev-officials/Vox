@@ -14,7 +14,7 @@ with Liquid Glass surfaces, Cupertino-style controls and one champagne accent.
 <br>
 
 <a href="https://github.com/nyx-dev-officials/Vox/releases/latest">
-  <img src="https://img.shields.io/badge/DOWNLOAD-2.0.5-E5C697?style=for-the-badge&labelColor=0E0D0C&logo=android&logoColor=E5C697" alt="Download Vox 2.0.5">
+  <img src="https://img.shields.io/badge/DOWNLOAD-2.0.6-E5C697?style=for-the-badge&labelColor=0E0D0C&logo=android&logoColor=E5C697" alt="Download Vox 2.0.6">
 </a>
 <a href="https://github.com/nyx-dev-officials/Vox/releases">
   <img src="https://img.shields.io/badge/RELEASES-ALL%20BUILDS-1B1917?style=for-the-badge&labelColor=0E0D0C&logo=github&logoColor=F6F3EE" alt="All Vox releases">
@@ -41,8 +41,8 @@ with Liquid Glass surfaces, Cupertino-style controls and one champagne accent.
 </div>
 
 > [!NOTE]
-> **2.0.5 is a debug build straight from this repository** — the first Vox build of the
-> glass redesign. Grab the APK from [Releases](https://github.com/nyx-dev-officials/Vox/releases/latest).
+> **2.0.6 is a debug build straight from this repository** — the Vox home identity and the
+> collapsible nav bar. Grab the APK from [Releases](https://github.com/nyx-dev-officials/Vox/releases/latest).
 
 <br>
 
@@ -81,7 +81,7 @@ tints from whatever the album art gives it, but never past the ceiling.
 
 | Channel | Build |
 | :-- | :-- |
-| **2.0.5** | [Download the APK from GitHub Releases](https://github.com/nyx-dev-officials/Vox/releases/latest) — `app-universal-foss-debug.apk`, built from this repo. |
+| **2.0.6** | [Download the APK from GitHub Releases](https://github.com/nyx-dev-officials/Vox/releases/latest) — `vox-2.0.6.apk`, built from this repo. |
 
 The universal build covers 64-bit phones (`arm64-v8a`) and emulators (`x86_64`).
 A 32-bit-only phone (for example Galaxy A13) needs a separate `arm32` build, which
