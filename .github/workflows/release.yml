@@ -138,7 +138,10 @@ jobs:
           BT=$(ls -d "${ANDROID_HOME:-$ANDROID_SDK_ROOT}"/build-tools/* | sort -V | tail -1)
           for apk in out/*.apk; do
             echo "== $apk"
-            "$BT/apksigner" verify --verbose --print-certs "$apk" | tee /tmp/apksigner.log
+            # --min-sdk-version 21 forces apksigner to actually check the v1 JAR
+            # signature; with minSdk 24+ it skips v1 and reports "false" even when
+            # the signature is present (Google issue 134858541).
+            "$BT/apksigner" verify --verbose --print-certs --min-sdk-version 21 "$apk" | tee /tmp/apksigner.log
             grep -q 'Verified using v1 scheme (JAR signing): true' /tmp/apksigner.log \
               || { echo "$apk has no v1 signature" >&2; exit 1; }
             grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/apksigner.log \
@@ -182,7 +185,7 @@ jobs:
         if: env.IS_RELEASE == 'true'
         run: |
           BT=$(ls -d "${ANDROID_HOME:-$ANDROID_SDK_ROOT}"/build-tools/* | sort -V | tail -1)
-          "$BT/apksigner" verify --verbose --print-certs vox-universal-foss.apk | tee /tmp/apksigner.log
+          "$BT/apksigner" verify --verbose --print-certs --min-sdk-version 21 vox-universal-foss.apk | tee /tmp/apksigner.log
           grep -q 'Verified using v1 scheme (JAR signing): true' /tmp/apksigner.log \
             || { echo "Universal APK has no v1 signature" >&2; exit 1; }
           grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/apksigner.log \
