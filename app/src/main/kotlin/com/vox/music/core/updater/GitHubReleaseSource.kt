@@ -11,6 +11,14 @@ import java.net.HttpURLConnection
 import java.net.URI
 import java.io.ByteArrayOutputStream
 
+/**
+ * Resolves the newest installable Vox build from GitHub.
+ *
+ * The update manifest does not live on the release page: stable releases carry only the
+ * APKs (plus GitHub's own source archives), and the manifest is published to the
+ * repository, where it is fetched from raw.githubusercontent.com. Nightly pre-releases
+ * still attach their manifest as a release asset, which is honoured as a fallback.
+ */
 class GitHubReleaseSource {
     private var cachedBody: String? = null
     private var etag: String? = null
@@ -18,7 +26,50 @@ class GitHubReleaseSource {
 
     suspend fun latest(includePrerelease: Boolean): UpdateRelease? = withContext(Dispatchers.IO) {
         if (System.currentTimeMillis() < blockedUntil) throw UpdateException(UpdateFailure.RATE_LIMIT)
-        val releases = JSONArray(read(RELEASES_URL, conditional = true))
+        try {
+            val releases = JSONArray(read(RELEASES_URL, conditional = true))
+            val manifest = repositoryManifest()
+            if (manifest != null) {
+                if (manifest.optString("channel") == "nightly" && !includePrerelease) return@withContext null
+                val release = findRelease(releases, manifest.getString("version"), includePrerelease) ?: return@withContext null
+                buildRelease(manifest, release)
+            } else {
+                attachedManifestRelease(releases, includePrerelease)
+            }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (failure: UpdateException) {
+            throw failure
+        } catch (_: IllegalArgumentException) {
+            throw UpdateException(UpdateFailure.METADATA)
+        } catch (_: org.json.JSONException) {
+            throw UpdateException(UpdateFailure.METADATA)
+        }
+    }
+
+    private fun repositoryManifest(): JSONObject? = try {
+        JSONObject(read(MANIFEST_URL))
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (failure: UpdateException) {
+        if (failure.failure == UpdateFailure.RATE_LIMIT) throw failure
+        null
+    } catch (_: org.json.JSONException) {
+        null
+    }
+
+    private fun findRelease(releases: JSONArray, version: String, includePrerelease: Boolean): JSONObject? {
+        val wanted = version.removePrefix("v")
+        for (index in 0 until releases.length()) {
+            val release = releases.getJSONObject(index)
+            if (release.optBoolean("draft") || (!includePrerelease && release.optBoolean("prerelease"))) continue
+            if (release.optString("tag_name").removePrefix("v") == wanted) return release
+        }
+        return null
+    }
+
+    /** Nightly builds keep their manifest attached to the pre-release. */
+    private fun attachedManifestRelease(releases: JSONArray, includePrerelease: Boolean): UpdateRelease? {
         val eligible = mutableListOf<UpdateRelease>()
         var examined = 0
         for (index in 0 until releases.length()) {
@@ -28,54 +79,50 @@ class GitHubReleaseSource {
             val assets = release.optJSONArray("assets") ?: continue
             val manifest = (0 until assets.length()).map(assets::getJSONObject).firstOrNull { it.optString("name") == "updater.json" } ?: continue
             examined++
-            try {
-                val metadata = JSONObject(read(manifest.getString("browser_download_url")))
-                require(metadata.getInt("schemaVersion") == 1)
-                require(metadata.getString("packageName") == "com.vox.music")
-                val variant = if (BuildConfig.CAST_AVAILABLE) "gms" else "foss"
-                val assetArray = metadata.getJSONArray("assets")
-                val candidates = (0 until assetArray.length()).map { i ->
-                    val item = assetArray.getJSONObject(i)
-                    val name = item.getString("name")
-                    val published = (0 until assets.length()).map(assets::getJSONObject).firstOrNull { it.optString("name") == name }
-                        ?: throw IllegalArgumentException("Missing asset")
-                    val checksum = item.getString("sha256")
-                    require(UpdatePolicy.validDigest(checksum))
-                    val assetUrl = published.getString("browser_download_url")
-                    require(isTrustedUrl(assetUrl))
-                    val apiDigest = published.optString("digest").removePrefix("sha256:")
-                    require(apiDigest.isBlank() || apiDigest.equals(checksum, ignoreCase = true))
-                    val size = item.getLong("size")
-                    require(size > 0 && size == published.getLong("size"))
-                    UpdateAsset(name, assetUrl, size, checksum,
-                        item.getLong("versionCode"), item.getString("variant"),
-                        item.getJSONArray("abis").let { a -> (0 until a.length()).map(a::getString) }, item.getInt("minSdk"))
-                }
-                val selected = UpdatePolicy.selectAsset(candidates, variant, Build.SUPPORTED_ABIS.toList(), Build.VERSION.SDK_INT, BuildConfig.VERSION_CODE.toLong()) ?: continue
-                val changes = metadata.optJSONArray("changelog")
-                val sections = if (changes == null) emptyList() else (0 until minOf(changes.length(), 8)).map { i ->
-                    val section = changes.getJSONObject(i)
-                    val items = section.getJSONArray("items")
-                    ChangelogSection(section.getString("title").take(100),
-                        (0 until minOf(items.length(), 32)).map { items.getString(it).take(500) })
-                }
-                val image = metadata.optString("image").takeIf { it.isNotBlank() }?.takeIf { isTrustedUrl(it) }
-                eligible += UpdateRelease(
-                    "${release.getLong("id")}:${selected.sha256}", metadata.getString("version"),
-                    release.optString("published_at"), metadata.optString("description").ifBlank { release.optString("body") }.take(4_000),
-                    image, sections, selected, release.optString("html_url").takeIf { isTrustedUrl(it) }.orEmpty(),
-                )
-            } catch (cancelled: CancellationException) {
-                throw cancelled
-            } catch (failure: UpdateException) {
-                throw failure
-            } catch (_: IllegalArgumentException) {
-                throw UpdateException(UpdateFailure.METADATA)
-            } catch (_: org.json.JSONException) {
-                throw UpdateException(UpdateFailure.METADATA)
-            }
+            buildRelease(JSONObject(read(manifest.getString("browser_download_url"))), release)?.let(eligible::add)
         }
-        eligible.maxByOrNull { it.asset.versionCode }
+        return eligible.maxByOrNull { it.asset.versionCode }
+    }
+
+    private fun buildRelease(metadata: JSONObject, release: JSONObject): UpdateRelease? {
+        require(metadata.getInt("schemaVersion") == 1)
+        require(metadata.getString("packageName") == "com.vox.music")
+        val assets = release.optJSONArray("assets")
+            ?.let { array -> (0 until array.length()).map(array::getJSONObject) }
+            .orEmpty()
+        val variant = if (BuildConfig.CAST_AVAILABLE) "gms" else "foss"
+        val assetArray = metadata.getJSONArray("assets")
+        val candidates = (0 until assetArray.length()).map { index ->
+            val item = assetArray.getJSONObject(index)
+            val name = item.getString("name")
+            val published = assets.firstOrNull { it.optString("name") == name }
+                ?: throw IllegalArgumentException("Missing asset")
+            val checksum = item.getString("sha256")
+            require(UpdatePolicy.validDigest(checksum))
+            val assetUrl = published.getString("browser_download_url")
+            require(isTrustedUrl(assetUrl))
+            val apiDigest = published.optString("digest").removePrefix("sha256:")
+            require(apiDigest.isBlank() || apiDigest.equals(checksum, ignoreCase = true))
+            val size = item.getLong("size")
+            require(size > 0 && size == published.getLong("size"))
+            UpdateAsset(name, assetUrl, size, checksum,
+                item.getLong("versionCode"), item.getString("variant"),
+                item.getJSONArray("abis").let { a -> (0 until a.length()).map(a::getString) }, item.getInt("minSdk"))
+        }
+        val selected = UpdatePolicy.selectAsset(candidates, variant, Build.SUPPORTED_ABIS.toList(), Build.VERSION.SDK_INT, BuildConfig.VERSION_CODE.toLong()) ?: return null
+        val changes = metadata.optJSONArray("changelog")
+        val sections = if (changes == null) emptyList() else (0 until minOf(changes.length(), 8)).map { index ->
+            val section = changes.getJSONObject(index)
+            val items = section.getJSONArray("items")
+            ChangelogSection(section.getString("title").take(100),
+                (0 until minOf(items.length(), 32)).map { items.getString(it).take(500) })
+        }
+        val image = metadata.optString("image").takeIf { it.isNotBlank() }?.takeIf { isTrustedUrl(it) }
+        return UpdateRelease(
+            "${release.getLong("id")}:${selected.sha256}", metadata.getString("version"),
+            release.optString("published_at"), metadata.optString("description").ifBlank { release.optString("body") }.take(4_000),
+            image, sections, selected, release.optString("html_url").takeIf { isTrustedUrl(it) }.orEmpty(),
+        )
     }
 
     private fun read(url: String, conditional: Boolean = false): String {
@@ -127,6 +174,10 @@ class GitHubReleaseSource {
 
     companion object {
         private const val RELEASES_URL = "https://api.github.com/repos/nyx-dev-officials/Vox/releases?per_page=30"
+
+        /** Stable manifest, committed to the repository so release pages stay clean. */
+        private const val MANIFEST_URL = "https://raw.githubusercontent.com/nyx-dev-officials/Vox/main/updater.json"
+
         fun isTrustedUrl(value: String): Boolean = runCatching {
             val uri = URI(value)
             uri.scheme == "https" && uri.userInfo == null && (uri.port == -1 || uri.port == 443) &&

@@ -84,9 +84,26 @@ jobs:
           if [ -n "${UPDATER_IMAGE_URL:-}" ]; then IMAGE_ARGS+=(--image "$UPDATER_IMAGE_URL"); fi
           python3 tools/publish_updater_metadata.py --version "$VERSION" --version-code "$VERSION_CODE" --release-notes ".github/release-notes/$TAG.md" --output updater.json "${IMAGE_ARGS[@]}" vox-universal-gms.apk vox-arm32-gms.apk vox-universal-foss.apk vox-arm32-foss.apk
 
-      - name: Upload APKs and updater metadata to Release
+      - name: Upload APKs to Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          gh release upload "$TAG" vox-universal-gms.apk vox-arm32-gms.apk vox-universal-foss.apk vox-arm32-foss.apk updater.json --repo "${{ github.repository }}" --clobber
+          gh release upload "$TAG" vox-universal-gms.apk vox-arm32-gms.apk vox-universal-foss.apk vox-arm32-foss.apk --repo "${{ github.repository }}" --clobber
+
+      # The update manifest stays out of the release assets: the app reads it from the
+      # repository, so a release page shows only APKs and GitHub's source archives.
+      - name: Publish updater manifest to the repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          cp updater.json /tmp/vox-updater.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          cp /tmp/vox-updater.json updater.json
+          git add updater.json
+          git commit -m "Publish updater manifest for $TAG" || true
+          git push origin main

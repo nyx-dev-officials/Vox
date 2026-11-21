@@ -41,7 +41,7 @@ with Liquid Glass surfaces, Cupertino-style controls and one champagne accent.
 </div>
 
 > [!NOTE]
-> **2.0.6 is a debug build straight from this repository** — the Vox home identity and the
+> **2.0.6 is a signed release build straight from this repository** — the Vox home identity and the
 > collapsible nav bar. Grab the APK from [Releases](https://github.com/nyx-dev-officials/Vox/releases/latest).
 
 <br>
@@ -89,8 +89,9 @@ A 32-bit-only phone (for example Galaxy A13) needs a separate `arm32` build, whi
 
 Vox supports **Android 8.0 (API 26)** and later. Install APKs only from sources
 you trust — Android may ask you to allow installation from the app you used to
-download it. This is a debug build: it is signed with the debug key and installs
-alongside nothing else, so uninstall any earlier copy first.
+download it. This is a signed release build (`com.vox.music`); it installs alongside
+the earlier debug build (`com.vox.music.debug`), which you can uninstall once you are
+happy with 2.0.6.
 
 <br>
 
