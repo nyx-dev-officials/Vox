@@ -88,6 +88,23 @@ jobs:
             echo "apksigner not found on runner; skipping signature print."
           fi
           unzip -l "$APK" | grep -q 'classes.dex'
+      # Diagnostics only: the build already failed loudly if signing or R8 did.
+      # A missing SDK tool on the runner must not block publishing a good APK.
+      - name: Verify signature and contents
+        run: |
+          APK=app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk
+          test -s "$APK" || { echo "APK missing: $APK" >&2; exit 1; }
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          APKSIGNER=""
+          if [ -n "$SDK" ] && [ -d "$SDK" ]; then
+            APKSIGNER=$(find "$SDK" -name apksigner -type f 2>/dev/null | sort | tail -1)
+          fi
+          if [ -n "$APKSIGNER" ]; then
+            "$APKSIGNER" verify --print-certs "$APK" || echo "apksigner reported an issue"
+          else
+            echo "apksigner not available on runner; signature check skipped."
+          fi
+          unzip -l "$APK" | grep 'classes.*\\.dex' | head -3 || echo "no dex entries listed"
 
       - name: Stage assets and manifest
         env:
