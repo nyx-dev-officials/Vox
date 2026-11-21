@@ -1,11 +1,11 @@
 ﻿---
 name: convx-android-motion
-description: Compose motion and micro-interaction standards for Convx. Use when adding or changing interactive Android UI, transitions, menus, sheets, loading feedback, gestures, or animated glass surfaces.
+description: Compose motion and micro-interaction standards for Vox. Use when adding or changing interactive Android UI, transitions, menus, sheets, loading feedback, gestures, or animated glass surfaces.
 ---
 
-# Convx Android Motion
+# Vox Android Motion
 
-Use this skill for Android UI motion in Convx. Follow the repository's HIG and existing Compose components. Motion is part of the interaction design and must remain useful, restrained, and accessible.
+Use this skill for Android UI motion in Vox. Follow the repository's HIG and existing Compose components. Motion is part of the interaction design and must remain useful, restrained, and accessible.
 
 ## Start with the reason
 
@@ -14,7 +14,7 @@ Before adding an animation, identify the user event it explains: press, selectio
 ## Use the native stack
 
 - Use Jetpack Compose animation APIs already present in the project, such as `animate*AsState`, `AnimatedVisibility`, `updateTransition`, and `Animatable`, when appropriate.
-- Prefer an existing Convx component or motion helper over a one-off animation implementation.
+- Prefer an existing Vox component or motion helper over a one-off animation implementation.
 - Keep business state in the existing ViewModel/state owner. Use `remember` only for composition-owned state such as animation controllers and gesture state.
 - Keep animated values out of frequently read composition when practical. Use layer/draw-phase reads for per-frame alpha, scale, rotation, and translation where that avoids repeated composition or layout work.
 - Never start unmanaged animation coroutines from a composable. Use Compose animation APIs and lifecycle-aware effects for effects that genuinely belong in composition.
@@ -30,7 +30,7 @@ Before adding an animation, identify the user event it explains: press, selectio
 
 ## Glass, menus, and sheets
 
-- Use the correct Convx backdrop and glass component. Follow existing `Modifier.liquidGlass(...)` usage and the nearest backdrop ownership pattern.
+- Use the correct Vox backdrop and glass component. Follow existing `Modifier.liquidGlass(...)` usage and the nearest backdrop ownership pattern.
 - Prefer the existing Cupertino dropdown and modal sheet components. Their motion, insets, shape, scrim, and dismissal behavior are part of the design system.
 - Do not use Material Design surfaces, dialogs, menus, or bottom sheets for new UI.
 - Avoid stacking glass layers. Make sure text and controls remain legible as the sampled background changes.
@@ -49,6 +49,6 @@ Before adding an animation, identify the user event it explains: press, selectio
 - [ ] Press, selection, loading, and dismissal states respond at the correct time.
 - [ ] Gestures remain interruptible and do not create conflicting input states.
 - [ ] Per-frame work avoids unnecessary recomposition and layout.
-- [ ] Menus, sheets, and glass use the established Convx primitives and correct backdrop.
+- [ ] Menus, sheets, and glass use the established Vox primitives and correct backdrop.
 - [ ] Disabled animations, accessibility, light/dark themes, and changing content remain understandable.
 - [ ] Motion was reviewed on an emulator or device when the change affects user-visible transitions.

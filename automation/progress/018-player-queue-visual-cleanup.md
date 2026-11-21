@@ -87,7 +87,7 @@ Nothing new was written that already existed:
 - Spacing values are `AppleTokens.Gutter` / `.SectionGap` / `.TextGap`, the
   app's declared scale ("Screens reference these, never a dp literal" —
   `AppleTokens.kt:47`), not fresh dp literals.
-- The count/duration merge uses `com.convx.music.utils.joinByBullet`, the same
+- The count/duration merge uses `com.vox.music.utils.joinByBullet`, the same
   helper `Items.kt` already uses to build every list row's subtitle. Same
   ` • ` separator the rows below it use, so the header now speaks the list's
   own punctuation.

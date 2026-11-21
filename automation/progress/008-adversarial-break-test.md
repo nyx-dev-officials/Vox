@@ -43,7 +43,7 @@ listed at the end.
 
 ### C1 — Zip Slip in backup restore chains into Java deserialization of attacker-controlled objects
 
-**`app/src/main/kotlin/com/convx/music/viewmodels/BackupRestoreViewModel.kt:132-138`**
+**`app/src/main/kotlin/com/vox/music/viewmodels/BackupRestoreViewModel.kt:132-138`**
 
 ```kotlin
 else -> if (entry.name.startsWith("$HOME_BACKGROUND_ZIP_DIR/")) {
@@ -69,11 +69,11 @@ count/size caps. The backup importer has none of it.
 files out of `filesDir` with a raw `ObjectInputStream` and no
 `setObjectInputFilter`:
 
-- `app/src/main/kotlin/com/convx/music/playback/MusicService.kt:1048-1051`
+- `app/src/main/kotlin/com/vox/music/playback/MusicService.kt:1048-1051`
   (`persistent_queue.data`)
-- `app/src/main/kotlin/com/convx/music/playback/MusicService.kt:1080-1083`
+- `app/src/main/kotlin/com/vox/music/playback/MusicService.kt:1080-1083`
   (`persistent_automix.data`)
-- `app/src/main/kotlin/com/convx/music/playback/MusicService.kt:1102-1105`
+- `app/src/main/kotlin/com/vox/music/playback/MusicService.kt:1102-1105`
   (`persistent_player_state.data`)
 
 ```kotlin
@@ -141,7 +141,7 @@ correctly scoped and should stay as-is.
 
 ### H2 — Update APK is downloaded without scheme or signature verification, and extracted without bounds
 
-**`app/src/main/kotlin/com/convx/music/convx/updater/downloadmanager/UpdateDownloadWorker.kt:28`**
+**`app/src/main/kotlin/com/vox/music/convx/updater/downloadmanager/UpdateDownloadWorker.kt:28`**
 
 ```kotlin
 val url = URL(apkUrl)
@@ -196,7 +196,7 @@ rule files, or set `allowBackup="false"`, or move the credentials to
 
 ### M1 — `convx://listen` deep link joins a Listen Together room with no confirmation
 
-**`app/src/main/kotlin/com/convx/music/MainActivity.kt:2346-2354`**, filter at
+**`app/src/main/kotlin/com/vox/music/MainActivity.kt:2346-2354`**, filter at
 **`app/src/main/AndroidManifest.xml:117-125`**
 
 ```kotlin
@@ -223,7 +223,7 @@ Fix direction: show a confirmation sheet naming the room before `joinRoom`.
 
 ### M2 — Deep-link route interpolation can crash the app from any web page
 
-**`app/src/main/kotlin/com/convx/music/MainActivity.kt:2373-2379`**
+**`app/src/main/kotlin/com/vox/music/MainActivity.kt:2373-2379`**
 
 ```kotlin
 "browse" -> uri.lastPathSegment?.let { browseId ->
@@ -251,7 +251,7 @@ does, and wrap `handleDeepLinkIntent`'s navigation in a `runCatching`.
 
 ### M3 — `Intent.EXTRA_TEXT` bypasses the manifest's host restrictions on deep links
 
-**`app/src/main/kotlin/com/convx/music/MainActivity.kt:2341`**
+**`app/src/main/kotlin/com/vox/music/MainActivity.kt:2341`**
 
 ```kotlin
 val uri = intent.data ?: intent.extras?.getString(Intent.EXTRA_TEXT)?.toUri() ?: return
@@ -270,8 +270,8 @@ declares before dispatching, regardless of which field the URI came from.
 
 ### M4 — Preset player-icon file names reach the filesystem without the traversal guard the DIY path has
 
-**`app/src/main/kotlin/com/convx/music/ui/player/customize/PlayerIcons.kt:114`**
-and **`app/src/main/kotlin/com/convx/music/utils/preset/PresetStore.kt:257-259, 269-271`**
+**`app/src/main/kotlin/com/vox/music/ui/player/customize/PlayerIcons.kt:114`**
+and **`app/src/main/kotlin/com/vox/music/utils/preset/PresetStore.kt:257-259, 269-271`**
 
 `PlayerIconSet.fromJson` takes the `"file"` string verbatim:
 
@@ -312,7 +312,7 @@ effect of the same missing validation.
 
 ### M5 — Restore wipes the saved queue and force-kills the app even when the archive contained nothing
 
-**`app/src/main/kotlin/com/convx/music/viewmodels/BackupRestoreViewModel.kt:145-156`**
+**`app/src/main/kotlin/com/vox/music/viewmodels/BackupRestoreViewModel.kt:145-156`**
 
 ```kotlin
 if (!foundAny) {
@@ -335,7 +335,7 @@ return before the teardown.
 
 ### M6 — `AddToPlaylistDialogOnline` still dismisses itself before its own work runs, and still increments shared state from N concurrent coroutines
 
-**`app/src/main/kotlin/com/convx/music/ui/menu/AddToPlaylistDialogOnline.kt:239-302`**
+**`app/src/main/kotlin/com/vox/music/ui/menu/AddToPlaylistDialogOnline.kt:239-302`**
 (and the identical block at **`:310-370`**)
 
 Commit `bb1049c5` fixed the `viewStateMap` clobbering in this file. Two
@@ -363,7 +363,7 @@ sibling instances of the same bug class survived it:
 
 ### M7 — Debug builds write full poTokens and the account cookie into a user-shareable log file
 
-**`app/src/main/kotlin/com/convx/music/utils/potoken/PoTokenWebView.kt:239`
+**`app/src/main/kotlin/com/vox/music/utils/potoken/PoTokenWebView.kt:239`
 and `:247`**
 
 ```kotlin
@@ -371,7 +371,7 @@ Timber.tag(TAG).d("Generated poToken (before decoding): identifier=$identifier p
 Timber.tag(TAG).d("Generated poToken: identifier=$identifier poToken=$poToken")
 ```
 
-**`app/src/main/kotlin/com/convx/music/App.kt:421` and `:425`**
+**`app/src/main/kotlin/com/vox/music/App.kt:421` and `:425`**
 
 ```kotlin
 Timber.d("forgetAccount: Before - cookie=${YouTube.cookie?.take(50)}, visitorData=…")
@@ -398,7 +398,7 @@ Fix direction: redact in the log call sites rather than relying on build type
 
 ### L1 — `println` survives into release logcat, including a private-upload stream URL
 
-**`app/src/main/kotlin/com/convx/music/utils/YTPlayerUtils.kt:1322`**
+**`app/src/main/kotlin/com/vox/music/utils/YTPlayerUtils.kt:1322`**
 
 ```kotlin
 println("[PLAYBACK_DEBUG] SUCCESS: Got playback data for uploaded track - format=${format.mimeType}, streamUrl=${streamUrl?.take(100)}...")
@@ -416,9 +416,9 @@ Fix direction: convert to `Timber.tag(...).d(...)` so the debug gate applies.
 
 ### L2 — Remote YouTube player JS runs in a WebView with file-URL read access and a Java bridge
 
-**`app/src/main/kotlin/com/convx/music/utils/cipher/CipherWebView.kt:39-45`
+**`app/src/main/kotlin/com/vox/music/utils/cipher/CipherWebView.kt:39-45`
 and `:186-195`**; same shape at
-**`app/src/main/kotlin/com/convx/music/utils/sabr/EjsNTransformSolver.kt:118-124`**
+**`app/src/main/kotlin/com/vox/music/utils/sabr/EjsNTransformSolver.kt:118-124`**
 
 ```kotlin
 settings.javaScriptEnabled = true
@@ -447,7 +447,7 @@ already in memory) and set `allowFileAccess = false` /
 
 ### L3 — Discord login WebView accepts a token from any origin that fires a JS alert
 
-**`app/src/main/kotlin/com/convx/music/ui/screens/settings/DiscordLoginScreen.kt:87-119`**
+**`app/src/main/kotlin/com/vox/music/ui/screens/settings/DiscordLoginScreen.kt:87-119`**
 
 ```kotlin
 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -473,7 +473,7 @@ Fix direction: `if (!url.startsWith("https://discord.com/")) { result.confirm();
 
 ### L4 — Playlist/CSV/M3U import reads the whole file into memory with no size cap
 
-**`app/src/main/kotlin/com/convx/music/viewmodels/BackupRestoreViewModel.kt:169, 199, 301`**
+**`app/src/main/kotlin/com/vox/music/viewmodels/BackupRestoreViewModel.kt:169, 199, 301`**
 
 ```kotlin
 val lines = stream.bufferedReader().readLines()
@@ -493,7 +493,7 @@ instead of materialising the list.
 
 ### L5 — Preset-bundled fonts skip revalidation
 
-**`app/src/main/kotlin/com/convx/music/utils/preset/PresetStore.kt:510`**
+**`app/src/main/kotlin/com/vox/music/utils/preset/PresetStore.kt:510`**
 
 ```kotlin
 "ttf", "otf" -> Unit // Fonts are handed to the platform loader, not decoded here.
@@ -523,7 +523,7 @@ presets in `cacheDir`, update APKs in the external files dir) require.
 
 ### L7 — Unbounded coroutine fan-out during composition in the lyrics romanizer
 
-**`app/src/main/kotlin/com/convx/music/ui/component/Lyrics.kt:280-355`**
+**`app/src/main/kotlin/com/vox/music/ui/component/Lyrics.kt:280-355`**
 (and the plain-text branch at **`:368-390`**)
 
 Inside `remember(lyrics, scope) { … }`, one `scope.launch` is started per
@@ -580,7 +580,7 @@ Recording these so a later round does not re-derive them:
   Saavn has no module under `app/` on this branch — the only hits are in a
   detached worktree (`.claude/worktrees/functional-beaming-matsumoto/jiosaavn/`)
   and Gradle cache artifacts, so there is nothing on this branch to probe.
-- The Discord *bot* (Hermes/ConvxBot) integration — only the in-app Discord
+- The Discord *bot* (Hermes/VoxBot) integration — only the in-app Discord
   RPC token path was reviewed.
 - `utils/potoken/PoTokenWebView.kt`'s JS bridge was read for logging only, not
   audited as an attack surface the way `CipherWebView` was.

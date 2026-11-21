@@ -1,5 +1,5 @@
 /**
- * Wire protocol for Convx Listen Together.
+ * Wire protocol for Vox Listen Together.
  *
  * Mirrors app/src/main/kotlin/com/convx/music/listentogether/Protocol.kt.
  * Field names are snake_case because the Kotlin side declares @SerialName on

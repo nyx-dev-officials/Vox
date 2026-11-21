@@ -1,9 +1,9 @@
 ﻿---
 name: convx-grill-me
-description: Automatically clarify substantial Convx feature, UX, and architecture requests before implementation. Use when product behavior, edge cases, architecture boundaries, data ownership, privacy, legality, or interaction design has unresolved choices that materially affect the solution.
+description: Automatically clarify substantial Vox feature, UX, and architecture requests before implementation. Use when product behavior, edge cases, architecture boundaries, data ownership, privacy, legality, or interaction design has unresolved choices that materially affect the solution.
 ---
 
-# Convx Grill Me
+# Vox Grill Me
 
 Use this skill before implementing a substantial feature or design change when a consequential requirement remains unclear. It helps agents ask the smallest useful question set and reach shared understanding without making the user answer questions the repository can answer.
 
@@ -21,11 +21,11 @@ Ask when multiple plausible choices produce meaningfully different behavior or a
 
 Do not ask questions that can be answered by reading code, configuration, tests, existing screens, or repository guidance. Do not grill a clear bug fix, a small low-risk change, or a request with explicit acceptance criteria. Do not ask for approval on reversible work that the user already authorized. Avoid speculative questions about implementation details that do not change the result.
 
-## Convx-specific checks
+## Vox-specific checks
 
-For UI work, clarify the interaction and relevant edge cases only if they cannot be inferred from the current screen and Convx's HIG. Follow the existing Cupertino-style and Liquid Glass language, and use the correct backdrop for popups and sheets. New UI should use purposeful Compose micro-interactions without forcing decorative motion.
+For UI work, clarify the interaction and relevant edge cases only if they cannot be inferred from the current screen and Vox's HIG. Follow the existing Cupertino-style and Liquid Glass language, and use the correct backdrop for popups and sheets. New UI should use purposeful Compose micro-interactions without forcing decorative motion.
 
-For architecture work, inspect current Gradle modules and dependency direction first. Convx uses Hilt and an existing multi-module structure. Do not assume a generic skill's Koin, Compose Navigation, or feature-module architecture applies here.
+For architecture work, inspect current Gradle modules and dependency direction first. Vox uses Hilt and an existing multi-module structure. Do not assume a generic skill's Koin, Compose Navigation, or feature-module architecture applies here.
 
 For persistence, network, playback, and integrations, consider offline behavior, retries, cancellation, duplicate actions, lifecycle recovery, and compatibility before asking the user about any unresolved product policy.
 

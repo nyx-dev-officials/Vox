@@ -167,10 +167,10 @@
 <div class="shell">
 
 <aside class="rail">
-  <div class="brand">Convx · Listen Together</div>
+  <div class="brand">Vox · Listen Together</div>
   <nav aria-label="Sections">
     <a href="#overview"><i class="dot"></i>Overview</a>
-    <div class="group">Convx Sync</div>
+    <div class="group">Vox Sync</div>
     <a href="#convx-client"><i class="dot convx"></i>Client</a>
     <a href="#convx-server"><i class="dot convx"></i>Server</a>
     <a href="#convx-protocol"><i class="dot convx"></i>Protocol</a>
@@ -187,10 +187,10 @@
 
 <header class="hero" id="top">
   <h1>Listen Together UML</h1>
-  <p class="lede">Convx has two group-listening paths that share one player. <strong>Convx Sync</strong> rooms run on a Cloudflare Worker in <code>listen-together-server/</code>. <strong>Jam</strong> parties run on BitChord's Go server. This page maps the classes, functions and flows on both sides.</p>
+  <p class="lede">Vox has two group-listening paths that share one player. <strong>Vox Sync</strong> rooms run on a Cloudflare Worker in <code>listen-together-server/</code>. <strong>Jam</strong> parties run on BitChord's Go server. This page maps the classes, functions and flows on both sides.</p>
   <div class="stats">
-    <div class="stat convx"><b>4,716</b><span>lines · Convx client, 9 files</span></div>
-    <div class="stat convx"><b>1,099</b><span>lines · Convx server, 4 files</span></div>
+    <div class="stat convx"><b>4,716</b><span>lines · Vox client, 9 files</span></div>
+    <div class="stat convx"><b>1,099</b><span>lines · Vox server, 4 files</span></div>
     <div class="stat jam"><b>1,289</b><span>lines · Jam client, 4 files</span></div>
     <div class="stat jam"><b>2,534</b><span>lines · BitChord server, 5 files</span></div>
   </div>
@@ -201,7 +201,7 @@
   <div class="sec-head">
     <div class="eyebrow both">Architecture</div>
     <h2>How the pieces connect</h2>
-    <p>Each path has a manager that drives the shared <code>PlayerConnection</code> through <code>ListenTogetherPlayerConnectionBridge</code>. Only one path runs at a time: joining a Jam first leaves any Convx room.</p>
+    <p>Each path has a manager that drives the shared <code>PlayerConnection</code> through <code>ListenTogetherPlayerConnectionBridge</code>. Only one path runs at a time: joining a Jam first leaves any Vox room.</p>
   </div>
   <div class="card diagram">
     <header><h3>Components<small>UI → view models → managers → clients → servers</small></h3><button class="btn" data-expand>Expand</button></header>
@@ -219,7 +219,7 @@ flowchart TB
     LTVM["ListenTogetherViewModel"]
     JVM["JamViewModel"]
   end
-  subgraph CONVX["Convx Sync client"]
+  subgraph CONVX["Vox Sync client"]
     direction LR
     LTM["ListenTogetherManager"]
     LTC["ListenTogetherClient"]
@@ -280,7 +280,7 @@ flowchart TB
 <!-- ============================================================ CONVX CLIENT -->
 <section id="convx-client">
   <div class="sec-head">
-    <div class="eyebrow convx">Convx Sync · client <code>app/…/listentogether</code></div>
+    <div class="eyebrow convx">Vox Sync · client <code>app/…/listentogether</code></div>
     <h2>Room client</h2>
     <p>The client owns the socket and keeps a copy of the room state. The manager turns room events into player actions, and local player events back into room actions. The boxes show state and public API; every private function is listed in the function maps below.</p>
   </div>
@@ -467,7 +467,7 @@ classDiagram
 <!-- ============================================================ CONVX SERVER -->
 <section id="convx-server">
   <div class="sec-head">
-    <div class="eyebrow convx">Convx Sync · server <code>listen-together-server/src</code></div>
+    <div class="eyebrow convx">Vox Sync · server <code>listen-together-server/src</code></div>
     <h2>Cloudflare room server</h2>
     <p>One <code>Room</code> Durable Object per room code. It handles one message at a time, so its state is the only version of the room. <code>Guard</code> rate-limits room creation per IP.</p>
   </div>
@@ -564,7 +564,7 @@ classDiagram
 <!-- ============================================================ PROTOCOL -->
 <section id="convx-protocol">
   <div class="sec-head">
-    <div class="eyebrow convx">Convx Sync · wire</div>
+    <div class="eyebrow convx">Vox Sync · wire</div>
     <h2>Room messages</h2>
   </div>
   <div class="two">
@@ -872,7 +872,7 @@ classDiagram
   </div>
 
   <div class="card diagram">
-    <header><h3>Host picks a new song<small>Convx Sync · everyone starts together</small></h3><button class="btn" data-expand>Expand</button></header>
+    <header><h3>Host picks a new song<small>Vox Sync · everyone starts together</small></h3><button class="btn" data-expand>Expand</button></header>
     <div class="canvas"><pre class="mermaid">
 sequenceDiagram
   autonumber
@@ -900,7 +900,7 @@ sequenceDiagram
 
   <div class="two">
     <div class="card diagram">
-      <header><h3>Guest joins mid-song<small>Convx Sync</small></h3><button class="btn" data-expand>Expand</button></header>
+      <header><h3>Guest joins mid-song<small>Vox Sync</small></h3><button class="btn" data-expand>Expand</button></header>
       <div class="canvas"><pre class="mermaid">
 sequenceDiagram
   participant G as Guest
@@ -920,7 +920,7 @@ sequenceDiagram
 </pre></div>
     </div>
     <div class="card diagram">
-      <header><h3>Guest pauses alone<small>Convx Sync</small></h3><button class="btn" data-expand>Expand</button></header>
+      <header><h3>Guest pauses alone<small>Vox Sync</small></h3><button class="btn" data-expand>Expand</button></header>
       <div class="canvas"><pre class="mermaid">
 sequenceDiagram
   participant U as Guest

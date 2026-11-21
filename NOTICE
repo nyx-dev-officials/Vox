@@ -1,4 +1,4 @@
-Convx bundles source vendored from third-party open-source projects.
+Vox bundles source vendored from third-party open-source projects.
 
 ## Lyrics providers
 
@@ -35,10 +35,10 @@ Official music video matching is adapted from Square
 
 SMB transport retry behavior in network-storage is adapted from BitChord
 (https://github.com/kushagrasinghx/BitChord), Copyright its contributors,
-licensed under GPL-3.0. See LICENSE. Convx retains separate saved-server
+licensed under GPL-3.0. See LICENSE. Vox retains separate saved-server
 sessions and adds connection ownership checks for concurrent readers.
 
 ## Base project
 
-Convx was originally built on an open-source GPL-3.0 music player and has since diverged
+Vox was originally built on an open-source GPL-3.0 music player and has since diverged
 completely. It remains licensed under the GNU General Public License v3.0 (see LICENSE).
