@@ -52,9 +52,14 @@ object MotionTokens {
     fun <T> playerMorphExit(): FiniteAnimationSpec<T> =
         tween(PlayerMorphExitMillis, easing = PlayerMorphEasing)
 
+    /**
+     * Mini player -> full player. One spring, the same one the tab morph uses: the
+     * sheet's container bounds fly on 380/0.85 so the pill's plate and the player's
+     * plate move as a single bounded object instead of two surfaces overlapping.
+     */
     fun <T> playerSheetOpen(): FiniteAnimationSpec<T> = spring(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = PlayerSheetStiffness,
+        dampingRatio = 0.85f,
+        stiffness = 380f,
     )
 
     fun <T> playerSheetClose(landing: Boolean = false): FiniteAnimationSpec<T> = spring(
