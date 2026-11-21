@@ -81,8 +81,13 @@ jobs:
       # A missing SDK tool on the runner must not block publishing a good APK.
       - name: Verify signature and contents
         run: |
-          APK=app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk
-          test -s "$APK" || { echo "APK missing: $APK" >&2; exit 1; }
+          APK=$(find app/build/outputs/apk -type f -name '*.apk' | grep -i 'universal' | grep -i 'release' | head -1)
+          if [ -z "$APK" ]; then
+            echo "No universal release APK found. Output tree:" >&2
+            find app/build/outputs -maxdepth 4 -name '*.apk' -o -maxdepth 3 -type d | head -40 >&2
+            exit 1
+          fi
+          echo "APK=$APK"
           SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
           APKSIGNER=""
           if [ -n "$SDK" ] && [ -d "$SDK" ]; then
@@ -102,8 +107,10 @@ jobs:
           VERSION=$(sed -n 's/^VERSION_MAJOR=//p' version.properties).$(sed -n 's/^VERSION_MINOR=//p' version.properties).$(sed -n 's/^VERSION_PATCH=//p' version.properties)
           test "${TAG}" = "$VERSION" || { echo "Tag $TAG does not match version.properties $VERSION" >&2; exit 1; }
           VERSION_CODE=$(python3 -c 'import sys; a,b,c=(int(v) for v in sys.argv[1].split(".")); print((a*10000+b*100+c)*10000+9999)' "$VERSION")
-          cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk vox-universal-foss.apk
-          cp app/build/outputs/apk/universalFoss/release/app-universal-foss-release.apk "vox-${TAG}.apk"
+          APK=$(find app/build/outputs/apk -type f -name '*.apk' | grep -i 'universal' | grep -i 'release' | head -1)
+          test -s "$APK" || { echo "No APK to stage" >&2; exit 1; }
+          cp "$APK" vox-universal-foss.apk
+          cp "$APK" "vox-${TAG}.apk"
           IMAGE_ARGS=()
           if [ -n "${UPDATER_IMAGE_URL:-}" ]; then IMAGE_ARGS+=(--image "$UPDATER_IMAGE_URL"); fi
           python3 tools/publish_updater_metadata.py \
