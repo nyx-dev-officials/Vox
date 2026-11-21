@@ -189,3 +189,6 @@ renovate.json
 !docs/KMP_DESKTOP_PROGRESS.md
 
 __pycache__/
+
+# Local code-graph tooling cache
+.codegraph/
