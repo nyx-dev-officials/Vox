@@ -471,6 +471,7 @@ fun AlbumScreen(
                                 modifier = Modifier.fillMaxSize())
                         }
                     },
+                    bleedArtwork = true,
                 )
             }
 

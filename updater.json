@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "packageName": "com.vox.music",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "channel": "stable",
-  "versionCode": 200079999,
-  "description": "Not a reskin. The palette, the type scale, the corners, the motion family and the onboarding flow were replaced, and every screen inherits from them.",
+  "versionCode": 200089999,
+  "description": "Album covers run edge to edge with a slow drift, Explore stops ending in an empty field, Settings loses its docked search field, and word-by-word lyrics are the default.",
   "changelog": [
     {
       "title": "Vox 2.0.7 — the frontend, rebuilt",

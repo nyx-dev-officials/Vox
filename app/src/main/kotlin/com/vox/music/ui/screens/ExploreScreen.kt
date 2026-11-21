@@ -185,6 +185,10 @@ fun ExploreScreen(
     val newReleases = albums.drop(6)
     val topSongs = chartsPage?.sections?.firstOrNull { it.chartType == ChartType.TOP }?.items.orEmpty().distinctBy { it.id }
     val moods = explorePage?.moodAndGenres.orEmpty()
+    // Every chart rail the charts page returns except the TOP list already shown above.
+    // Without these the page ends after Moods & Genres and leaves a dead black field
+    // down to the mini-player.
+    val extraCharts = chartsPage?.sections.orEmpty().filter { it.chartType != ChartType.TOP && it.items.isNotEmpty() }
     val recommendedTitle = stringResource(R.string.recommended_for_you)
     val newTitle = stringResource(R.string.new_release_albums)
     val topTitle = stringResource(R.string.top_songs)
@@ -257,6 +261,14 @@ fun ExploreScreen(
                     }
                 }
             }
+        }
+        extraCharts.forEachIndexed { index, section ->
+            exploreShelf(
+                key = "chart_${section.chartType.name}_$index",
+                title = section.title,
+                items = section.items.distinctBy { it.id },
+                sideInset = sideInset,
+            ) { item -> Tile(item) { ShelfCard(item) } }
         }
     }
     }

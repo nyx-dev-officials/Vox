@@ -173,8 +173,6 @@ fun SettingsScreen(
                         NyXSignature()
                     }
                 }
-                // Clears the docked search field.
-                item("searchSpace") { Spacer(Modifier.height(96.dp)) }
             }
         }
 
@@ -182,7 +180,6 @@ fun SettingsScreen(
             Row(Modifier.fillMaxSize()) {
                 Box(Modifier.width(380.dp).fillMaxHeight()) {
                     rootList(true)
-                    SearchBar(query, { query = it }, Modifier.align(Alignment.BottomCenter))
                 }
                 Crossfade(selectedHubId, Modifier.weight(1f), tween(200), label = "settingsDetail") { id ->
                     val hub = SettingsHubs.byId(id) ?: SettingsHubs.player
@@ -205,7 +202,6 @@ fun SettingsScreen(
             }
         } else {
             rootList(false)
-            SearchBar(query, { query = it }, Modifier.align(Alignment.BottomCenter))
         }
     }
 }

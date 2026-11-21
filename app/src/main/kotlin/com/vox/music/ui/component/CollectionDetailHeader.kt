@@ -1,5 +1,11 @@
 package com.vox.music.ui.component
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.BasicTextField
@@ -19,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -64,11 +71,24 @@ fun CollectionDetailHeader(
     searchFocusRequester: FocusRequester? = null,
     titleContent: (@Composable () -> Unit)? = null,
     artworkOverlay: (@Composable BoxScope.() -> Unit)? = null,
+    // Album pages run the cover edge to edge with a slow drift instead of a
+    // floating 12dp plate. Off by default so list-style headers keep their plate.
+    bleedArtwork: Boolean = false,
 ) {
     CompositionLocalProvider(LocalContentColor provides foreground) {
         BoxWithConstraints(modifier.fillMaxWidth()) {
             val artworkSize = minOf(maxWidth * .68f, 300.dp)
             var artworkFailed by remember(artwork) { mutableStateOf(false) }
+            // Read only inside graphicsLayer so the drift never recomposes the page.
+            val coverDrift = rememberInfiniteTransition(label = "coverDrift").animateFloat(
+                initialValue = 1f,
+                targetValue = 1.07f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 18_000, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse,
+                ),
+                label = "coverDriftScale",
+            )
             Column(
                 Modifier.fillMaxWidth().padding(top = 26.dp, bottom = 22.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -113,11 +133,21 @@ fun CollectionDetailHeader(
                     Spacer(Modifier.height(26.dp))
                 }
                 Box(
-                    Modifier.size(artworkSize).shadow(18.dp, RoundedCornerShape(12.dp), clip = false,
-                        ambientColor = Color.Black.copy(alpha = .18f), spotColor = Color.Black.copy(alpha = .18f)),
+                    if (bleedArtwork) {
+                        Modifier.fillMaxWidth().aspectRatio(1f)
+                    } else {
+                        Modifier.size(artworkSize).shadow(18.dp, RoundedCornerShape(12.dp), clip = false,
+                            ambientColor = Color.Black.copy(alpha = .18f), spotColor = Color.Black.copy(alpha = .18f))
+                    },
                 ) {
                     Box(
-                        Modifier.sharedArtworkTarget().fillMaxSize().clip(RoundedCornerShape(12.dp))
+                        Modifier.sharedArtworkTarget().fillMaxSize()
+                            .then(if (bleedArtwork) Modifier else Modifier.clip(RoundedCornerShape(12.dp)))
+                            .graphicsLayer {
+                                val scale = coverDrift.value
+                                scaleX = scale
+                                scaleY = scale
+                            }
                             .background(foreground.copy(alpha = .12f)),
                         contentAlignment = Alignment.Center,
                     ) {
