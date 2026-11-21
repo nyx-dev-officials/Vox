@@ -145,8 +145,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // R8 stays off for intermediate builds: it is the slowest part of an
+            // Android release by an order of magnitude, and a test APK does not
+            // need it. Turn it on only for a real release with -PfullR8=true.
+            val fullR8 = providers.gradleProperty("fullR8").orNull?.toBoolean() == true
+            isMinifyEnabled = fullR8
+            isShrinkResources = fullR8
             isCrunchPngs = false
             isDebuggable = false
             if (signingConfigs.getByName("release").storeFile?.exists() == true) {

@@ -1,8 +1,12 @@
 name: Signed Release
 
-# The release APK is built, minified, signed and published on GitHub's runners.
-# Nothing here needs to run on the maintainer's machine, and no keystore or
-# password ever lives in the repository — only in Actions secrets.
+# Two lanes:
+#   • workflow_dispatch → fast signed TEST build (arm64-v8a + armeabi-v7a, no R8,
+#     Gradle cache reused). Artifacts only; nothing is published.
+#   • tag push → full universal release with R8, published with notes and the
+#     repo-hosted updater manifest.
+#
+# No keystore or password lives in the repository — only in Actions secrets.
 
 on:
   push:
@@ -10,24 +14,26 @@ on:
       - '2.*'
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Release tag (e.g. 2.0.7) — must already exist'
-        required: true
+      label:
+        description: 'Label for this test build'
+        required: false
+        default: 'test'
         type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-${{ github.event.inputs.tag || github.ref_name }}
-  cancel-in-progress: false
+  group: release-${{ github.event.inputs.label || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
-  release:
-    name: Build, sign and publish
+  build:
+    name: Build and sign
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      TAG: ${{ github.event.inputs.label || github.ref_name }}
+      IS_RELEASE: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,8 +46,12 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Set up Gradle
+      # Gradle user home, dependency cache and build cache persist between runs.
+      # This is what makes an intermediate build minutes instead of half an hour.
+      - name: Set up Gradle (with cache)
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -61,7 +71,29 @@ jobs:
             -storepass "${{ secrets.STORE_PASSWORD }}" -alias "${{ secrets.KEY_ALIAS }}" > /dev/null
           echo "Keystore decoded and readable."
 
-      - name: Build signed universal FOSS release (R8)
+      # Test lane: both ARM ABIs, no R8 — older 32-bit devices stay supported and
+      # the emulator-only x86 slices are not built at all.
+      - name: Build signed test APKs (arm64 + arm32, no R8)
+        if: env.IS_RELEASE != 'true'
+        env:
+          KEYSTORE_FILE: app/keystore/release.keystore
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+        run: |
+          ./gradlew :app:assembleArm64FossRelease :app:assembleArm32FossRelease \
+            -PgithubUpdater=true \
+            --build-cache \
+            --no-configuration-cache \
+            --console=plain \
+            --warning-mode summary \
+            -x lint
+
+      # Release lane: one universal APK, fully minified. Only for a real release.
+      - name: Build signed universal release (R8)
+        if: env.IS_RELEASE == 'true'
         env:
           KEYSTORE_FILE: app/keystore/release.keystore
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
@@ -72,43 +104,42 @@ jobs:
         run: |
           ./gradlew :app:assembleUniversalFossRelease \
             -PgithubUpdater=true \
+            -PfullR8=true \
+            --build-cache \
             --no-configuration-cache \
             --console=plain \
             --warning-mode summary \
             -x lint
 
-      # Diagnostics only: the build already failed loudly if signing or R8 did.
-      # A missing SDK tool on the runner must not block publishing a good APK.
-      - name: Verify signature and contents
+      - name: Collect test APKs
+        if: env.IS_RELEASE != 'true'
         run: |
-          APK=$(find app/build/outputs/apk -type f -name '*.apk' | grep -i 'universal' | grep -i 'release' | head -1)
-          if [ -z "$APK" ]; then
-            echo "No universal release APK found. Output tree:" >&2
-            find app/build/outputs -maxdepth 4 -name '*.apk' -o -maxdepth 3 -type d | head -40 >&2
-            exit 1
-          fi
-          echo "APK=$APK"
-          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
-          APKSIGNER=""
-          if [ -n "$SDK" ] && [ -d "$SDK" ]; then
-            APKSIGNER=$(find "$SDK" -name apksigner -type f 2>/dev/null | sort | tail -1)
-          fi
-          if [ -n "$APKSIGNER" ]; then
-            "$APKSIGNER" verify --print-certs "$APK" || echo "apksigner reported an issue"
-          else
-            echo "apksigner not available on runner; signature check skipped."
-          fi
-          unzip -l "$APK" | grep 'classes.*\\.dex' | head -3 || echo "no dex entries listed"
+          mkdir -p out
+          ARM64=$(find app/build/outputs/apk/arm64 -name '*.apk' | head -1)
+          ARM32=$(find app/build/outputs/apk/arm32 -name '*.apk' | head -1)
+          test -s "$ARM64" && test -s "$ARM32"
+          cp "$ARM64" out/vox-arm64-foss.apk
+          cp "$ARM32" out/vox-arm32-foss.apk
+          ls -lh out
 
-      - name: Stage assets and manifest
+      - name: Upload test APKs
+        if: env.IS_RELEASE != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vox-${{ env.TAG }}-test-apks
+          path: out/*.apk
+          retention-days: 14
+
+      - name: Stage release assets and manifest
+        if: env.IS_RELEASE == 'true'
         env:
           UPDATER_IMAGE_URL: ${{ vars.UPDATER_IMAGE_URL }}
         run: |
           VERSION=$(sed -n 's/^VERSION_MAJOR=//p' version.properties).$(sed -n 's/^VERSION_MINOR=//p' version.properties).$(sed -n 's/^VERSION_PATCH=//p' version.properties)
           test "${TAG}" = "$VERSION" || { echo "Tag $TAG does not match version.properties $VERSION" >&2; exit 1; }
           VERSION_CODE=$(python3 -c 'import sys; a,b,c=(int(v) for v in sys.argv[1].split(".")); print((a*10000+b*100+c)*10000+9999)' "$VERSION")
-          APK=$(find app/build/outputs/apk -type f -name '*.apk' | grep -i 'universal' | grep -i 'release' | head -1)
-          test -s "$APK" || { echo "No APK to stage" >&2; exit 1; }
+          APK=$(find app/build/outputs/apk/universal -name '*.apk' | head -1)
+          test -s "$APK" || { echo "No universal APK produced" >&2; exit 1; }
           cp "$APK" vox-universal-foss.apk
           cp "$APK" "vox-${TAG}.apk"
           IMAGE_ARGS=()
@@ -122,6 +153,7 @@ jobs:
           ls -lh vox-universal-foss.apk "vox-${TAG}.apk" updater.json
 
       - name: Create release with notes
+        if: env.IS_RELEASE == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -130,23 +162,21 @@ jobs:
           if gh release view "$TAG" --repo "${{ github.repository }}" > /dev/null 2>&1; then
             gh release edit "$TAG" --notes-file "$NOTES" --latest --repo "${{ github.repository }}"
           else
-            gh release create "$TAG" \
-              --title "Vox $TAG" \
-              --notes-file "$NOTES" \
-              --latest \
+            gh release create "$TAG" --title "Vox $TAG" --notes-file "$NOTES" --latest \
               --repo "${{ github.repository }}"
           fi
 
-      - name: Upload APKs
+      - name: Upload release APKs
+        if: env.IS_RELEASE == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # No updater.json here: the manifest lives in the repository, so the
-          # release page stays APKs plus GitHub's own source archives.
+          # No updater.json in the assets: the manifest lives in the repository.
           gh release upload "$TAG" vox-universal-foss.apk "vox-${TAG}.apk" \
             --repo "${{ github.repository }}" --clobber
 
       - name: Publish updater manifest to main
+        if: env.IS_RELEASE == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
