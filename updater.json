@@ -1,59 +1,67 @@
 {
   "schemaVersion": 1,
   "packageName": "com.vox.music",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "channel": "stable",
-  "versionCode": 200069999,
-  "description": "The first two passes of the interface overhaul: Home carries its own voice, and the bottom bar gets out of the way while you scroll.",
+  "versionCode": 200079999,
+  "description": "Not a reskin. The palette, the type scale, the corners, the motion family and the onboarding flow were replaced, and every screen inherits from them.",
   "changelog": [
     {
-      "title": "Vox 2.0.6 — a Vox home, not an Apple Music clone",
+      "title": "Vox 2.0.7 — the frontend, rebuilt",
       "items": [
-        "The first two passes of the interface overhaul: Home carries its own voice, and the bottom bar gets out of the way while you scroll."
+        "Not a reskin. The palette, the type scale, the corners, the motion family and the",
+        "onboarding flow were replaced, and every screen inherits from them."
       ]
     },
     {
-      "title": "Home identity",
+      "title": "A new surface",
       "items": [
-        "Chillax sets the display type for the masthead, section headers and tile titles; Plus Jakarta Sans carries everything you read.",
-        "The glass is gone from scrolling surfaces: warm obsidian and paper with a single 1dp hairline at 12% white. Blur is reserved for static modals, so scrolling no longer pays for it every frame.",
-        "Top Picks is a full-bleed cover with the title underneath over a dark scrim, instead of artwork with type baked into the image.",
-        "Section headers get a champagne rule, and \"SEE ALL\" is uppercase champagne.",
-        "Chips are outlined when idle and solid champagne when selected.",
-        "The mic and shuffle discs no longer overlap Music Videos — they sit in one docked capsule that hides on scroll."
+        "Ink canvas `#09090B` with a 12% hairline grid, replacing the warm brown-black and its glass edges.",
+        "One accent: Signal vermilion `#FF5C38`, used for play, progress, selection and section marks — nothing else.",
+        "Every squircle is gone. 82 files moved from continuous 20dp curves to print-cut corners (4dp artwork, 8dp cards, 12dp sheets).",
+        "Drop shadows removed from covers and cards. A cover is a plate on the page, not a floating tile.",
+        "Light mode is paper stock `#F5F1E8` with ink type, not an iOS grey system background."
       ]
     },
     {
-      "title": "Nav and mini player",
+      "title": "A new voice",
       "items": [
-        "The mini player is no longer squeezed into the middle of the tab bar between Home and Search.",
-        "Scroll down and the tab bar folds into one floating circular Search button on the right while the mini player expands into the space it left; scrolling back up unfolds it.",
-        "Everything animates on a single 380 stiffness / 0.85 damping spring, with the player clipped rather than scaled, so text and icons never warp.",
-        "Long-press the mini player for a lifted preview: dimmed backdrop, a single cached 20dp blur, artwork, title, artist, a live scrubber, the current lyric, previous/play/next, and a stacked menu for Favorites, Add to Playlist, Go to Album/Artist, Share and Listen Together.",
-        "On Home the top bar no longer repeats the page title under the masthead."
+        "Headlines run on Chillax at display sizes with trackings tightened by hand; body copy stays on your chosen reading face.",
+        "The Material and iOS type scales were both rebuilt from the same numbers, so a screen that never left the compat layer still lands on the new hierarchy.",
+        "Micro-labels are 10sp, uppercase, 1.9 tracking. Section headers now close with a hairline rule instead of a floating pill and a champagne tick."
       ]
     },
     {
-      "title": "Install",
+      "title": "Onboarding, rewritten",
       "items": [
-        "Download `vox-2.0.6.apk`, allow installs from your browser or file manager, and open it.",
-        "This is a signed release build (`com.vox.music`), not a debug build. It installs alongside the old `com.vox.music.debug` copy, which you can uninstall afterwards."
+        "Four pages set like a magazine: folio counter, eyebrow, a display headline with the signal word in vermilion, a hairline-divided list, one filled bar.",
+        "Pastel app-icon tiles are gone; glyphs are monochrome inside hairline squares.",
+        "Progress is four hairlines, not dots. Page transitions slide and crossfade with a spring, and the primary button is a rectangular signal bar.",
+        "The Vox seal rotates once every 32 seconds as a registration mark, not a spinner."
+      ]
+    },
+    {
+      "title": "Motion",
+      "items": [
+        "One spring family for surfaces (`settle`, 0.92/340), one for touch (`snap`, 0.82/640), expo-out for arrivals, 180ms for exits, 28ms stagger.",
+        "Page pushes now settle on a spring instead of a fixed 260ms tween, so interrupting a push keeps its velocity.",
+        "The tab fold and mini-player flight keep the 380/0.85 spring."
       ]
     },
     {
       "title": "Notes",
       "items": [
-        "ABIs: `arm64-v8a` and `x86_64`. A 32-bit-only phone needs the arm32 flavour.",
-        "The in-app updater reads its manifest from the repository, so release pages carry only the APKs and GitHub's source archives."
+        "Signed release build, `com.vox.music`, arm64-v8a + x86_64. Not a debug build.",
+        "Still to come: the remaining library, settings and player screens are on the new tokens but have not had their individual layouts redrawn yet."
       ]
     }
   ],
   "assets": [
     {
       "name": "vox-universal-foss.apk",
-      "size": 124635857,
-      "sha256": "19505f253e71ee9497c0b0b5ee9e35dcaac5264397824c84a4644fa336b5f534",
-      "versionCode": 200069999,
+      "size": 124647049,
+      "sha256": "bd271b20470d0f4e2f030b95816c56f433f8eccdda9395e2012990eeecca978d",
+      "versionCode": 200079999,
       "variant": "foss",
       "abis": [
         "arm64-v8a",
