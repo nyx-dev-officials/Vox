@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "packageName": "com.vox.music",
+  "version": "2.0.6",
+  "channel": "stable",
+  "versionCode": 200069999,
+  "description": "The first two passes of the interface overhaul: Home carries its own voice, and the bottom bar gets out of the way while you scroll.",
+  "changelog": [
+    {
+      "title": "Vox 2.0.6 — a Vox home, not an Apple Music clone",
+      "items": [
+        "The first two passes of the interface overhaul: Home carries its own voice, and the bottom bar gets out of the way while you scroll."
+      ]
+    },
+    {
+      "title": "Home identity",
+      "items": [
+        "Chillax sets the display type for the masthead, section headers and tile titles; Plus Jakarta Sans carries everything you read.",
+        "The glass is gone from scrolling surfaces: warm obsidian and paper with a single 1dp hairline at 12% white. Blur is reserved for static modals, so scrolling no longer pays for it every frame.",
+        "Top Picks is a full-bleed cover with the title underneath over a dark scrim, instead of artwork with type baked into the image.",
+        "Section headers get a champagne rule, and \"SEE ALL\" is uppercase champagne.",
+        "Chips are outlined when idle and solid champagne when selected.",
+        "The mic and shuffle discs no longer overlap Music Videos — they sit in one docked capsule that hides on scroll."
+      ]
+    },
+    {
+      "title": "Nav and mini player",
+      "items": [
+        "The mini player is no longer squeezed into the middle of the tab bar between Home and Search.",
+        "Scroll down and the tab bar folds into one floating circular Search button on the right while the mini player expands into the space it left; scrolling back up unfolds it.",
+        "Everything animates on a single 380 stiffness / 0.85 damping spring, with the player clipped rather than scaled, so text and icons never warp.",
+        "Long-press the mini player for a lifted preview: dimmed backdrop, a single cached 20dp blur, artwork, title, artist, a live scrubber, the current lyric, previous/play/next, and a stacked menu for Favorites, Add to Playlist, Go to Album/Artist, Share and Listen Together.",
+        "On Home the top bar no longer repeats the page title under the masthead."
+      ]
+    },
+    {
+      "title": "Install",
+      "items": [
+        "Download `vox-2.0.6.apk`, allow installs from your browser or file manager, and open it.",
+        "This is a signed release build (`com.vox.music`), not a debug build. It installs alongside the old `com.vox.music.debug` copy, which you can uninstall afterwards."
+      ]
+    },
+    {
+      "title": "Notes",
+      "items": [
+        "ABIs: `arm64-v8a` and `x86_64`. A 32-bit-only phone needs the arm32 flavour.",
+        "The in-app updater reads its manifest from the repository, so release pages carry only the APKs and GitHub's source archives."
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "vox-universal-foss.apk",
+      "size": 124635857,
+      "sha256": "19505f253e71ee9497c0b0b5ee9e35dcaac5264397824c84a4644fa336b5f534",
+      "versionCode": 200069999,
+      "variant": "foss",
+      "abis": [
+        "arm64-v8a",
+        "x86_64"
+      ],
+      "minSdk": 26
+    }
+  ]
+}
