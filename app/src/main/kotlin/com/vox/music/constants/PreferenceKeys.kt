@@ -231,6 +231,8 @@ val StudioRpmKey = intPreferencesKey("studioRpm")                   // 33 or 45
 val StudioGrainKey = floatPreferencesKey("studioGrain")             // 0 … 1
 val StudioBackdropBlurKey = floatPreferencesKey("studioBlur")       // 0 … 60 dp
 val StudioHapticsKey = booleanPreferencesKey("studioHaptics")
+/** OFF, SUBTLE or CRISP. */
+val StudioHapticsIntensityKey = stringPreferencesKey("studioHapticsIntensity")
 val StudioGyroKey = booleanPreferencesKey("studioGyro")
 val StudioDaylightScrimKey = booleanPreferencesKey("studioDaylight")
 /** LIGHT, REGULAR or BOLD. */

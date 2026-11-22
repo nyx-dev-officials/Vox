@@ -19,6 +19,28 @@ object LyricsTextFormatter {
     private val timestamp = Regex("""^\s*\[\d{1,2}:\d{2}(?:[.:]\d{1,3})?]\s*""")
     private val sectionTag = Regex("""^\[[^\]]+]$""")
 
+    /**
+     * Breaks an over-long line at the pause nearest its middle (comma, dash, then
+     * space) instead of leaving one orphan word on the next line. Lines that
+     * already fit are untouched.
+     */
+    fun wrapBalanced(line: String, maxChars: Int = 34): List<String> {
+        if (line.length <= maxChars) return listOf(line)
+        val middle = line.length / 2
+        val pauses = listOf(", ", " — ", " - ", " ")
+        for (pause in pauses) {
+            val candidates = Regex(Regex.escape(pause)).findAll(line)
+                .map { it.range.first + 1 }
+                .filter { it in 6..(line.length - 6) }
+                .toList()
+            if (candidates.isNotEmpty()) {
+                val cut = candidates.minByOrNull { kotlin.math.abs(it - middle) } ?: continue
+                return listOf(line.take(cut).trim(), line.drop(cut).trim())
+            }
+        }
+        return listOf(line)
+    }
+
     /** Timestamp-free, non-blank lines — what a carousel slide should quote. */
     fun plainLines(lyrics: String): List<String> = lyrics
         .lineSequence()

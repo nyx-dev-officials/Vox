@@ -219,7 +219,9 @@ internal fun ShareLyricsCustomizer(
                         coverArtUrl = coverUrl,
                         songTitle = songTitle,
                         artistName = artists,
-                        lyrics = page.joinToString("\n"),
+                        lyrics = page.flatMap {
+                            com.vox.music.lyrics.LyricsTextFormatter.wrapBalanced(it)
+                        }.joinToString("\n"),
                         backgroundColor = background.toArgb(),
                         backgroundStyle = backgroundStyle,
                         textColor = primaryInk.toArgb(),

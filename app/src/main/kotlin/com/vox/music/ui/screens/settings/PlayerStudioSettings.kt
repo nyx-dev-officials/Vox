@@ -29,6 +29,7 @@ import com.vox.music.constants.StudioCoverRadiusKey
 import com.vox.music.constants.StudioDaylightScrimKey
 import com.vox.music.constants.StudioGrainKey
 import com.vox.music.constants.StudioGyroKey
+import com.vox.music.constants.StudioHapticsIntensityKey
 import com.vox.music.constants.StudioHapticsKey
 import com.vox.music.constants.StudioPlayerKey
 import com.vox.music.constants.StudioRpmKey
@@ -59,6 +60,10 @@ fun PlayerStudioSettings(
     val (titleScale, onTitleScale) = rememberPreference(StudioTitleScaleKey, defaultValue = 1f)
     val (titleWeight, onTitleWeight) = rememberPreference(StudioTitleWeightKey, defaultValue = "BOLD")
     val (haptics, onHaptics) = rememberPreference(StudioHapticsKey, defaultValue = true)
+    val (hapticIntensity, onHapticIntensity) = rememberPreference(
+        StudioHapticsIntensityKey,
+        defaultValue = "SUBTLE",
+    )
     val (gyro, onGyro) = rememberPreference(StudioGyroKey, defaultValue = true)
     val (daylight, onDaylight) = rememberPreference(StudioDaylightScrimKey, defaultValue = true)
 
@@ -178,6 +183,23 @@ fun PlayerStudioSettings(
                             description = { Text("A tick every 10% while dragging the timeline.") },
                             trailingContent = { Switch(checked = haptics, onCheckedChange = onHaptics) },
                             onClick = { onHaptics(!haptics) },
+                        ),
+                        IosSettingsItem(
+                            title = { Text("Haptic strength") },
+                            description = { Text("Off, a subtle tick, or one crisp detent.") },
+                            enabled = haptics,
+                            trailingContent = {
+                                Text(if (haptics) hapticIntensity else "OFF")
+                            },
+                            onClick = {
+                                onHapticIntensity(
+                                    when (hapticIntensity) {
+                                        "OFF" -> "SUBTLE"
+                                        "SUBTLE" -> "CRISP"
+                                        else -> "OFF"
+                                    },
+                                )
+                            },
                         ),
                         IosSettingsItem(
                             title = { Text("Gyroscope parallax") },

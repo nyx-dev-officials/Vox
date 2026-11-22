@@ -96,6 +96,7 @@ import com.vox.music.constants.StudioCoverRadiusKey
 import com.vox.music.constants.StudioDaylightScrimKey
 import com.vox.music.constants.StudioGrainKey
 import com.vox.music.constants.StudioGyroKey
+import com.vox.music.constants.StudioHapticsIntensityKey
 import com.vox.music.constants.StudioHapticsKey
 import com.vox.music.constants.StudioRpmKey
 import com.vox.music.constants.StudioSkinKey
@@ -138,6 +139,7 @@ fun PlayerStudio(
     val (grain) = rememberPreference(StudioGrainKey, defaultValue = 0.16f)
     val (blurDp) = rememberPreference(StudioBackdropBlurKey, defaultValue = 36f)
     val (haptics) = rememberPreference(StudioHapticsKey, defaultValue = true)
+    val (hapticIntensity) = rememberPreference(StudioHapticsIntensityKey, defaultValue = "SUBTLE")
     val (gyro) = rememberPreference(StudioGyroKey, defaultValue = true)
     val (daylight) = rememberPreference(StudioDaylightScrimKey, defaultValue = true)
     val (weightName) = rememberPreference(StudioTitleWeightKey, defaultValue = "BOLD")
@@ -263,7 +265,8 @@ fun PlayerStudio(
                         )
                         StudioControls(
                             metadata = metadata, isPlaying = isPlaying, position = position, duration = duration,
-                            accent = accent, haptics = haptics, bpm = dj.currentBpm, key = dj.currentKey,
+                            accent = accent, haptics = haptics, hapticIntensity = hapticIntensity,
+                            bpm = dj.currentBpm, key = dj.currentKey,
                             format = currentFormat?.let { f ->
                                 val rate = f.sampleRate?.let { " · ${(it / 1000f).roundToInt()} kHz" }.orEmpty()
                                 val lossless = f.mimeType.contains("flac", true)
@@ -313,7 +316,8 @@ fun PlayerStudio(
                         )
                         StudioControls(
                             metadata = metadata, isPlaying = isPlaying, position = position, duration = duration,
-                            accent = accent, haptics = haptics, bpm = dj.currentBpm, key = dj.currentKey,
+                            accent = accent, haptics = haptics, hapticIntensity = hapticIntensity,
+                            bpm = dj.currentBpm, key = dj.currentKey,
                             format = currentFormat?.let { f ->
                                 val rate = f.sampleRate?.let { " · ${(it / 1000f).roundToInt()} kHz" }.orEmpty()
                                 val lossless = f.mimeType.contains("flac", true)
@@ -716,6 +720,7 @@ private fun StudioControls(
     duration: Long,
     accent: Color,
     haptics: Boolean,
+    hapticIntensity: String,
     bpm: Float,
     key: String?,
     format: String?,
@@ -768,7 +773,14 @@ private fun StudioControls(
         TrackChips(bpm = bpm, key = key, format = format, accent = accent)
 
         Spacer(Modifier.height(18.dp))
-        StudioScrubber(position = position, duration = duration, accent = accent, haptics = haptics, onSeek = onSeek)
+        StudioScrubber(
+            position = position,
+            duration = duration,
+            accent = accent,
+            haptics = haptics,
+            hapticIntensity = hapticIntensity,
+            onSeek = onSeek,
+        )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(formatTime(position), color = Color.White.copy(alpha = 0.45f), fontSize = 11.sp)
             Text(formatTime(duration), color = Color.White.copy(alpha = 0.45f), fontSize = 11.sp)
@@ -910,6 +922,7 @@ private fun StudioScrubber(
     duration: Long,
     accent: Color,
     haptics: Boolean,
+    hapticIntensity: String,
     onSeek: (Long) -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -940,7 +953,12 @@ private fun StudioScrubber(
                     val step = (f * 10).toInt()
                     if (step != lastDetent) {
                         lastDetent = step
-                        if (haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        if (haptics && hapticIntensity != "OFF") {
+                            haptic.performHapticFeedback(
+                                if (hapticIntensity == "CRISP") HapticFeedbackType.LongPress
+                                else HapticFeedbackType.TextHandleMove,
+                            )
+                        }
                     }
                 }
             },
