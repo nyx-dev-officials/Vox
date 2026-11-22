@@ -188,6 +188,10 @@ object SettingsHubs {
                 listOf(
                     SettingsLink("Advanced appearance", R.drawable.settings, { systemGray }, route("settings/appearance/advanced"),
                         "Grids, corners, blur and overscroll", "grid corner radius blur overscroll pure black"),
+                    SettingsLink("Storage", R.drawable.settings, { systemGray }, route("settings/storage"),
+                        "Space used by cache, downloads and share cards", "cache cleaner disk size storage"),
+                    SettingsLink("Diagnostics", R.drawable.settings, { systemGray }, route("settings/diagnostics"),
+                        "Memory pressure, cache and build details", "debug memory heap low ram diagnostics"),
                 ),
             ),
         ),

@@ -89,8 +89,10 @@ import com.vox.music.ui.screens.settings.ContentAdvancedSettings
 import com.vox.music.ui.screens.settings.JioSettings
 import com.vox.music.ui.screens.settings.TidalSettings
 import com.vox.music.ui.screens.settings.LocalFoldersSettingsScreen
+import com.vox.music.ui.screens.settings.DiagnosticsScreen
 import com.vox.music.ui.screens.settings.LiveIslandSettings
 import com.vox.music.ui.screens.settings.PlayerStudioSettings
+import com.vox.music.ui.screens.settings.StorageBreakdownScreen
 import com.vox.music.ui.screens.settings.ScanMusicScreen
 import com.vox.music.ui.screens.settings.SongTransitionsScreen
 import com.vox.music.ui.screens.settings.PrivacySettings
@@ -585,6 +587,14 @@ fun NavGraphBuilder.navigationBuilder(
 
     sharedComposable("settings/player/studio") {
         PlayerStudioSettings(navController, scrollBehavior)
+    }
+
+    sharedComposable("settings/storage") {
+        StorageBreakdownScreen(navController, scrollBehavior)
+    }
+
+    sharedComposable("settings/diagnostics") {
+        DiagnosticsScreen(navController, scrollBehavior)
     }
 
     sharedComposable("settings/scan_music") {

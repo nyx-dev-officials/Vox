@@ -161,8 +161,22 @@ fun PlayerStudio(
         }
     }
 
-    val powerSaver = remember {
-        context.getSystemService(android.os.PowerManager::class.java)?.isPowerSaveMode ?: false
+    // Degrade on battery saver or below 15%: the fluid backdrop and the row
+    // visualizers are the first things to stop costing frames.
+    val degraded = remember {
+        val power = context.getSystemService(android.os.PowerManager::class.java)
+        val level = context.registerReceiver(
+            null,
+            android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED),
+        )?.getIntExtra(android.os.BatteryManager.EXTRA_LEVEL, -1) ?: -1
+        (power?.isPowerSaveMode ?: false) || level in 0..15
+    }
+    // OLED burn-in protection: the ambient stage creeps a pixel on a slow cycle.
+    val burnShift by produceState(0f) {
+        while (isActive) {
+            value = ((System.currentTimeMillis() / 60_000L) % 3L).toFloat()
+            delay(60_000L)
+        }
     }
     val tilt = rememberTilt(gyro)
     val accent by rememberCoverAccent(metadata?.thumbnailUrl)
@@ -197,9 +211,9 @@ fun PlayerStudio(
             StudioBackdrop(
                 artworkUrl = metadata?.thumbnailUrl,
                 blurDp = blurDp,
-                isPlaying = isPlaying && !powerSaver,
+                isPlaying = isPlaying && !degraded,
                 accent = accent,
-                skipAnimation = powerSaver,
+                skipAnimation = degraded,
             )
         }
         // Daylight boost: a stronger veil outdoors so type keeps its contrast.
@@ -213,6 +227,10 @@ fun PlayerStudio(
                 lyric = lyricLine,
                 accent = accent,
                 progress = if (duration > 0) position.toFloat() / duration else 0f,
+                modifier = Modifier.graphicsLayer {
+                    translationX = burnShift
+                    translationY = burnShift
+                },
                 onExit = { ambient = false },
             )
         } else {
@@ -1058,6 +1076,7 @@ private fun AmbientCanvas(
     lyric: String?,
     accent: Color,
     progress: Float,
+    modifier: Modifier = Modifier,
     onExit: () -> Unit,
 ) {
     val bob by rememberInfiniteTransition(label = "ambient").animateFloat(
@@ -1068,7 +1087,7 @@ private fun AmbientCanvas(
     )
 
     Box(
-        Modifier
+        modifier
             .fillMaxSize()
             .clickable(onClick = onExit),
         contentAlignment = Alignment.Center,

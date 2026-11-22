@@ -120,6 +120,8 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
         SearchableSetting(stringResource(R.string.dsp_midnight), null, "Playback & audio", "settings/player/dsp"),
         SearchableSetting(stringResource(R.string.live_island), null, "Appearance", "settings/appearance/island"),
         SearchableSetting("Player Studio", null, "Appearance", "settings/player/studio"),
+        SearchableSetting("Storage", null, "Appearance", "settings/storage"),
+        SearchableSetting("Diagnostics", null, "Appearance", "settings/diagnostics"),
         SearchableSetting("Vinyl skin", null, "Appearance", "settings/player/studio"),
         SearchableSetting("Cassette skin", null, "Appearance", "settings/player/studio"),
         SearchableSetting("Ambient mode", null, "Appearance", "settings/player/studio"),
