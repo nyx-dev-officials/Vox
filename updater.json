@@ -1,67 +1,34 @@
 {
   "schemaVersion": 1,
   "packageName": "com.vox.music",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "channel": "stable",
-  "versionCode": 200089999,
-  "description": "Album covers run edge to edge with a slow drift, Explore stops ending in an empty field, Settings loses its docked search field, and word-by-word lyrics are the default.",
+  "versionCode": 200099999,
+  "description": "Maintenance & performance release following 2.0.8.",
   "changelog": [
     {
-      "title": "Vox 2.0.7 — the frontend, rebuilt",
+      "title": "Vox 2.0.9",
       "items": [
-        "Not a reskin. The palette, the type scale, the corners, the motion family and the",
-        "onboarding flow were replaced, and every screen inherits from them."
+        "Maintenance & performance release following 2.0.8."
       ]
     },
     {
-      "title": "A new surface",
+      "title": "What's Changed",
       "items": [
-        "Ink canvas `#09090B` with a 12% hairline grid, replacing the warm brown-black and its glass edges.",
-        "One accent: Signal vermilion `#FF5C38`, used for play, progress, selection and section marks — nothing else.",
-        "Every squircle is gone. 82 files moved from continuous 20dp curves to print-cut corners (4dp artwork, 8dp cards, 12dp sheets).",
-        "Drop shadows removed from covers and cards. A cover is a plate on the page, not a floating tile.",
-        "Light mode is paper stock `#F5F1E8` with ink type, not an iOS grey system background."
-      ]
-    },
-    {
-      "title": "A new voice",
-      "items": [
-        "Headlines run on Chillax at display sizes with trackings tightened by hand; body copy stays on your chosen reading face.",
-        "The Material and iOS type scales were both rebuilt from the same numbers, so a screen that never left the compat layer still lands on the new hierarchy.",
-        "Micro-labels are 10sp, uppercase, 1.9 tracking. Section headers now close with a hairline rule instead of a floating pill and a champagne tick."
-      ]
-    },
-    {
-      "title": "Onboarding, rewritten",
-      "items": [
-        "Four pages set like a magazine: folio counter, eyebrow, a display headline with the signal word in vermilion, a hairline-divided list, one filled bar.",
-        "Pastel app-icon tiles are gone; glyphs are monochrome inside hairline squares.",
-        "Progress is four hairlines, not dots. Page transitions slide and crossfade with a spring, and the primary button is a rectangular signal bar.",
-        "The Vox seal rotates once every 32 seconds as a registration mark, not a spinner."
-      ]
-    },
-    {
-      "title": "Motion",
-      "items": [
-        "One spring family for surfaces (`settle`, 0.92/340), one for touch (`snap`, 0.82/640), expo-out for arrivals, 180ms for exits, 28ms stagger.",
-        "Page pushes now settle on a spring instead of a fixed 260ms tween, so interrupting a push keeps its velocity.",
-        "The tab fold and mini-player flight keep the 380/0.85 spring."
-      ]
-    },
-    {
-      "title": "Notes",
-      "items": [
-        "Signed release build, `com.vox.music`, arm64-v8a + x86_64. Not a debug build.",
-        "Still to come: the remaining library, settings and player screens are on the new tokens but have not had their individual layouts redrawn yet."
+        "**Tidal Max Engine**: Official PKCE login, hi-res resolver, Innertube fallback, and Audiophile tone stage.",
+        "**Player Studio & Visuals**: Player Studio with custom skins, live three-bar playing indicator, and Live Island overlay refinements.",
+        "**Lyrics & Share**: Lyric signatures, carousel export, verse-tagged copy, and two-mode artwork card.",
+        "**Performance & Diagnostics**: Storage and diagnostics screens, battery/burn-in guards, and Coil 3 island image loading fixes.",
+        "**Signing & Compatibility**: Verified v1 + v2 APK signature schemes for complete support across modern and legacy OEM Android devices (ColorOS / Oppo, etc.)."
       ]
     }
   ],
   "assets": [
     {
       "name": "vox-universal-foss.apk",
-      "size": 124723310,
-      "sha256": "7040f1663886b44ef63c2ec52c3710d6ecbe648b7db0b199ca6e55c3dc754835",
-      "versionCode": 200079999,
+      "size": 124906551,
+      "sha256": "2ba93a245a681824996d08f9d07eb63973d27bffe4645172ecdd2257eb0a4b42",
+      "versionCode": 200099999,
       "variant": "foss",
       "abis": [
         "arm64-v8a",
