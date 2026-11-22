@@ -148,14 +148,17 @@ class VoxWidgetManager(
                     appWidgetManager.updateAppWidget(
                         widgetId,
                         createLyricsRemoteViews(
+                            widgetId,
                             appWidgetManager.getAppWidgetOptions(widgetId),
                             WidgetConfig.load(context, widgetId),
                             title,
                             artist,
                             albumArt,
                             isPlaying,
+                            isLiked,
                             lines,
                             currentPosition,
+                            duration,
                         ),
                     )
                 }
@@ -956,79 +959,260 @@ class VoxWidgetManager(
     }
 
     /**
-     * Lyrics widget: a three-line window around the current line.
+     * The artwork lyrics widget: one full-bleed artwork card, two states.
      *
-     * RemoteViews has no animation, so this cannot reproduce the app's Apple-style
-     * glide — it steps as the line changes, keeping the same visual language
-     * (active line solid, neighbours faded) that VoxLyrics uses.
+     * Cover state puts artist/title and a favourite button over the artwork with
+     * the transport underneath; the lyric state swaps in a five-line window around
+     * the current line and flips which corner the track info sits in. Both states
+     * are painted white over a dark scrim, so the ink never depends on the artwork.
+     *
+     * RemoteViews has no animation, so the lyric window steps on line change rather
+     * than gliding — the honest limit of the widget host.
      */
     private fun createLyricsRemoteViews(
+        widgetId: Int,
         options: Bundle,
         config: WidgetConfig,
         title: String,
         artist: String,
         albumArt: Bitmap?,
         isPlaying: Boolean,
+        isLiked: Boolean,
         lines: List<LyricsEntry>,
         currentPosition: Long,
+        duration: Long,
     ): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_lyrics)
         val card = cardSizeFor(options)
+        val coverMode = config.lyricsMode == LyricsWidgetMode.COVER
+        // The scrim guarantees contrast, so both states always paint white.
+        val ink = Color.WHITE
 
         views.setImageViewBitmap(
             R.id.widget_lyr_bg,
             loadConfiguredBackground(config, card)
-                ?: createCardBackground(config, albumArt, card),
+                ?: createArtworkBackdrop(albumArt, card, coverMode),
         )
 
+        views.setViewVisibility(
+            R.id.widget_lyr_cover_group,
+            if (coverMode) android.view.View.VISIBLE else android.view.View.GONE,
+        )
+        views.setViewVisibility(
+            R.id.widget_lyr_lyrics_group,
+            if (coverMode) android.view.View.GONE else android.view.View.VISIBLE,
+        )
+
+        views.setTextViewText(R.id.widget_lyr_cover_title, title)
+        views.setTextViewText(R.id.widget_lyr_cover_artist, artist)
         views.setTextViewText(R.id.widget_lyr_title, title)
         views.setTextViewText(R.id.widget_lyr_artist, artist)
 
         if (lines.isEmpty()) {
-            views.setTextViewText(R.id.widget_lyr_prev, "")
+            listOf(
+                R.id.widget_lyr_prev2,
+                R.id.widget_lyr_prev,
+                R.id.widget_lyr_next,
+                R.id.widget_lyr_next2,
+            ).forEach { views.setTextViewText(it, "") }
             views.setTextViewText(
                 R.id.widget_lyr_current,
                 context.getString(R.string.widget_no_lyrics),
             )
-            views.setTextViewText(R.id.widget_lyr_next, "")
         } else {
             val index = LyricsUtils.findCurrentLineIndex(lines, currentPosition)
                 .coerceIn(0, lines.lastIndex)
+            views.setTextViewText(R.id.widget_lyr_prev2, lines.getOrNull(index - 2)?.text ?: "")
             views.setTextViewText(R.id.widget_lyr_prev, lines.getOrNull(index - 1)?.text ?: "")
             views.setTextViewText(R.id.widget_lyr_current, lines[index].text)
             views.setTextViewText(R.id.widget_lyr_next, lines.getOrNull(index + 1)?.text ?: "")
+            views.setTextViewText(R.id.widget_lyr_next2, lines.getOrNull(index + 2)?.text ?: "")
         }
 
+        val playPauseRes = if (isPlaying) R.drawable.ic_widget_pause else R.drawable.ic_widget_play
+        views.setImageViewResource(R.id.widget_lyr_cover_play_pause, playPauseRes)
+        views.setImageViewResource(R.id.widget_lyr_play_pause, playPauseRes)
+        val pillLabel =
+            context.getString(if (isPlaying) R.string.widget_pause else R.string.widget_play)
+        views.setTextViewText(R.id.widget_lyr_cover_pill_text, pillLabel)
+        views.setTextViewText(R.id.widget_lyr_pill_text, pillLabel)
+
         views.setImageViewResource(
-            R.id.widget_lyr_play_pause,
-            if (isPlaying) R.drawable.ic_widget_pause else R.drawable.ic_widget_play,
+            R.id.widget_lyr_cover_like,
+            if (isLiked) R.drawable.ic_widget_heart_nav else R.drawable.ic_widget_heart_outline_nav,
         )
+
+        // Both states carry the same scrubber; the widget has no seek surface, so
+        // it only reports where the track is.
+        val level =
+            if (duration > 0) {
+                ((currentPosition.toDouble() / duration) * 10000).toInt().coerceIn(0, 10000)
+            } else {
+                0
+            }
+        views.setInt(R.id.widget_lyr_cover_progress_fill, "setImageLevel", level)
+        views.setInt(R.id.widget_lyr_progress_fill, "setImageLevel", level)
+        views.setTextViewText(R.id.widget_lyr_cover_elapsed, formatWidgetTime(currentPosition))
+        views.setTextViewText(R.id.widget_lyr_cover_total, formatWidgetTime(duration))
+        views.setTextViewText(R.id.widget_lyr_elapsed, formatWidgetTime(currentPosition))
+        views.setTextViewText(R.id.widget_lyr_total, formatWidgetTime(duration))
 
         val transportVisibility =
             if (config.showPrevNext) android.view.View.VISIBLE else android.view.View.GONE
         views.setViewVisibility(R.id.widget_lyr_skip_prev, transportVisibility)
         views.setViewVisibility(R.id.widget_lyr_skip_next, transportVisibility)
+        views.setViewVisibility(R.id.widget_lyr_cover_prev, transportVisibility)
+        views.setViewVisibility(R.id.widget_lyr_cover_next, transportVisibility)
 
+        views.setOnClickPendingIntent(R.id.widget_lyr_cover_play_pause, getPlayPauseIntent())
+        views.setOnClickPendingIntent(R.id.widget_lyr_cover_pill, getPlayPauseIntent())
+        views.setOnClickPendingIntent(R.id.widget_lyr_cover_next, getNextIntent())
+        views.setOnClickPendingIntent(R.id.widget_lyr_cover_prev, getPreviousIntent())
+        views.setOnClickPendingIntent(R.id.widget_lyr_cover_like, getLikeIntent())
+        views.setOnClickPendingIntent(
+            R.id.widget_lyr_cover_lyrics_toggle,
+            getLyricsModeToggleIntent(widgetId),
+        )
         views.setOnClickPendingIntent(R.id.widget_lyr_play_pause, getPlayPauseIntent())
+        views.setOnClickPendingIntent(R.id.widget_lyr_pill, getPlayPauseIntent())
         views.setOnClickPendingIntent(R.id.widget_lyr_skip_next, getNextIntent())
         views.setOnClickPendingIntent(R.id.widget_lyr_skip_prev, getPreviousIntent())
+        views.setOnClickPendingIntent(
+            R.id.widget_lyr_lyrics_toggle,
+            getLyricsModeToggleIntent(widgetId),
+        )
         views.setOnClickPendingIntent(R.id.widget_lyr_bg, getOpenAppIntent())
 
-        val ink = onCardColorFor(config, albumArt)
         listOf(
+            R.id.widget_lyr_cover_title,
+            R.id.widget_lyr_cover_artist,
+            R.id.widget_lyr_cover_elapsed,
+            R.id.widget_lyr_cover_total,
+            R.id.widget_lyr_cover_pill_text,
             R.id.widget_lyr_title,
             R.id.widget_lyr_artist,
+            R.id.widget_lyr_prev2,
             R.id.widget_lyr_prev,
             R.id.widget_lyr_current,
             R.id.widget_lyr_next,
+            R.id.widget_lyr_next2,
+            R.id.widget_lyr_elapsed,
+            R.id.widget_lyr_total,
+            R.id.widget_lyr_pill_text,
         ).forEach { views.setTextColor(it, ink) }
         listOf(
+            R.id.widget_lyr_cover_play_pause,
+            R.id.widget_lyr_cover_prev,
+            R.id.widget_lyr_cover_next,
+            R.id.widget_lyr_cover_like,
+            R.id.widget_lyr_cover_lyrics_toggle,
             R.id.widget_lyr_play_pause,
-            R.id.widget_lyr_skip_next,
             R.id.widget_lyr_skip_prev,
-            R.id.widget_lyr_glyph,
+            R.id.widget_lyr_skip_next,
+            R.id.widget_lyr_lyrics_toggle,
+            R.id.widget_lyr_cover_progress_track,
+            R.id.widget_lyr_cover_progress_fill,
+            R.id.widget_lyr_progress_track,
+            R.id.widget_lyr_progress_fill,
         ).forEach { tint(views, it, ink) }
+
+        sizeGlyphs(
+            views,
+            card,
+            listOf(R.id.widget_lyr_cover_lyrics_toggle, R.id.widget_lyr_lyrics_toggle),
+        )
         return views
+    }
+
+    /**
+     * Full-bleed artwork with the dark scrim the card's white type is designed for.
+     *
+     * The lyric state sits behind more ink so the middle of the artwork can't fight
+     * the lyric window; both states keep a heavier gradient at the bottom where the
+     * scrubber and transport live.
+     */
+    private fun createArtworkBackdrop(
+        albumArt: Bitmap?,
+        card: CardSize,
+        coverMode: Boolean,
+    ): Bitmap {
+        if (albumArt == null) return createCardBackground(defaultCardConfig, null, card)
+
+        val width = card.width
+        val height = card.height
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Center-crop rather than stretch: the card is taller than it is wide and
+        // the artwork is square, so cropping keeps the subject undistorted.
+        val scale = maxOf(width.toFloat() / albumArt.width, height.toFloat() / albumArt.height)
+        val matrix = android.graphics.Matrix().apply {
+            setScale(scale, scale)
+            postTranslate(
+                (width - albumArt.width * scale) / 2f,
+                (height - albumArt.height * scale) / 2f,
+            )
+        }
+        val artPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            isFilterBitmap = true
+            shader = BitmapShader(albumArt, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+                .apply { setLocalMatrix(matrix) }
+        }
+        drawContinuousRoundedRect(
+            canvas,
+            width.toFloat(),
+            height.toFloat(),
+            card.cornerPx,
+            artPaint,
+        )
+
+        val baseDim = if (coverMode) 38 else 150
+        val veil = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(baseDim, 0, 0, 0) }
+        drawContinuousRoundedRect(canvas, width.toFloat(), height.toFloat(), card.cornerPx, veil)
+
+        val scrim = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            shader = LinearGradient(
+                0f, height * 0.38f, 0f, height.toFloat(),
+                intArrayOf(Color.TRANSPARENT, Color.argb(232, 0, 0, 0)),
+                floatArrayOf(0f, 1f),
+                Shader.TileMode.CLAMP,
+            )
+        }
+        drawContinuousRoundedRect(canvas, width.toFloat(), height.toFloat(), card.cornerPx, scrim)
+
+        // Hairline rim so the card separates from a light wallpaper.
+        val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = (height * 0.008f).coerceAtLeast(1f)
+            color = Color.argb(40, 255, 255, 255)
+        }
+        drawContinuousRoundedRect(canvas, width.toFloat(), height.toFloat(), card.cornerPx, rim)
+        return bitmap
+    }
+
+    /** mm:ss for the widget's scrubber, matching the reference card's "01:20". */
+    private fun formatWidgetTime(positionMs: Long): String {
+        if (positionMs <= 0L) return "00:00"
+        val totalSeconds = positionMs / 1000
+        return String.format(
+            java.util.Locale.US,
+            "%02d:%02d",
+            totalSeconds / 60,
+            totalSeconds % 60,
+        )
+    }
+
+    private fun getLyricsModeToggleIntent(widgetId: Int): PendingIntent {
+        val intent = Intent(context, MusicWidgetReceiver::class.java).apply {
+            action = MusicWidgetReceiver.ACTION_TOGGLE_LYRICS_MODE
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+        }
+        return PendingIntent.getBroadcast(
+            context,
+            900 + widgetId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
     }
 
     private fun getOpenAppIntent(): PendingIntent {

@@ -1545,4 +1545,38 @@
     <string name="ai_key_failed">Key didn\'t work</string>
     <string name="ai_key_edit">Edit key</string>
     <string name="ai_key_save_anyway">Save anyway</string>
+
+    <!-- Share card customiser -->
+    <string name="share_card_layout">Card layout</string>
+    <string name="share_aspect_ratio">Aspect ratio</string>
+    <string name="share_background">Background</string>
+    <string name="share_typography">Typography</string>
+    <string name="share_alignment">Text alignment</string>
+    <string name="share_watermark">Watermark</string>
+    <string name="share_backdrop_dim">Backdrop dim</string>
+    <string name="share_backdrop_blur">Backdrop blur</string>
+    <string name="share_save_image">Save Image</string>
+    <string name="share_saved">Saved to your gallery</string>
+    <string name="share_template_classic">Classic Apple Blur</string>
+    <string name="share_template_editorial">Editorial Poster</string>
+    <string name="share_template_full_bleed">Full-Bleed Art</string>
+    <string name="share_template_obsidian">Minimal Obsidian</string>
+    <string name="share_template_vinyl">Vinyl Frame</string>
+    <string name="share_ratio_square">Square 1:1</string>
+    <string name="share_ratio_story">Story 9:16</string>
+    <string name="share_ratio_auto">Compact Auto</string>
+    <string name="share_bg_solid">Solid</string>
+    <string name="share_bg_blur">Blurred Art</string>
+    <string name="share_bg_gradient">Gradient</string>
+    <string name="share_bg_mesh">Mesh Gradient</string>
+    <string name="share_bg_full_bleed">Full-Bleed Cover</string>
+    <string name="share_font_chillax">Chillax Display</string>
+    <string name="share_font_jakarta">Plus Jakarta Sans</string>
+    <string name="share_font_serif">Editorial Serif</string>
+    <string name="share_font_mono">Mono</string>
+    <string name="share_align_left">Left</string>
+    <string name="share_align_center">Center</string>
+    <string name="share_watermark_minimal">Minimal</string>
+    <string name="share_watermark_pill">Pill Badge</string>
+    <string name="share_watermark_hidden">Hidden</string>
 </resources>

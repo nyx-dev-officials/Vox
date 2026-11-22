@@ -18,6 +18,14 @@ enum class WidgetBackground {
     IMAGE,
 }
 
+/** Which of the two states the artwork lyrics widget shows. */
+enum class LyricsWidgetMode {
+    /** Full-bleed artwork, artist and title bottom-left, heart bottom-right. */
+    COVER,
+    /** The same artwork darkened, with the synced lyric window in the middle. */
+    LYRICS,
+}
+
 /**
  * Per-instance widget settings.
  *
@@ -38,6 +46,8 @@ data class WidgetConfig(
      * null = act on whatever is currently playing.
      */
     val playlistId: String? = null,
+    /** Only the artwork lyrics widget reads this; the toggle in the card flips it. */
+    val lyricsMode: LyricsWidgetMode = LyricsWidgetMode.COVER,
 ) {
     companion object {
         private const val FILE = "widget_config"
@@ -59,6 +69,9 @@ data class WidgetConfig(
                 showPrevNext = p.decodeBool(keyOf(widgetId, "prevnext"), default.showPrevNext),
                 showLike = p.decodeBool(keyOf(widgetId, "like"), default.showLike),
                 playlistId = p.decodeString(keyOf(widgetId, "playlist")),
+                lyricsMode = p.decodeString(keyOf(widgetId, "lyrmode"))
+                    ?.let { name -> LyricsWidgetMode.entries.firstOrNull { it.name == name } }
+                    ?: LyricsWidgetMode.COVER,
             )
         }
 
@@ -70,13 +83,14 @@ data class WidgetConfig(
             p.encode(keyOf(widgetId, "prevnext"), config.showPrevNext)
             p.encode(keyOf(widgetId, "like"), config.showLike)
             p.encode(keyOf(widgetId, "playlist"), config.playlistId)
+            p.encode(keyOf(widgetId, "lyrmode"), config.lyricsMode.name)
         }
 
         /** Called from onDeleted so removed widgets don't leak their settings forever. */
         fun delete(context: Context, widgetIds: IntArray) {
             val p = prefs(context)
             widgetIds.forEach { id ->
-                listOf("bg", "image", "art", "prevnext", "like", "playlist")
+                listOf("bg", "image", "art", "prevnext", "like", "playlist", "lyrmode")
                     .forEach { p.removeValueForKey(keyOf(id, it)) }
             }
         }

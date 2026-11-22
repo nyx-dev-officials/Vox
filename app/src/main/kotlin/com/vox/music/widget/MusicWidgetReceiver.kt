@@ -82,6 +82,7 @@ open class MusicWidgetReceiver : AppWidgetProvider() {
         super.onReceive(context, intent)
 
         when (intent.action) {
+            ACTION_TOGGLE_LYRICS_MODE -> toggleLyricsMode(context, intent)
             ACTION_PLAY_PAUSE, ACTION_LIKE, ACTION_NEXT, ACTION_PREVIOUS -> {
                 // User interactions from widget buttons can start the service.
                 // Use startForegroundService so the system grants FGS privilege
@@ -99,7 +100,50 @@ open class MusicWidgetReceiver : AppWidgetProvider() {
         }
     }
 
+    /**
+     * Flips the artwork lyrics widget between its cover and lyric states.
+     *
+     * The choice is per widget instance and lives in [WidgetConfig], so the next
+     * repaint from the service already renders the new state. When the service
+     * isn't running there is nothing to repaint from, so the card is refreshed
+     * through the receiver's own idle update instead of a silent no-op.
+     */
+    private fun toggleLyricsMode(context: Context, intent: Intent) {
+        val widgetId = intent.getIntExtra(
+            AppWidgetManager.EXTRA_APPWIDGET_ID,
+            AppWidgetManager.INVALID_APPWIDGET_ID,
+        )
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) return
+
+        val config = WidgetConfig.load(context, widgetId)
+        val next = if (config.lyricsMode == LyricsWidgetMode.COVER) {
+            LyricsWidgetMode.LYRICS
+        } else {
+            LyricsWidgetMode.COVER
+        }
+        WidgetConfig.save(context, widgetId, config.copy(lyricsMode = next))
+
+        if (MusicService.isRunning) {
+            runCatching {
+                context.startService(
+                    Intent(context, MusicService::class.java).apply {
+                        action = ACTION_UPDATE_WIDGET
+                    }
+                )
+            }
+            return
+        }
+
+        context.sendBroadcast(
+            Intent(context, LyricsWidgetReceiver::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
+            }
+        )
+    }
+
     companion object {
+        const val ACTION_TOGGLE_LYRICS_MODE = "com.vox.music.widget.TOGGLE_LYRICS_MODE"
         const val ACTION_PLAY_PAUSE = "com.vox.music.widget.PLAY_PAUSE"
         const val ACTION_LIKE = "com.vox.music.widget.LIKE"
         const val ACTION_NEXT = "com.vox.music.widget.NEXT"
