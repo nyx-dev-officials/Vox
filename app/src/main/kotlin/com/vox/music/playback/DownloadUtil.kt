@@ -189,8 +189,12 @@ class DownloadUtil(
                 return@Factory dataSpec.withStream(it.first)
             }
 
-            val preferAac = appContext.dataStore.get(SaveDownloadsToMusicFolderKey, true)
-            val playbackData = resolvePlaybackData(videoId, preferAac, if (upgrade) AudioQuality.HIGH else audioQuality)
+            val preferAac = appContext.dataStore.get(SaveDownloadsToMusicFolderKey, true) &&
+                audioQuality != AudioQuality.MAX
+            // MAX never downgrades to the AAC-for-compatibility path: the point of it
+            // is the best file the source has, FLAC included.
+            val requestedQuality = if (upgrade) AudioQuality.MAX else audioQuality
+            val playbackData = resolvePlaybackData(videoId, preferAac, requestedQuality, allowDash = false)
             // The stored format and song row keep describing the current copy until the upgrade completes.
             if (upgrade) pendingUpgrades[videoId] = formatEntity(videoId, playbackData)
             else saveResolvedMetadata(mediaId, playbackData)
@@ -205,6 +209,7 @@ class DownloadUtil(
         mediaId: String,
         preferAac: Boolean,
         quality: AudioQuality = audioQuality,
+        allowDash: Boolean = true,
     ): YTPlayerUtils.PlaybackData =
         runBlocking(Dispatchers.IO) {
             YTPlayerUtils.playerResponseForPlayback(
@@ -214,6 +219,7 @@ class DownloadUtil(
                 context = appContext,
                 allowLossless = true,
                 preferAac = preferAac,
+                allowDash = allowDash,
             )
         }.getOrThrow()
 

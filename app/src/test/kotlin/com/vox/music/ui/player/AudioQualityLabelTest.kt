@@ -6,9 +6,9 @@ import org.junit.Test
 
 class AudioQualityLabelTest {
     @Test
-    fun `apple wording for lossless, hi-res and atmos`() {
-        assertEquals(AudioQuality("Lossless", true), audioQualityLabel("audio/flac", null, 900_000, 44_100))
-        assertEquals(AudioQuality("Hi-Res Lossless", true), audioQualityLabel("audio/flac", null, null, 96_000))
+    fun `lossless is labelled by tier, bit depth and sample rate`() {
+        assertEquals(AudioQuality("CD · 16/44.1", true), audioQualityLabel("audio/flac", null, 900_000, 44_100))
+        assertEquals(AudioQuality("MAX · 24/96", true), audioQualityLabel("audio/flac", null, null, 96_000))
         assertEquals(AudioQuality("Dolby Atmos", false), audioQualityLabel("audio/mp4", "ec-3", 768_000, 48_000))
     }
 
@@ -21,8 +21,8 @@ class AudioQualityLabelTest {
 
     @Test
     fun `card detail line`() {
-        assertEquals("96 kHz FLAC", audioQualityDetail("audio/flac", null, null, 96_000))
-        assertEquals("44.1 kHz ALAC", audioQualityDetail("audio/mp4", "alac", null, 44_100))
+        assertEquals("24-bit/96 kHz FLAC", audioQualityDetail("audio/flac", null, null, 96_000))
+        assertEquals("16-bit/44.1 kHz ALAC", audioQualityDetail("audio/mp4", "alac", null, 44_100))
         assertEquals("Opus · 151 kbps · 48 kHz", audioQualityDetail("audio/webm", "opus", 151_018, 48_000))
     }
 

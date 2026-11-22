@@ -63,6 +63,12 @@ android {
         buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmKey\"")
         buildConfigField("String", "LASTFM_SECRET", "\"$lastFmSecret\"")
 
+        // Tidal developer app credentials: local.properties or env only, never committed.
+        val tidalClientId = localProperties.getProperty("TIDAL_CLIENT_ID") ?: System.getenv("TIDAL_CLIENT_ID") ?: ""
+        val tidalClientSecret = localProperties.getProperty("TIDAL_CLIENT_SECRET") ?: System.getenv("TIDAL_CLIENT_SECRET") ?: ""
+        buildConfigField("String", "TIDAL_CLIENT_ID", "\"$tidalClientId\"")
+        buildConfigField("String", "TIDAL_CLIENT_SECRET", "\"$tidalClientSecret\"")
+
         val isNightly = project.hasProperty("nightly") && project.property("nightly") == "true"
         buildConfigField("Boolean", "IS_NIGHTLY", isNightly.toString())
         // CI stamps the workflow run number so a nightly build knows which one it is.

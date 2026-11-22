@@ -38,10 +38,11 @@ import com.vox.music.constants.ModuleSettingsKey
 import com.vox.music.constants.SaavnAudioQuality
 import com.vox.music.constants.SaavnAudioQualityKey
 import com.vox.music.constants.TidalInstanceUrlKey
-import com.vox.music.constants.TidalQuality
-import com.vox.music.constants.TidalQualityKey
-import com.vox.music.utils.tidal.TidalService
-import com.vox.music.utils.tidal.TidalTrack
+import com.vox.music.constants.TidalEngineMode
+import com.vox.music.constants.TidalEngineModeKey
+import com.vox.music.constants.TidalQualityCap
+import com.vox.music.constants.TidalQualityCapKey
+import com.vox.music.utils.tidal.TidalEngine
 import com.music.spine.ModuleManager
 import org.json.JSONArray
 import com.vox.music.utils.cipher.CipherDeobfuscator
@@ -72,41 +73,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
-
-/** Higher first. Ranks Tidal search-result candidates so the matcher below tries
- *  the best-quality candidate first instead of Tidal's own (unordered w.r.t.
- *  quality) search result order. */
-private fun tidalQualityRank(audioQuality: String?): Int = when (audioQuality?.uppercase(java.util.Locale.US)) {
-    "HI_RES_LOSSLESS", "HI_RES" -> 3
-    "LOSSLESS" -> 2
-    "HIGH" -> 1
-    else -> 0
-}
-
-private fun isMatchingTidalCandidate(
-    candidate: TidalTrack,
-    wantedTitle: String,
-    wantedArtists: List<String>,
-    wantedDuration: Int?,
-): Boolean {
-    val candidateTitle = candidate.title.lowercase(java.util.Locale.US)
-    val candidateArtists = candidate.artistNames.map { it.lowercase(java.util.Locale.US) }
-    val titleMatches = candidateTitle.contains(wantedTitle) || wantedTitle.contains(candidateTitle)
-    val artistMatches = wantedArtists.isEmpty() || wantedArtists.any { wantedArtist ->
-        candidateArtists.any { candidateArtist ->
-            candidateArtist.contains(wantedArtist) || wantedArtist.contains(candidateArtist)
-        }
-    }
-
-    // Require an exact title match when duration is unavailable, avoiding loose substring matches.
-    val durationMatches = if (wantedDuration != null && candidate.duration != null) {
-        kotlin.math.abs(candidate.duration - wantedDuration) <= 10
-    } else {
-        candidateTitle == wantedTitle
-    }
-
-    return titleMatches && artistMatches && durationMatches
-}
 
 private fun isAgeRestrictedStatus(status: String): Boolean =
     status == "AGE_CHECK_REQUIRED" ||
@@ -336,6 +302,8 @@ object YTPlayerUtils {
         val streamExpiresInSeconds: Int,
         val isSaavnStream: Boolean = false,
         val isTidalStream: Boolean = false,
+        /** The Tidal manifest is DASH (hi-res) rather than a direct file. */
+        val isTidalDash: Boolean = false,
         val isSpineStream: Boolean = false,
         val isDashStream: Boolean = false,
         val isHlsStream: Boolean = false,
@@ -369,6 +337,8 @@ object YTPlayerUtils {
         forceStandardAudio: Boolean = false,
         requireYouTube: Boolean = false,
         preferAac: Boolean = false,
+        /** False for downloads: a plain progressive file is wanted, not a DASH manifest. */
+        allowDash: Boolean = true,
     ): Result<PlaybackData> {
         if (context != null) {
             // Honor selected quality only when Saavn is enabled.
@@ -443,9 +413,17 @@ object YTPlayerUtils {
                 Timber.tag(TAG).d("═══ SPINE INTERCEPT END ═══")
             } // !forceStandardAudio
 
-            // Try Tidal lossless before Saavn when enabled.
-            if (!forceStandardAudio && !requireYouTube && !forceSelectedQuality && allowLossless && context.dataStore.get(EnableTidalStreamingKey, false)) {
-                Timber.tag(TAG).d("Lossless enabled — trying TIDAL for videoId=$videoId")
+            // Lossless engine: official Tidal first, public proxy second.
+            val engineMode = runCatching {
+                TidalEngineMode.valueOf(
+                    context.dataStore.get(TidalEngineModeKey, TidalEngineMode.HYBRID.name),
+                )
+            }.getOrDefault(TidalEngineMode.HYBRID)
+            val tidalEnabled = context.dataStore.get(EnableTidalStreamingKey, false) &&
+                engineMode != TidalEngineMode.INNERTUBE_ONLY
+
+            if (!forceStandardAudio && !requireYouTube && !forceSelectedQuality && allowLossless && tidalEnabled) {
+                Timber.tag(TAG).d("Lossless enabled (${engineMode.name}) — trying TIDAL for videoId=$videoId")
                 val tidalResult = runCatching {
                     val (currentSong, meta) = resolvePlaybackMetadata(videoId, playlistId)
 
@@ -456,69 +434,52 @@ object YTPlayerUtils {
                         currentSong?.artists?.map { it.name },
                         meta?.videoDetails?.author.orEmpty(),
                     )
-                    val query = normalizeSearchQuery("$title ${artistNames.joinToString(" ")}")
-
-                    val wantedTitle = title.lowercase(java.util.Locale.US)
-                    val wantedArtists = artistNames.map { it.lowercase(java.util.Locale.US) }
-                    val wantedDuration = currentSong?.duration
+                    val cap = runCatching {
+                        TidalQualityCap.valueOf(
+                            context.dataStore.get(TidalQualityCapKey, TidalQualityCap.MAX.name),
+                        )
+                    }.getOrDefault(TidalQualityCap.MAX)
                     val customUrl = context.dataStore.get(TidalInstanceUrlKey, "").ifBlank { null }
 
-                    val candidates = TidalService.search(query, customUrl)
-                    // Rank matches by audio quality because search order is not quality order.
-                    val matchingCandidates = candidates.filter { candidate ->
-                        isMatchingTidalCandidate(
-                            candidate = candidate,
-                            wantedTitle = wantedTitle,
-                            wantedArtists = wantedArtists,
-                            wantedDuration = wantedDuration,
-                        )
-                    }.sortedByDescending { tidalQualityRank(it.audioQuality) }
-
-                    if (matchingCandidates.isEmpty()) {
-                        Timber.tag(TAG).d("TIDAL: no match for \"$query\" — falling back")
+                    val stream = TidalEngine.resolve(
+                        context = context,
+                        title = title,
+                        artists = artistNames,
+                        durationSec = currentSong?.duration,
+                        cap = cap,
+                        allowDash = allowDash,
+                        proxyUrl = customUrl,
+                    )
+                    if (stream == null) {
+                        Timber.tag(TAG).d("TIDAL: no stream for \"$title\" — falling back")
                         return@runCatching null
                     }
 
-                    val quality = runCatching {
-                        TidalQuality.valueOf(context.dataStore.get(TidalQualityKey, TidalQuality.LOSSLESS.name))
-                    }.getOrDefault(TidalQuality.LOSSLESS)
-
-                    var best: TidalTrack? = null
-                    var streamUrl: String? = null
-                    for (candidate in matchingCandidates) {
-                        val url = TidalService.streamUrl(candidate.id, quality.toApiValue(), customUrl)
-                        if (url != null) {
-                            best = candidate
-                            streamUrl = url
-                            break
-                        }
-                    }
-                    if (best == null || streamUrl == null) {
-                        Timber.tag(TAG).d("TIDAL: no stream URL among ${matchingCandidates.size} match(es) for \"$query\" — falling back")
-                        return@runCatching null
-                    }
-
-                    Timber.tag(TAG).i("Tidal: streaming FLAC \"${best.title}\" (id=${best.id}, ${quality.toApiValue()}) for videoId=$videoId")
+                    val codecHeader = stream.mimeType.substringBefore(';').trim()
+                    Timber.tag(TAG).i(
+                        "Tidal: ${stream.quality} ${stream.bitDepth}-bit/${stream.sampleRate / 1000}kHz " +
+                            "(${if (stream.official) "official" else "proxy"}) for videoId=$videoId",
+                    )
                     PlaybackData(
                         audioConfig      = meta?.playerConfig?.audioConfig,
                         videoDetails     = meta?.videoDetails,
                         playbackTracking = meta?.playbackTracking,
                         format           = PlayerResponse.StreamingData.Format(
                             itag             = 9999,               // sentinel: lossless FLAC
-                            url              = streamUrl,
-                            // codecs= segment so the media-info sheet shows "flac", not the "mp3" default
-                            mimeType         = "audio/flac; codecs=\"flac\"",
-                            bitrate          = 1_411_000,          // nominal 16/44.1 stereo, for the badge
+                            url              = stream.url,
+                            mimeType         = "$codecHeader; codecs=\"${stream.codecs}\"",
+                            // Nominal, only used for display: 24/96 stereo ≈ 4.6 Mbit/s, 16/44.1 ≈ 1.4.
+                            bitrate          = if (stream.bitDepth >= 24) 4_608_000 else 1_411_000,
                             width            = null,
                             height           = null,
                             contentLength    = null,
-                            quality          = quality.toApiValue(),
+                            quality          = stream.quality,
                             fps              = null,
                             qualityLabel     = null,
                             averageBitrate   = null,
-                            audioQuality     = quality.toApiValue(),
-                            approxDurationMs = best.duration?.let { (it * 1000L).toString() },
-                            audioSampleRate  = 44100,
+                            audioQuality     = stream.quality,
+                            approxDurationMs = stream.durationSec?.let { (it * 1000L).toString() },
+                            audioSampleRate  = stream.sampleRate,
                             audioChannels    = 2,
                             loudnessDb       = null,
                             lastModified     = null,
@@ -526,13 +487,17 @@ object YTPlayerUtils {
                             cipher           = null,
                             audioTrack       = null,
                         ),
-                        streamUrl              = streamUrl,
+                        streamUrl              = stream.url,
                         streamExpiresInSeconds = 3600,
                         isTidalStream          = true,
+                        isTidalDash            = stream.isDash,
                     )
                 }.getOrNull()
 
                 if (tidalResult != null) return Result.success(tidalResult)
+                if (engineMode == TidalEngineMode.TIDAL_ONLY) {
+                    return Result.failure(IOException("Tidal could not serve this track and Tidal-only mode is on"))
+                }
                 Timber.tag(TAG).d("TIDAL intercept failed or returned null — trying next source")
             }
 

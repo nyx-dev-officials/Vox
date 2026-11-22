@@ -135,6 +135,7 @@ fun PlayerSettings(
             valueText = {
                 when (it) {
                     AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
+                    AudioQuality.MAX -> stringResource(R.string.audio_quality_max)
                     AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
                     AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
                 }
@@ -159,6 +160,7 @@ fun PlayerSettings(
                                 Text(
                                     when (audioQuality) {
                                         AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
+                                        AudioQuality.MAX -> stringResource(R.string.audio_quality_max)
                                         AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
                                         AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
                                     }

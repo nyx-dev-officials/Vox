@@ -110,6 +110,8 @@ import com.vox.music.constants.EnableSaavnStreamingKey
 import com.vox.music.constants.SaavnAudioQualityKey
 import com.vox.music.constants.SaavnFallbackToYouTubeKey
 import com.vox.music.constants.TidalQualityKey
+import com.vox.music.constants.TidalEngineModeKey
+import com.vox.music.constants.TidalQualityCapKey
 import com.vox.music.constants.TidalInstanceUrlKey
 import com.vox.music.constants.AutoLoadMoreKey
 import com.vox.music.constants.AutoSkipNextOnErrorKey
@@ -3475,6 +3477,8 @@ class MusicService :
         (prefs[EnableTidalStreamingKey] ?: false).toString(),
         prefs[TidalQualityKey].orEmpty(),
         prefs[TidalInstanceUrlKey].orEmpty(),
+        prefs[TidalEngineModeKey].orEmpty(),
+        prefs[TidalQualityCapKey].orEmpty(),
         (prefs[ForceSelectedQualityKey] ?: false).toString(),
     )
 
@@ -3482,6 +3486,7 @@ class MusicService :
         val uri: android.net.Uri,
         val directFile: Boolean,
         val hls: Boolean = false,
+        val dash: Boolean = false,
     )
 
     /** Resolves stream URLs, builds data sources, and prefetches upcoming tracks. */
@@ -3511,6 +3516,7 @@ class MusicService :
         }
 
         private val hlsStreamKeys = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+        private val dashStreamKeys = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
 
         /** First later queue item playable with no network: a finished download, or a fully cached stream. */
         fun nextOfflinePlayableIndex(): Int? {
@@ -3593,7 +3599,8 @@ class MusicService :
 
             val streamUrl = playbackData.streamUrl
             if (playbackData.isHlsStream) hlsStreamKeys.add(effKey) else hlsStreamKeys.remove(effKey)
-            Timber.tag("SpineDebug").d("DataSourceResolver: resolved mediaId=$mediaId isSpineStream=${playbackData.isSpineStream} isTidalStream=${playbackData.isTidalStream} hls=${playbackData.isHlsStream}")
+            if (playbackData.isTidalDash) dashStreamKeys.add(effKey) else dashStreamKeys.remove(effKey)
+            Timber.tag("SpineDebug").d("DataSourceResolver: resolved mediaId=$mediaId isSpineStream=${playbackData.isSpineStream} isTidalStream=${playbackData.isTidalStream} hls=${playbackData.isHlsStream} dash=${playbackData.isTidalDash}")
 
             if (playbackData.isTidalStream || playbackData.isSpineStream) {
                 losslessStreamMediaIds.add(mediaId)
@@ -3608,6 +3615,7 @@ class MusicService :
                 uri = streamUrl.toUri(),
                 directFile = playbackData.isTidalStream || playbackData.isSpineStream,
                 hls = playbackData.isHlsStream,
+                dash = playbackData.isTidalDash,
             )
         }
 
@@ -3673,7 +3681,8 @@ class MusicService :
                     val cached = songUrlCache[effKey]?.takeIf { it.second > System.currentTimeMillis() }
                     val resolved = cached?.let {
                         ResolvedStream(it.first.toUri(), directFile = false,
-                            hls = effKey in hlsStreamKeys || it.first.substringBefore('?').endsWith(".m3u8", true))
+                            hls = effKey in hlsStreamKeys || it.first.substringBefore('?').endsWith(".m3u8", true),
+                            dash = effKey in dashStreamKeys || it.first.substringBefore('?').endsWith(".mpd", true))
                     } ?: fetchResolvedStream(mediaId, effKey)
                     if (resolved.hls) {
                         kotlinx.coroutines.withTimeout(45_000L) {
@@ -3794,13 +3803,15 @@ class MusicService :
                             ?.takeUnless { bypassCacheForQualityChange.contains(mediaId) }
                         val resolved = cached?.let {
                             ResolvedStream(it.first.toUri(), directFile = false,
-                                hls = key in hlsStreamKeys || it.first.substringBefore('?').endsWith(".m3u8", true))
+                                hls = key in hlsStreamKeys || it.first.substringBefore('?').endsWith(".m3u8", true),
+                                dash = key in dashStreamKeys || it.first.substringBefore('?').endsWith(".mpd", true))
                         } ?: fetchResolvedStream(mediaId, key)
-                        if (resolved.hls) {
-                            adaptive.createMediaSource(mediaItem.buildUpon().setUri(resolved.uri)
+                        when {
+                            resolved.hls -> adaptive.createMediaSource(mediaItem.buildUpon().setUri(resolved.uri)
                                 .setCustomCacheKey(null).setMimeType(androidx.media3.common.MimeTypes.APPLICATION_M3U8).build())
-                        } else {
-                            progressive.createMediaSource(mediaItem)
+                            resolved.dash -> adaptive.createMediaSource(mediaItem.buildUpon().setUri(resolved.uri)
+                                .setCustomCacheKey(null).setMimeType(androidx.media3.common.MimeTypes.APPLICATION_MPD).build())
+                            else -> progressive.createMediaSource(mediaItem)
                         }
                     }
             }

@@ -139,8 +139,11 @@ fun audioQualityLabel(mime: String?, codecs: String?, bitrate: Int?, sampleRate:
         containsFormat("ec-3") || containsFormat("eac3") || containsFormat("joc") || containsFormat("atmos") ->
             AudioQuality("Dolby Atmos", lossless = false)
         containsFormat("flac") || containsFormat("alac") -> {
-            val label = if ((sampleRate ?: 0) > 48_000) "Hi-Res Lossless" else "Lossless"
-            AudioQuality(label, lossless = true)
+            val khz = (sampleRate ?: 44_100) / 1000f
+            val rate = if (khz % 1f == 0f) khz.toInt().toString() else "%.1f".format(khz)
+            // Tidal hi-res masters are 24-bit; CD-tier lossless is 16-bit.
+            if ((sampleRate ?: 0) > 48_000) AudioQuality("MAX · 24/$rate", lossless = true)
+            else AudioQuality("CD · 16/$rate", lossless = true)
         }
         else -> {
             val codec = when {
@@ -169,7 +172,8 @@ fun audioQualityDetail(mime: String?, codecs: String?, bitrate: Int?, sampleRate
         else -> "Audio"
     }
     return if (codec == "FLAC" || codec == "ALAC") {
-        listOfNotNull(khz, codec).joinToString(" ")
+        val depth = if ((sampleRate ?: 0) > 48_000) "24-bit" else "16-bit"
+        if (khz == null) "$depth $codec" else "$depth/$khz $codec"
     } else {
         listOfNotNull(codec, bitrate?.let { "${it / 1000} kbps" }, khz).joinToString(" · ")
     }

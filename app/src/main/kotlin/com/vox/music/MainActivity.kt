@@ -126,8 +126,29 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // A Tidal OAuth redirect is consumed here and never routed as a deep link.
+        if (consumeTidalRedirect(intent)) return
         // Retain the intent until Compose's listener is ready to handle it.
         pendingIntent = intent
+    }
+
+    /** True when [intent] was the Tidal login redirect (handled, not to be routed). */
+    private fun consumeTidalRedirect(intent: Intent?): Boolean {
+        val data = intent?.data ?: return false
+        if (data.scheme != "vox" || data.host != "tidal-auth") return false
+        intent.data = null
+        // Token exchange is a network call; keep it off the main thread and report back.
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val error = com.vox.music.utils.tidal.TidalAuth.completeLogin(this@MainActivity, data)
+            runOnUiThread {
+                android.widget.Toast.makeText(
+                    this@MainActivity,
+                    error ?: getString(R.string.tidal_session_active),
+                    if (error == null) android.widget.Toast.LENGTH_SHORT else android.widget.Toast.LENGTH_LONG,
+                ).show()
+            }
+        }
+        return true
     }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -145,6 +166,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Cold-start Tidal redirect (the process may have been killed mid-login).
+        consumeTidalRedirect(intent)
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             val locale = dataStore[AppLanguageKey]

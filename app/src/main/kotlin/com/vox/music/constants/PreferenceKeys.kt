@@ -185,6 +185,9 @@ enum class AudioQuality {
     AUTO,
     HIGH,
     LOW,
+    /** Best the source can deliver: highest-bitrate Opus/AAC on Innertube, and
+     *  lossless FLAC when a Tidal engine is enabled. Downloads honour it too. */
+    MAX,
 }
 
 val AudioOffload = booleanPreferencesKey("enableOffload")
@@ -216,6 +219,50 @@ val ForceSelectedQualityKey = booleanPreferencesKey("forceSelectedQuality")
 val EnableTidalStreamingKey = booleanPreferencesKey("enableTidalStreaming")
 val TidalQualityKey         = stringPreferencesKey("tidalQuality")
 val TidalInstanceUrlKey     = stringPreferencesKey("tidalInstanceUrl")
+
+/** Engine routing for lossless playback (official Tidal vs. proxy vs. Innertube). */
+val TidalEngineModeKey = stringPreferencesKey("tidalEngineMode")
+
+/** Ceiling requested from Tidal. Never a floor: a track that only exists at CD
+ *  quality still plays at CD instead of being refused. */
+val TidalQualityCapKey = stringPreferencesKey("tidalQualityCap")
+
+enum class TidalEngineMode {
+    /** Official Tidal first, public proxy second, Innertube when both miss. */
+    HYBRID,
+    /** Tidal only — a miss fails instead of silently serving Opus. */
+    TIDAL_ONLY,
+    /** Ignore every lossless source and stay on Innertube. */
+    INNERTUBE_ONLY;
+
+    fun toLabel() = when (this) {
+        HYBRID        -> "Tidal Max + Innertube fallback"
+        TIDAL_ONLY    -> "Tidal only"
+        INNERTUBE_ONLY -> "Innertube only"
+    }
+}
+
+enum class TidalQualityCap {
+    /** 24-bit/192 kHz FLAC when the master has it. */
+    MAX,
+    /** 16-bit/44.1 kHz FLAC. */
+    CD,
+    /** Tidal HIGH (AAC) — last resort before Innertube. */
+    HIGH;
+
+    fun toLabel() = when (this) {
+        MAX  -> "Max · 24-bit/192 kHz FLAC"
+        CD   -> "CD · 16-bit/44.1 kHz FLAC"
+        HIGH -> "High · 320 kbps AAC"
+    }
+
+    /** Formats to ask Tidal for, best first. */
+    fun apiValues(): List<String> = when (this) {
+        MAX  -> listOf("HI_RES_LOSSLESS", "LOSSLESS", "HIGH")
+        CD   -> listOf("LOSSLESS", "HIGH")
+        HIGH -> listOf("HIGH")
+    }
+}
 
 enum class TidalQuality {
     LOSSLESS,   // 16-bit/44.1kHz FLAC — direct URL, ships now

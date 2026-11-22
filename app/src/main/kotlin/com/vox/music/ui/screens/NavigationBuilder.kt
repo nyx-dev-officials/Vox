@@ -86,6 +86,7 @@ import com.vox.music.ui.screens.settings.PlayerAdvancedSettings
 import com.vox.music.ui.screens.settings.AppearanceAdvancedSettings
 import com.vox.music.ui.screens.settings.ContentAdvancedSettings
 import com.vox.music.ui.screens.settings.JioSettings
+import com.vox.music.ui.screens.settings.TidalSettings
 import com.vox.music.ui.screens.settings.LocalFoldersSettingsScreen
 import com.vox.music.ui.screens.settings.ScanMusicScreen
 import com.vox.music.ui.screens.settings.SongTransitionsScreen
@@ -565,6 +566,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     sharedComposable("settings/player/jio") {
         JioSettings(navController, scrollBehavior)
+    }
+
+    sharedComposable("settings/player/tidal") {
+        TidalSettings(navController, scrollBehavior)
     }
 
     sharedComposable("settings/scan_music") {

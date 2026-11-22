@@ -146,6 +146,8 @@ object SettingsHubs {
                     SettingsLink("Advanced playback", R.drawable.settings, { systemGray }, route("settings/player/advanced"),
                         "Offload, bit-perfect and queue rules", "offload bit perfect duplicates history duration"),
                     SettingsLink("JioSaavn", R.drawable.music_note, { systemTeal }, route("settings/player/jio"), "Streaming source settings"),
+                    SettingsLink("Tidal Max", R.drawable.music_note, { systemTeal }, route("settings/player/tidal"),
+                        "Lossless engine, login and quality ceiling", "flac hi-res lossless tidal oauth"),
                     SettingsLink("AI DJ analysis", R.drawable.equalizer, { systemPurple }, route("ai_dj_set"),
                         "Analyze songs and build a mix", "bpm key mix analysis"),
                 ),
