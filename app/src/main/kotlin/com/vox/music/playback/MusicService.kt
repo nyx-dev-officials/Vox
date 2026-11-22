@@ -153,6 +153,7 @@ import com.vox.music.constants.IslandMetadataLyricsKey
 import com.vox.music.constants.IslandYOffsetKey
 import com.vox.music.constants.LiveIslandOverlayKey
 import com.vox.music.core.updater.downloadmanager.VoxNotificationProvider
+import com.vox.music.island.IslandArtworkData
 import com.vox.music.island.IslandNotificationLyrics
 import com.vox.music.island.IslandOverlayController
 import com.vox.music.lyrics.LyricsEntry
@@ -450,6 +451,7 @@ class MusicService :
     private var cachedIslandOverlay = false
     private var cachedIslandMetadataLyrics = false
     private var cachedIslandYOffset = 0
+    private val islandArtworkData by lazy { IslandArtworkData(this) }
 
     private var crossfade: CrossfadeController? = null
     private var trackAnalyzer: TrackAnalyzer? = null
@@ -842,6 +844,7 @@ class MusicService :
         observeTransitionPreferences()
 
         observeIsland()
+        publishIslandArtwork()
 
         restorePersistentPlaybackState()
 
@@ -936,6 +939,40 @@ class MusicService :
             val found = lyricsHelper.getLyrics(metadata, initial, ::persistUpgrade)
             if (found.lyrics != LyricsEntity.LYRICS_NOT_FOUND || lastWritten == null || changed) persistUpgrade(found)
 
+        }
+    }
+
+    /**
+     * OEM islands that only read raw bitmap bytes ignore artworkUri, so the current
+     * item gets a 256 px JPEG in MediaMetadata.artworkData as soon as its track
+     * starts. Only metadata changes, which Media3 documents as a seamless
+     * replaceMediaItem: the media source stays, nothing re-buffers.
+     */
+    private fun publishIslandArtwork() {
+        scope.launch {
+            currentMediaMetadata
+                .map { metadata -> metadata?.let { it.id to it.thumbnailUrl } }
+                .distinctUntilChanged()
+                .collect { target ->
+                    val (id, url) = target ?: return@collect
+                    val index = player.currentMediaItemIndex
+                    val item = player.currentMediaItem ?: return@collect
+                    if (item.mediaId != id || item.mediaMetadata.artworkData != null) return@collect
+                    val bytes = islandArtworkData.bytesFor(url) ?: return@collect
+                    // The track can change while the cover decodes.
+                    if (player.currentMediaItem?.mediaId != id) return@collect
+                    val enriched = item.buildUpon()
+                        .setMediaMetadata(
+                            item.mediaMetadata.buildUpon()
+                                .setArtworkData(
+                                    bytes,
+                                    androidx.media3.common.MediaMetadata.PICTURE_TYPE_FRONT_COVER,
+                                )
+                                .build(),
+                        )
+                        .build()
+                    runCatching { player.replaceMediaItem(index, enriched) }
+                }
         }
     }
 
