@@ -9,6 +9,7 @@ package com.vox.music.playback
 
 import android.app.Notification
 import android.app.NotificationChannel
+import android.app.ActivityManager
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.media.AudioDeviceCallback
@@ -148,6 +149,14 @@ import com.vox.music.constants.MediaSessionConstants.CommandToggleLike
 import com.vox.music.constants.MediaSessionConstants.CommandToggleRepeatMode
 import com.vox.music.constants.MediaSessionConstants.CommandToggleShuffle
 import com.vox.music.constants.MediaSessionConstants.CommandToggleStartRadio
+import com.vox.music.constants.IslandMetadataLyricsKey
+import com.vox.music.constants.IslandYOffsetKey
+import com.vox.music.constants.LiveIslandOverlayKey
+import com.vox.music.core.updater.downloadmanager.VoxNotificationProvider
+import com.vox.music.island.IslandNotificationLyrics
+import com.vox.music.island.IslandOverlayController
+import com.vox.music.lyrics.LyricsEntry
+import com.vox.music.lyrics.LyricsUtils
 import com.vox.music.constants.PauseListenHistoryKey
 import com.vox.music.history.ListenHistorySettings
 import com.vox.music.history.ListenHistorySettingsState
@@ -430,6 +439,18 @@ class MusicService :
     private var cachedDspHighPass = false
     private var cachedDspMidnight = false
 
+    // Live Island. Mode A is a window above other apps, Mode B rewrites the media
+    // notification title. Both are off until the user turns them on, and the
+    // 250 ms tick below only runs while one of them is on.
+    private var islandOverlay: IslandOverlayController? = null
+    private var islandJob: Job? = null
+    private var islandLyricsMediaId: String? = null
+    private var islandLines: List<LyricsEntry> = emptyList()
+    private var islandLastLine: String? = null
+    private var cachedIslandOverlay = false
+    private var cachedIslandMetadataLyrics = false
+    private var cachedIslandYOffset = 0
+
     private var crossfade: CrossfadeController? = null
     private var trackAnalyzer: TrackAnalyzer? = null
 
@@ -688,12 +709,15 @@ class MusicService :
 
         startForegroundNotification()
 
+        // VoxNotificationProvider wraps the default one and promotes the
+        // notification to an Android 16 status chip (Live Updates), which is what
+        // the platform island reads. MediaStyle itself already comes from Media3.
         setMediaNotificationProvider(
-            DefaultMediaNotificationProvider(
+            VoxNotificationProvider(
                 this,
                 { NOTIFICATION_ID },
                 CHANNEL_ID,
-                R.string.music_player
+                R.string.music_player,
             )
                 .apply {
                     setSmallIcon(R.drawable.vox_notification)
@@ -817,6 +841,8 @@ class MusicService :
 
         observeTransitionPreferences()
 
+        observeIsland()
+
         restorePersistentPlaybackState()
 
         startQueuePersistence()
@@ -911,6 +937,134 @@ class MusicService :
             if (found.lyrics != LyricsEntity.LYRICS_NOT_FOUND || lastWritten == null || changed) persistUpgrade(found)
 
         }
+    }
+
+    /**
+     * Live Island. One tick drives both modes because it is the only place that
+     * already has the play position and the parsed lines; nothing runs while both
+     * modes are off.
+     */
+    private fun observeIsland() {
+        islandOverlay = IslandOverlayController(this, ::openPlayerFromIsland)
+        scope.launch {
+            combine(
+                dataStore.data.map { it[LiveIslandOverlayKey] ?: false },
+                dataStore.data.map { it[IslandMetadataLyricsKey] ?: false },
+                dataStore.data.map { it[IslandYOffsetKey] ?: 0 },
+            ) { overlay, metadata, offset -> Triple(overlay, metadata, offset) }
+                .distinctUntilChanged()
+                .collect { (overlay, metadata, offset) ->
+                    cachedIslandOverlay = overlay
+                    cachedIslandMetadataLyrics = metadata
+                    cachedIslandYOffset = offset
+                    IslandNotificationLyrics.enabled = metadata
+
+                    if (!overlay && !metadata) {
+                        stopIslandTicker()
+                        islandOverlay?.hide()
+                        islandLastLine = null
+                        IslandNotificationLyrics.line = null
+                        refreshIslandNotification(restore = true)
+                    } else {
+                        startIslandTicker()
+                    }
+                }
+        }
+    }
+
+    private fun startIslandTicker() {
+        if (islandJob?.isActive == true) return
+        islandJob = scope.launch {
+            while (isActive) {
+                runCatching { renderIsland() }
+                delay(250)
+            }
+        }
+    }
+
+    private fun stopIslandTicker() {
+        islandJob?.cancel()
+        islandJob = null
+    }
+
+    private suspend fun renderIsland() {
+        val item = player.currentMediaItem
+        if (item == null || !player.isPlaying) {
+            islandOverlay?.hide()
+            // A paused notification shows the song again, not the last line.
+            if (islandLastLine != null) {
+                islandLastLine = null
+                IslandNotificationLyrics.line = null
+                if (cachedIslandMetadataLyrics) refreshIslandNotification(restore = true)
+            }
+            return
+        }
+        if (item.mediaId != islandLyricsMediaId) {
+            islandLyricsMediaId = item.mediaId
+            // The previous song's line must not survive into the new notification.
+            islandLastLine = null
+            IslandNotificationLyrics.line = null
+            if (cachedIslandMetadataLyrics) refreshIslandNotification(restore = true)
+            // Parse once per track: the 250 ms tick only re-runs the binary search.
+            islandLines = runCatching {
+                database.lyrics(item.mediaId).first()?.lyrics?.let(LyricsUtils::parseLyrics)
+            }.getOrNull().orEmpty()
+        }
+
+        val line = if (islandLines.isEmpty()) {
+            null
+        } else {
+            islandLines
+                .getOrNull(LyricsUtils.findCurrentLineIndex(islandLines, player.currentPosition))
+                ?.text
+                ?.takeIf { it.isNotBlank() }
+        }
+
+        if (line != islandLastLine) {
+            islandLastLine = line
+            IslandNotificationLyrics.line = line
+            if (cachedIslandMetadataLyrics) refreshIslandNotification(restore = line == null)
+        }
+
+        // The in-app capsule in AppRootContent already covers the foreground case.
+        if (!cachedIslandOverlay || line == null || isAppForeground()) {
+            islandOverlay?.hide()
+            return
+        }
+        islandOverlay?.show(
+            mediaId = item.mediaId,
+            line = line,
+            artworkUrl = item.mediaMetadata.artworkUri?.toString()
+                ?: currentMediaMetadata.value?.thumbnailUrl,
+            yOffsetDp = cachedIslandYOffset,
+        )
+    }
+
+    /** Mode B: refresh the live notification in place, keeping its media session token. */
+    private fun refreshIslandNotification(restore: Boolean) {
+        val manager = getSystemService(NotificationManager::class.java) ?: return
+        val active = runCatching {
+            manager.activeNotifications.firstOrNull { it.id == NOTIFICATION_ID }?.notification
+        }.getOrNull() ?: return
+        val next = if (restore) {
+            IslandNotificationLyrics.restore(this, active)
+        } else {
+            IslandNotificationLyrics.rewrite(this, active, cachedIslandMetadataLyrics)
+        }
+        if (next !== active) runCatching { manager.notify(NOTIFICATION_ID, next) }
+    }
+
+    private fun isAppForeground(): Boolean {
+        val info = ActivityManager.RunningAppProcessInfo()
+        ActivityManager.getMyMemoryState(info)
+        return info.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+    }
+
+    private fun openPlayerFromIsland() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        runCatching { startActivity(intent) }
     }
 
     private fun observeAudioProcessingPreferences() {
@@ -4085,6 +4239,9 @@ class MusicService :
 
     override fun onDestroy() {
         isRunning = false
+        stopIslandTicker()
+        islandOverlay?.release()
+        islandOverlay = null
 
         try {
             unregisterReceiver(screenStateReceiver)

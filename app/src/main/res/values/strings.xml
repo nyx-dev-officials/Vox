@@ -579,6 +579,13 @@
     <string name="live_island_offset">Vertical position</string>
     <string name="live_island_offset_desc">Nudge the pill up or down to clear taller cut-outs.</string>
     <string name="live_island_permission">Allow display over other apps so the pill can appear above the player.</string>
+    <string name="live_island_in_app_desc">Show the current lyric line in a pill at the cut-out while Vox is on screen.</string>
+    <string name="live_island_overlay">Show over other apps</string>
+    <string name="live_island_overlay_desc">Draw the same pill above whatever app is on screen while music plays.</string>
+    <string name="live_island_overlay_permission">Needs \"Display over other apps\". Tap to grant it.</string>
+    <string name="live_island_metadata">Lyrics in the system island</string>
+    <string name="live_island_metadata_desc">Sends the current line into the media notification so OEM islands and dynamicSpot mirror it.</string>
+    <string name="live_island_metadata_warning">While this is on, the notification, Bluetooth and car displays show the lyric instead of the song title.</string>
     <string name="audio_quality_lossless">Lossless</string>
     <string name="queue">Queue</string>
     <string name="persistent_queue">Persistent queue</string>

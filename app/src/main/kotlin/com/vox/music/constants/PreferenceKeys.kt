@@ -218,6 +218,11 @@ val DspMidnightKey = booleanPreferencesKey("dspMidnight")
 // Live Island / punch-hole lyric pill.
 val LiveIslandPillKey = booleanPreferencesKey("liveIslandPill")
 val IslandYOffsetKey  = intPreferencesKey("islandYOffset")
+/** Mode A: draw the capsule above other apps. Needs the SYSTEM_ALERT_WINDOW app op. */
+val LiveIslandOverlayKey = booleanPreferencesKey("liveIslandOverlay")
+/** Mode B: put the current lyric into the media notification title so OEM islands
+ *  and dynamicSpot mirror it. Also changes Bluetooth and car displays. */
+val IslandMetadataLyricsKey = booleanPreferencesKey("islandMetadataLyrics")
 
 // JioSaavn streaming
 val EnableSaavnStreamingKey = booleanPreferencesKey("enableSaavnStreaming")

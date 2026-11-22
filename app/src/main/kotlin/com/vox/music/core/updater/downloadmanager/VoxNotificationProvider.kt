@@ -14,6 +14,7 @@ import androidx.media3.session.MediaNotification
 import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
 import com.vox.music.R
+import com.vox.music.island.IslandNotificationLyrics
 import java.util.Locale
 
 /**
@@ -132,10 +133,24 @@ class VoxNotificationProvider(
                 }
             }
 
-            return MediaNotification(mediaNotification.notificationId, updatedNotification)
+            val themed = IslandNotificationLyrics.rewrite(
+                context,
+                updatedNotification,
+                IslandNotificationLyrics.enabled,
+            )
+            return MediaNotification(mediaNotification.notificationId, themed)
         }
 
-        return mediaNotification
+        val themed = IslandNotificationLyrics.rewrite(
+            context,
+            mediaNotification.notification,
+            IslandNotificationLyrics.enabled,
+        )
+        return if (themed === mediaNotification.notification) {
+            mediaNotification
+        } else {
+            MediaNotification(mediaNotification.notificationId, themed)
+        }
     }
 
     override fun handleCustomCommand(session: MediaSession, action: String, extras: Bundle): Boolean =
