@@ -94,6 +94,10 @@ internal fun ShareLyricsCustomizer(
     var backdropBlur by remember { mutableFloatStateOf(0.55f) }
     var fontStyle by remember { mutableStateOf(ShareFontStyle.CHILLAX) }
     var watermark by remember { mutableStateOf(ShareWatermarkStyle.MINIMAL) }
+    val (signature, onSignature) = com.vox.music.utils.rememberPreference(
+        com.vox.music.constants.ShareSignatureKey,
+        defaultValue = "",
+    )
     var centered by remember { mutableStateOf(defaultCentered) }
     var background by remember { mutableStateOf(Color(0xFF121212)) }
     var primaryInk by remember { mutableStateOf(Color.White) }
@@ -183,9 +187,78 @@ internal fun ShareLyricsCustomizer(
         aspectRatio = ratio,
         fontStyle = fontStyle,
         watermark = watermark,
+        signature = signature.takeIf { it.isNotBlank() },
         backdropDim = backdropDim,
         backdropBlur = backdropBlur,
     )
+
+    /** Copy-friendly plain text with [Verse] / [Chorus] headers. */
+    fun copyLyrics() {
+        val clipboard = context.getSystemService(android.content.ClipboardManager::class.java)
+        val text = com.vox.music.lyrics.LyricsTextFormatter.withSectionHeaders(lyricsText)
+        runCatching {
+            clipboard?.setPrimaryClip(android.content.ClipData.newPlainText(songTitle, text))
+        }
+        Toast.makeText(context, "Lyrics copied", Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Carousel: eight lines per slide, story ratio, same template and palette as the
+     * single card. Capped at twelve slides so a long track cannot fill the gallery.
+     */
+    fun exportCarousel() {
+        if (generating) return
+        scope.launch {
+            generating = true
+            try {
+                val lines = com.vox.music.lyrics.LyricsTextFormatter.plainLines(lyricsText)
+                val pages = lines.chunked(8).take(12)
+                pages.forEachIndexed { index, page ->
+                    val bitmap = ComposeToImage.createLyricsImage(
+                        context = context,
+                        coverArtUrl = coverUrl,
+                        songTitle = songTitle,
+                        artistName = artists,
+                        lyrics = page.joinToString("\n"),
+                        backgroundColor = background.toArgb(),
+                        backgroundStyle = backgroundStyle,
+                        textColor = primaryInk.toArgb(),
+                        secondaryTextColor = secondaryInk.toArgb(),
+                        lyricsAlignment = if (centered) {
+                            android.text.Layout.Alignment.ALIGN_CENTER
+                        } else {
+                            android.text.Layout.Alignment.ALIGN_NORMAL
+                        },
+                        template = template,
+                        aspectRatio = ShareAspectRatio.STORY,
+                        fontStyle = fontStyle,
+                        watermark = watermark,
+                        signature = signature.takeIf { it.isNotBlank() },
+                        backdropDim = backdropDim,
+                        backdropBlur = backdropBlur,
+                    )
+                    ComposeToImage.saveBitmapAsFile(
+                        context,
+                        bitmap,
+                        "lyrics_${System.currentTimeMillis()}_${index + 1}",
+                    )
+                }
+                Toast.makeText(
+                    context,
+                    "Saved ${pages.size} slides to Pictures/Vox",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            } catch (e: Exception) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.failed_to_create_image, e.message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            } finally {
+                generating = false
+            }
+        }
+    }
 
     fun export(share: Boolean) {
         if (generating) return
@@ -275,6 +348,7 @@ internal fun ShareLyricsCustomizer(
                         secondaryTextColor = secondaryInk,
                         fontStyle = fontStyle,
                         watermark = watermark,
+                        signature = signature.takeIf { it.isNotBlank() },
                         textAlign = if (centered) TextAlign.Center else TextAlign.Left,
                         backdropDim = backdropDim,
                         backdropBlur = backdropBlur,
@@ -408,6 +482,15 @@ internal fun ShareLyricsCustomizer(
                     }
                 }
 
+                SectionLabel("Signature")
+                androidx.compose.material3.OutlinedTextField(
+                    value = signature,
+                    onValueChange = { onSignature(it.take(24)) },
+                    singleLine = true,
+                    placeholder = { Text("@yourhandle") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
                 SectionLabel(stringResource(R.string.background_color))
                 ColorSwatchRow(
                     colors = paletteColors + listOf(
@@ -475,6 +558,14 @@ internal fun ShareLyricsCustomizer(
                             fontWeight = FontWeight.Medium,
                         )
                     }
+                }
+                Spacer(Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    SecondaryAction("COPY LYRICS", Modifier.weight(1f)) { copyLyrics() }
+                    SecondaryAction("CAROUSEL", Modifier.weight(1f)) { exportCarousel() }
                 }
                 Spacer(Modifier.height(6.dp))
             }
@@ -572,5 +663,32 @@ private fun ColorSwatchRow(
                     .clickable { onSelect(color) },
             )
         }
+    }
+}
+
+@Composable
+private fun SecondaryAction(
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .height(42.dp)
+            .clip(RoundedCornerShape(21.dp))
+            .border(
+                1.dp,
+                AppTheme.colorScheme.onSurface.copy(alpha = 0.16f),
+                RoundedCornerShape(21.dp),
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            color = AppTheme.colorScheme.onSurface.copy(alpha = 0.78f),
+            fontSize = 11.sp,
+            letterSpacing = 1.2.sp,
+        )
     }
 }

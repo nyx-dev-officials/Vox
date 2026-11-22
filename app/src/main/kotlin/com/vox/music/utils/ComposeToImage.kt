@@ -82,6 +82,8 @@ object ComposeToImage {
         aspectRatio: ShareAspectRatio = ShareAspectRatio.AUTO,
         fontStyle: ShareFontStyle = ShareFontStyle.CHILLAX,
         watermark: ShareWatermarkStyle = ShareWatermarkStyle.MINIMAL,
+        /** Optional @handle drawn beside the Vox wordmark. */
+        signature: String? = null,
         backdropDim: Float = 0.42f,
         backdropBlur: Float = 0.55f,
         artwork: Bitmap? = null,
@@ -333,6 +335,7 @@ object ComposeToImage {
                 secondaryInk = secondaryInk,
                 baseColor = baseColor,
                 style = watermark,
+                signature = signature,
             )
         }
 
@@ -525,8 +528,20 @@ object ComposeToImage {
         secondaryInk: Int,
         baseColor: Int,
         style: ShareWatermarkStyle,
+        signature: String? = null,
     ) {
         val wordmark = context.getString(R.string.app_name)
+        val signatureText = signature
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { if (it.startsWith("@")) it else "@$it" }
+        val signaturePaint = TextPaint().apply {
+            color = withAlpha(secondaryInk, 0.72f)
+            textSize = 11f * scale
+            typeface = Typeface.DEFAULT
+            isAntiAlias = true
+        }
+        val signatureWidth = signatureText?.let { signaturePaint.measureText(it) + 6f * scale } ?: 0f
         val wordPaint = TextPaint().apply {
             color = secondaryInk
             textSize = 13f * scale
@@ -549,11 +564,19 @@ object ComposeToImage {
                 val baseline = top + boxSize / 2f -
                     (wordPaint.descent() + wordPaint.ascent()) / 2f
                 canvas.drawText(wordmark, x + boxSize + 8f * scale, baseline, wordPaint)
+                signatureText?.let {
+                    canvas.drawText(
+                        it,
+                        x + boxSize + 8f * scale + wordWidth + 8f * scale,
+                        baseline,
+                        signaturePaint,
+                    )
+                }
             }
 
             ShareWatermarkStyle.PILL -> {
                 val pillHeight = 30f * scale
-                val pillWidth = logoSize + wordWidth + 30f * scale
+                val pillWidth = logoSize + wordWidth + 30f * scale + signatureWidth
                 val pill = RectF(x, top - 4f * scale, x + pillWidth, top - 4f * scale + pillHeight)
                 canvas.drawRoundRect(
                     pill,
@@ -571,6 +594,14 @@ object ComposeToImage {
                 val baseline = pill.centerY() -
                     (wordPaint.descent() + wordPaint.ascent()) / 2f
                 canvas.drawText(wordmark, logoBox.right + 6f * scale, baseline, wordPaint)
+                signatureText?.let {
+                    canvas.drawText(
+                        it,
+                        logoBox.right + 6f * scale + wordWidth + 6f * scale,
+                        baseline,
+                        signaturePaint,
+                    )
+                }
             }
 
             ShareWatermarkStyle.HIDDEN -> Unit

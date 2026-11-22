@@ -96,6 +96,7 @@ fun LyricsShareCardPreview(
     secondaryTextColor: Color,
     fontStyle: ShareFontStyle,
     watermark: ShareWatermarkStyle,
+    signature: String? = null,
     textAlign: TextAlign,
     backdropDim: Float,
     backdropBlur: Float,
@@ -125,7 +126,7 @@ fun LyricsShareCardPreview(
 
     LaunchedEffect(
         lyricText, songTitle, artistName, artwork, template, aspectRatio, backgroundStyle,
-        backgroundColor, textColor, secondaryTextColor, fontStyle, watermark, textAlign,
+        backgroundColor, textColor, secondaryTextColor, fontStyle, watermark, signature, textAlign,
         backdropDim, backdropBlur,
     ) {
         // Coalesce slider drags into one render instead of queueing every frame.
@@ -150,6 +151,7 @@ fun LyricsShareCardPreview(
                 aspectRatio = aspectRatio,
                 fontStyle = fontStyle,
                 watermark = watermark,
+                signature = signature,
                 backdropDim = backdropDim,
                 backdropBlur = backdropBlur,
                 artwork = artwork,

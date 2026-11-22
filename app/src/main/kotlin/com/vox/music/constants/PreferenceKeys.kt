@@ -219,6 +219,9 @@ val DspMidnightKey = booleanPreferencesKey("dspMidnight")
 val LiveIslandPillKey = booleanPreferencesKey("liveIslandPill")
 val IslandYOffsetKey  = intPreferencesKey("islandYOffset")
 
+/** Optional @handle drawn beside the Vox wordmark on share cards. */
+val ShareSignatureKey = stringPreferencesKey("shareSignature")
+
 // Player Studio: the alternate expanded-player surface (Phase 3A).
 val StudioPlayerKey = booleanPreferencesKey("studioPlayer")
 /** StudioSkin name: COVER, VINYL, CASSETTE or TYPE. */
