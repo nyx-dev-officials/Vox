@@ -30,6 +30,7 @@ import com.vox.music.constants.StudioDaylightScrimKey
 import com.vox.music.constants.StudioGrainKey
 import com.vox.music.constants.StudioGyroKey
 import com.vox.music.constants.StudioHapticsIntensityKey
+import com.vox.music.constants.StudioReduceMotionKey
 import com.vox.music.constants.StudioHapticsKey
 import com.vox.music.constants.StudioPlayerKey
 import com.vox.music.constants.StudioRpmKey
@@ -65,6 +66,10 @@ fun PlayerStudioSettings(
         defaultValue = "SUBTLE",
     )
     val (gyro, onGyro) = rememberPreference(StudioGyroKey, defaultValue = true)
+    val (reduceMotion, onReduceMotion) = rememberPreference(
+        StudioReduceMotionKey,
+        defaultValue = false,
+    )
     val (daylight, onDaylight) = rememberPreference(StudioDaylightScrimKey, defaultValue = true)
 
     SettingsLazyPage(
@@ -200,6 +205,14 @@ fun PlayerStudioSettings(
                                     },
                                 )
                             },
+                        ),
+                        IosSettingsItem(
+                            title = { Text("Reduce motion") },
+                            description = { Text("Freezes the backdrop and visor glow. Accessibility and battery.") },
+                            trailingContent = {
+                                Switch(checked = reduceMotion, onCheckedChange = onReduceMotion)
+                            },
+                            onClick = { onReduceMotion(!reduceMotion) },
                         ),
                         IosSettingsItem(
                             title = { Text("Gyroscope parallax") },

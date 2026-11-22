@@ -86,7 +86,23 @@ fun DiagnosticsScreen(
                             title = { Text(label) },
                             description = { Text(value) },
                         )
-                    },
+                    } + listOf(
+                        IosSettingsItem(
+                            title = { Text("Copy report") },
+                            description = { Text("Paste into a bug report.") },
+                            onClick = {
+                                val clipboard = context.getSystemService(
+                                    android.content.ClipboardManager::class.java,
+                                )
+                                val report = rows.joinToString("\n") { (k, v) -> "$k: $v" }
+                                runCatching {
+                                    clipboard?.setPrimaryClip(
+                                        android.content.ClipData.newPlainText("Vox diagnostics", report),
+                                    )
+                                }
+                            },
+                        ),
+                    ),
                 )
                 Spacer(Modifier.height(36.dp))
             }

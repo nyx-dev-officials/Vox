@@ -121,6 +121,17 @@ fun StorageBreakdownScreen(
                     )
                 }
 
+                val freeBytes = remember { context.filesDir.usableSpace }
+                if (freeBytes in 1..(5L * 1024 * 1024 * 1024)) {
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = "Only ${formatBytes(freeBytes)} free — downloads and offline playback can fail.",
+                        style = AppTheme.typography.bodySmall,
+                        color = androidx.compose.ui.graphics.Color(0xFFE8A96B),
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                    )
+                }
+
                 Spacer(Modifier.height(14.dp))
                 IosSettingsGroup(
                     items = buckets.map { bucket ->

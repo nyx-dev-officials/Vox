@@ -97,6 +97,7 @@ import com.vox.music.constants.StudioDaylightScrimKey
 import com.vox.music.constants.StudioGrainKey
 import com.vox.music.constants.StudioGyroKey
 import com.vox.music.constants.StudioHapticsIntensityKey
+import com.vox.music.constants.StudioReduceMotionKey
 import com.vox.music.constants.StudioHapticsKey
 import com.vox.music.constants.StudioRpmKey
 import com.vox.music.constants.StudioSkinKey
@@ -140,6 +141,7 @@ fun PlayerStudio(
     val (blurDp) = rememberPreference(StudioBackdropBlurKey, defaultValue = 36f)
     val (haptics) = rememberPreference(StudioHapticsKey, defaultValue = true)
     val (hapticIntensity) = rememberPreference(StudioHapticsIntensityKey, defaultValue = "SUBTLE")
+    val (reduceMotion) = rememberPreference(StudioReduceMotionKey, defaultValue = false)
     val (gyro) = rememberPreference(StudioGyroKey, defaultValue = true)
     val (daylight) = rememberPreference(StudioDaylightScrimKey, defaultValue = true)
     val (weightName) = rememberPreference(StudioTitleWeightKey, defaultValue = "BOLD")
@@ -213,9 +215,9 @@ fun PlayerStudio(
             StudioBackdrop(
                 artworkUrl = metadata?.thumbnailUrl,
                 blurDp = blurDp,
-                isPlaying = isPlaying && !degraded,
+                isPlaying = isPlaying && !degraded && !reduceMotion,
                 accent = accent,
-                skipAnimation = degraded,
+                skipAnimation = degraded || reduceMotion,
             )
         }
         // Daylight boost: a stronger veil outdoors so type keeps its contrast.

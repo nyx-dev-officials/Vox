@@ -233,6 +233,8 @@ val StudioBackdropBlurKey = floatPreferencesKey("studioBlur")       // 0 … 60 
 val StudioHapticsKey = booleanPreferencesKey("studioHaptics")
 /** OFF, SUBTLE or CRISP. */
 val StudioHapticsIntensityKey = stringPreferencesKey("studioHapticsIntensity")
+/** Freezes Player Studio motion for accessibility, weak GPUs and battery. */
+val StudioReduceMotionKey = booleanPreferencesKey("studioReduceMotion")
 val StudioGyroKey = booleanPreferencesKey("studioGyro")
 val StudioDaylightScrimKey = booleanPreferencesKey("studioDaylight")
 /** LIGHT, REGULAR or BOLD. */
