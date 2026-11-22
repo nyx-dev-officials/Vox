@@ -179,6 +179,8 @@ object SettingsHubs {
                     SettingsLink("Home feed order", R.drawable.sliders, { systemOrange }, route("settings/home_feed_order"), "Arrange home sections"),
                     SettingsLink("Live Island", R.drawable.graphic_eq, { systemRed }, route("settings/appearance/island"),
                         "Current lyric in a capsule at the camera cut-out", "dynamic island lyric pill cutout now playing"),
+                    SettingsLink("Player Studio", R.drawable.graphic_eq, { systemOrange }, route("settings/player/studio"),
+                        "Vinyl, cassette, ambient and typographic Now Playing skins", "vinyl cassette ambient gyro cover haptics"),
                 ),
             ),
             SettingsLinkGroup(

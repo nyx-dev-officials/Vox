@@ -218,6 +218,21 @@ val DspMidnightKey = booleanPreferencesKey("dspMidnight")
 // Live Island / punch-hole lyric pill.
 val LiveIslandPillKey = booleanPreferencesKey("liveIslandPill")
 val IslandYOffsetKey  = intPreferencesKey("islandYOffset")
+
+// Player Studio: the alternate expanded-player surface (Phase 3A).
+val StudioPlayerKey = booleanPreferencesKey("studioPlayer")
+/** StudioSkin name: COVER, VINYL, CASSETTE or TYPE. */
+val StudioSkinKey = stringPreferencesKey("studioSkin")
+val StudioCoverRadiusKey = intPreferencesKey("studioCoverRadius")   // 0 … 32 dp
+val StudioRpmKey = intPreferencesKey("studioRpm")                   // 33 or 45
+val StudioGrainKey = floatPreferencesKey("studioGrain")             // 0 … 1
+val StudioBackdropBlurKey = floatPreferencesKey("studioBlur")       // 0 … 60 dp
+val StudioHapticsKey = booleanPreferencesKey("studioHaptics")
+val StudioGyroKey = booleanPreferencesKey("studioGyro")
+val StudioDaylightScrimKey = booleanPreferencesKey("studioDaylight")
+/** LIGHT, REGULAR or BOLD. */
+val StudioTitleWeightKey = stringPreferencesKey("studioTitleWeight")
+val StudioTitleScaleKey = floatPreferencesKey("studioTitleScale")   // 0.8 … 1.4
 /** Mode A: draw the capsule above other apps. Needs the SYSTEM_ALERT_WINDOW app op. */
 val LiveIslandOverlayKey = booleanPreferencesKey("liveIslandOverlay")
 /** Mode B: put the current lyric into the media notification title so OEM islands

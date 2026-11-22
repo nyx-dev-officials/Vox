@@ -1605,6 +1605,20 @@ fun BottomSheetPlayer(
                 onCoverShowingChange = { v17ShowingCover = it },
             )
             }
+
+            // Player Studio is an opaque second surface, so it mounts last (topmost)
+            // over V2 while it is on. Its STUDIO tag collapses back to the mini player.
+            val (studioPlayer) = rememberPreference(
+                com.vox.music.constants.StudioPlayerKey,
+                defaultValue = false,
+            )
+            if (studioPlayer) {
+                com.vox.music.ui.player.studio.PlayerStudio(
+                    playerConnection = playerConnection,
+                    onCollapse = { state.collapseSoft() },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
             return@BottomSheet
         }
         PlayerAuxiliaryPages(
