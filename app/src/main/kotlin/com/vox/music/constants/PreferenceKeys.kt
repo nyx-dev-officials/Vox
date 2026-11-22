@@ -205,6 +205,20 @@ val SpatialAudioKey = booleanPreferencesKey("spatialAudio")
 /** Center-channel reduction for a stereo karaoke mix. */
 val VocalSuppressionKey = floatPreferencesKey("vocalSuppression")
 
+// Audiophile tone stage (com.vox.music.playback.audio.AudiophileDspProcessor).
+// Every one of these rewrites samples, so all of them are neutral while Bit
+// Perfect is on, and the processor is a passthrough until one leaves neutral.
+val DspBalanceKey  = floatPreferencesKey("dspBalance")   // -1 … +1
+val DspMonoKey     = booleanPreferencesKey("dspMono")
+val DspCrossfeedKey = floatPreferencesKey("dspCrossfeed") // 0 … 1
+val DspPreampKey   = floatPreferencesKey("dspPreamp")    // -12 … +12 dB
+val DspHighPassKey = booleanPreferencesKey("dspHighPass")
+val DspMidnightKey = booleanPreferencesKey("dspMidnight")
+
+// Live Island / punch-hole lyric pill.
+val LiveIslandPillKey = booleanPreferencesKey("liveIslandPill")
+val IslandYOffsetKey  = intPreferencesKey("islandYOffset")
+
 // JioSaavn streaming
 val EnableSaavnStreamingKey = booleanPreferencesKey("enableSaavnStreaming")
 val SaavnAudioQualityKey    = stringPreferencesKey("saavnAudioQuality")

@@ -124,6 +124,7 @@ import com.vox.music.ui.component.AppFloatingSideBar
 import com.vox.music.ui.component.BottomSheetPage
 import com.vox.music.ui.component.FloatingMiniPlayerWidthFraction
 import com.vox.music.ui.component.ListenTogetherOverlay
+import com.vox.music.ui.component.LiveIslandPill
 import com.vox.music.ui.component.LocalAppBackdrop
 import com.vox.music.ui.component.LocalAppBackdropFrozen
 import com.vox.music.ui.component.LocalAppMotionFrozen
@@ -1319,6 +1320,19 @@ internal fun AppRootContent(
                     liveBackdrop = menuSourceBackdrop,
                     liquidGlassPlayerMode = playerBackgroundStyle == PlayerBackgroundStyle.GLASS,
                 )
+                }
+
+                // Live Island: the current lyric line in a capsule at the cut-out.
+                // Hidden while the full player is open, where the lyric is already on screen.
+                playerConnection?.let { connection ->
+                    LiveIslandPill(
+                        playerConnection = connection,
+                        visible = playerBottomSheetState.progress == 0f,
+                        onClick = { playerBottomSheetState.expandSoft() },
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .zIndex(4f),
+                    )
                 }
 
                 // Show join requests at the app root; the host may be on another screen.

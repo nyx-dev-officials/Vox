@@ -170,6 +170,12 @@ import com.vox.music.constants.SkipSilenceInstantKey
 import com.vox.music.constants.BitPerfectKey
 import com.vox.music.constants.SpatialAudioKey
 import com.vox.music.constants.VocalSuppressionKey
+import com.vox.music.constants.DspBalanceKey
+import com.vox.music.constants.DspMonoKey
+import com.vox.music.constants.DspCrossfeedKey
+import com.vox.music.constants.DspPreampKey
+import com.vox.music.constants.DspHighPassKey
+import com.vox.music.constants.DspMidnightKey
 import com.vox.music.constants.SkipSilenceKey
 import com.vox.music.constants.IpVersionKey
 import com.music.innertube.models.IpVersion
@@ -221,6 +227,7 @@ import com.vox.music.playback.audio.LosslessStallWatchdogAudioProcessor
 import com.vox.music.playback.audio.SilenceDetectorAudioProcessor
 import com.vox.music.playback.audio.SpatialAudioProcessor
 import com.vox.music.playback.audio.VocalSuppressionAudioProcessor
+import com.vox.music.playback.audio.AudiophileDspProcessor
 import com.vox.music.playback.queues.EmptyQueue
 import com.vox.music.playback.queues.Queue
 import com.vox.music.playback.queues.YouTubeQueue
@@ -416,6 +423,12 @@ class MusicService :
     private var cachedOffloadEnabled = false
     private var cachedSpatialAudio = false
     private var cachedVocalSuppression = 0f
+    private var cachedDspBalance = 0f
+    private var cachedDspMono = false
+    private var cachedDspCrossfeed = 0f
+    private var cachedDspPreamp = 0f
+    private var cachedDspHighPass = false
+    private var cachedDspMidnight = false
 
     private var crossfade: CrossfadeController? = null
     private var trackAnalyzer: TrackAnalyzer? = null
@@ -530,6 +543,7 @@ class MusicService :
     private val playerStallWatchdogs = HashMap<Player, LosslessStallWatchdogAudioProcessor>()
     private val playerSpatialProcessors = HashMap<Player, SpatialAudioProcessor>()
     private val playerVocalSuppressionProcessors = HashMap<Player, VocalSuppressionAudioProcessor>()
+    private val playerDspProcessors = HashMap<Player, AudiophileDspProcessor>()
 
     private val instantSilenceSkipEnabled = MutableStateFlow(false)
 
@@ -937,6 +951,7 @@ class MusicService :
                 // left alone and restores when Bit Perfect goes back off.
                 audioEffects.applySpatialAudio()
                 audioEffects.applyVocalSuppression()
+                audioEffects.applyDsp()
 
                 if (bitPerfect) {
                     player.skipSilenceEnabled = false
@@ -962,6 +977,28 @@ class MusicService :
             .collectLatest(scope) { amount ->
                 cachedVocalSuppression = amount.coerceIn(0f, 1f)
                 audioEffects.applyVocalSuppression()
+            }
+
+        dataStore.data
+            .map { prefs ->
+                DspPrefs(
+                    balance = (prefs[DspBalanceKey] ?: 0f).coerceIn(-1f, 1f),
+                    mono = prefs[DspMonoKey] ?: false,
+                    crossfeed = (prefs[DspCrossfeedKey] ?: 0f).coerceIn(0f, 1f),
+                    preampDb = (prefs[DspPreampKey] ?: 0f).coerceIn(-12f, 12f),
+                    highPass = prefs[DspHighPassKey] ?: false,
+                    midnight = prefs[DspMidnightKey] ?: false,
+                )
+            }
+            .distinctUntilChanged()
+            .collectLatest(scope) { dsp ->
+                cachedDspBalance = dsp.balance
+                cachedDspMono = dsp.mono
+                cachedDspCrossfeed = dsp.crossfeed
+                cachedDspPreamp = dsp.preampDb
+                cachedDspHighPass = dsp.highPass
+                cachedDspMidnight = dsp.midnight
+                audioEffects.applyDsp()
             }
 
         combine(
@@ -1429,17 +1466,27 @@ class MusicService :
         val djAmbience = DjAmbienceAudioProcessor()
         val spatialProcessor = SpatialAudioProcessor()
         val vocalSuppressionProcessor = VocalSuppressionAudioProcessor()
+        val dspProcessor = AudiophileDspProcessor()
         // Use cached preferences; reading DataStore here could stall player creation during crossfade.
         silenceProcessor.instantModeEnabled = cachedSkipSilence && cachedSkipSilenceInstant && !roomPlaybackBridge.jamActive.value
         spatialProcessor.enabled = cachedSpatialAudio && !cachedBitPerfect
         vocalSuppressionProcessor.amount = if (cachedBitPerfect) 0f else cachedVocalSuppression
+        dspProcessor.applyCached(
+            balance = cachedDspBalance,
+            mono = cachedDspMono,
+            crossfeed = cachedDspCrossfeed,
+            preampDb = cachedDspPreamp,
+            highPass = cachedDspHighPass,
+            midnight = cachedDspMidnight,
+            bitPerfect = cachedBitPerfect,
+        )
 
         val player = ExoPlayer.Builder(this)
             .setMediaSourceFactory(streamResolver.createMediaSourceFactory())
             .setRenderersFactory(
                 streamResolver.createRenderersFactory(
                     eqProcessor, silenceProcessor, stallWatchdog, bpmAnalyzer, spatialProcessor, vocalSuppressionProcessor,
-                    djFilter, djTail, djDelay, djAmbience, analysisOnly,
+                    dspProcessor, djFilter, djTail, djDelay, djAmbience, analysisOnly,
                 )
             )
             .setLoadControl(
@@ -1473,6 +1520,7 @@ class MusicService :
             playerStallWatchdogs[player] = stallWatchdog
             playerSpatialProcessors[player] = spatialProcessor
             playerVocalSuppressionProcessors[player] = vocalSuppressionProcessor
+            playerDspProcessors[player] = dspProcessor
         }
         djEngine.registerPlayer(player, bpmAnalyzer, djFilter, djTail, djDelay, djAmbience)
 
@@ -1491,6 +1539,7 @@ class MusicService :
         playerStallWatchdogs.remove(target)
         playerSpatialProcessors.remove(target)
         playerVocalSuppressionProcessors.remove(target)
+        playerDspProcessors.remove(target)
         target.release()
     }
 
@@ -2493,6 +2542,11 @@ class MusicService :
         startRadioSeamlessly()
     }
 
+    /** Held by the A/B "Raw audio" control in the DSP settings; true bypasses the stage. */
+    fun setDspRawBypass(bypass: Boolean) {
+        playerDspProcessors.values.forEach { it.rawBypass = bypass }
+    }
+
     /** Loudness normalization + spatial audio + the system audio-effect-session broadcast, grouped as one effects chain. */
     inner class AudioEffectsChain {
 
@@ -2504,6 +2558,21 @@ class MusicService :
         fun applyVocalSuppression() {
             val amount = if (cachedBitPerfect) 0f else cachedVocalSuppression
             playerVocalSuppressionProcessors.values.forEach { it.amount = amount }
+        }
+
+        /** Bit Perfect forces every control here neutral — the stage rewrites samples. */
+        fun applyDsp() {
+            playerDspProcessors.values.forEach {
+                it.applyCached(
+                    balance = cachedDspBalance,
+                    mono = cachedDspMono,
+                    crossfeed = cachedDspCrossfeed,
+                    preampDb = cachedDspPreamp,
+                    highPass = cachedDspHighPass,
+                    midnight = cachedDspMidnight,
+                    bitPerfect = cachedBitPerfect,
+                )
+            }
         }
 
         fun setupLoudnessEnhancer() {
@@ -3489,6 +3558,15 @@ class MusicService :
         val dash: Boolean = false,
     )
 
+    private data class DspPrefs(
+        val balance: Float,
+        val mono: Boolean,
+        val crossfeed: Float,
+        val preampDb: Float,
+        val highPass: Boolean,
+        val midnight: Boolean,
+    )
+
     /** Resolves stream URLs, builds data sources, and prefetches upcoming tracks. */
     inner class StreamResolver {
 
@@ -3824,6 +3902,7 @@ class MusicService :
             bpmAnalyzer: TrackAnalyzerAudioProcessor,
             spatialProcessor: SpatialAudioProcessor,
             vocalSuppressionProcessor: VocalSuppressionAudioProcessor,
+            dspProcessor: AudiophileDspProcessor,
             djFilter: DjFilterAudioProcessor,
             djTail: DjTailAudioProcessor,
             djDelay: DelayAudioProcessor,
@@ -3852,6 +3931,9 @@ class MusicService :
                                 // low end isn't fed back in by the widener's crossfeed.
                                 spatialProcessor,
                                 vocalSuppressionProcessor,
+                                // The user's own tone stage runs before the DJ chain so
+                                // a transition's tail isn't compressed twice.
+                                dspProcessor,
                                 djFilter,
                                 djTail,
                                 djDelay,

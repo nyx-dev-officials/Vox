@@ -129,6 +129,8 @@ object SettingsHubs {
                         "Audio quality, normalization and skip silence", "quality normalization loudness silence"),
                     SettingsLink("Song transitions", R.drawable.shuffle, { systemPurple }, route("settings/song_transitions"),
                         "Crossfade, gapless and Automix", "crossfade gapless automix dj mixing"),
+                    SettingsLink("Audio processing", R.drawable.graphic_eq, { systemPink }, route("settings/player/dsp"),
+                        "Balance, crossfeed, pre-amp and midnight mode", "dsp balance crossfeed preamp mono rumble midnight bit perfect"),
                 ),
             ),
             SettingsLinkGroup(
@@ -175,6 +177,8 @@ object SettingsHubs {
                     SettingsLink("Layout & home", R.drawable.sliders, { systemGreen }, route("settings/appearance"),
                         "Language, default tab, density, home", "language default tab density refresh rate"),
                     SettingsLink("Home feed order", R.drawable.sliders, { systemOrange }, route("settings/home_feed_order"), "Arrange home sections"),
+                    SettingsLink("Live Island", R.drawable.graphic_eq, { systemRed }, route("settings/appearance/island"),
+                        "Current lyric in a capsule at the camera cut-out", "dynamic island lyric pill cutout now playing"),
                 ),
             ),
             SettingsLinkGroup(

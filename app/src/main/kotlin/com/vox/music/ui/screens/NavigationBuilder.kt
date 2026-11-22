@@ -84,10 +84,12 @@ import com.vox.music.ui.screens.settings.DiscordLoginScreen
 import com.vox.music.ui.screens.settings.PlayerSettings
 import com.vox.music.ui.screens.settings.PlayerAdvancedSettings
 import com.vox.music.ui.screens.settings.AppearanceAdvancedSettings
+import com.vox.music.ui.screens.settings.AudioDspSettings
 import com.vox.music.ui.screens.settings.ContentAdvancedSettings
 import com.vox.music.ui.screens.settings.JioSettings
 import com.vox.music.ui.screens.settings.TidalSettings
 import com.vox.music.ui.screens.settings.LocalFoldersSettingsScreen
+import com.vox.music.ui.screens.settings.LiveIslandSettings
 import com.vox.music.ui.screens.settings.ScanMusicScreen
 import com.vox.music.ui.screens.settings.SongTransitionsScreen
 import com.vox.music.ui.screens.settings.PrivacySettings
@@ -570,6 +572,14 @@ fun NavGraphBuilder.navigationBuilder(
 
     sharedComposable("settings/player/tidal") {
         TidalSettings(navController, scrollBehavior)
+    }
+
+    sharedComposable("settings/player/dsp") {
+        AudioDspSettings(navController, scrollBehavior)
+    }
+
+    sharedComposable("settings/appearance/island") {
+        LiveIslandSettings(navController, scrollBehavior)
     }
 
     sharedComposable("settings/scan_music") {

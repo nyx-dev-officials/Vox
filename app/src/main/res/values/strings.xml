@@ -548,6 +548,37 @@
     <string name="enable_tidal_streaming">Enable Tidal Max</string>
     <string name="enable_tidal_streaming_desc">Prefers official Tidal FLAC before Innertube. Off by default; nothing changes until you turn it on.</string>
     <string name="tidal_beta_info">Official playback uses your own Tidal subscription. If a track is missing, region-locked, or rate-limited, Vox plays the Innertube stream without interrupting playback.</string>
+
+    <!-- Audiophile tone stage -->
+    <string name="dsp_settings">Audio processing</string>
+    <string name="dsp_settings_desc">Everything here rewrites the samples. Leave the controls neutral to keep the signal untouched.</string>
+    <string name="dsp_bit_perfect_bypass">Bit Perfect is on, so this whole stage is bypassed. Your settings are kept and come back when Bit Perfect goes off.</string>
+    <string name="dsp_tone">Tone</string>
+    <string name="dsp_balance">Channel balance</string>
+    <string name="dsp_balance_left">Left %1$d%%</string>
+    <string name="dsp_balance_center">Centred</string>
+    <string name="dsp_balance_right">Right %1$d%%</string>
+    <string name="dsp_crossfeed">Crossfeed</string>
+    <string name="dsp_crossfeed_desc">Blends the channels slightly for headphones, easing hard-panned mixes.</string>
+    <string name="dsp_preamp">Pre-amp</string>
+    <string name="dsp_preamp_desc">Gain before the limiter. Cuts are always safe; boosts are caught by the limiter.</string>
+    <string name="dsp_mono">Mono</string>
+    <string name="dsp_mono_desc">Sum both channels. Useful on a single speaker.</string>
+    <string name="dsp_highpass">Remove rumble</string>
+    <string name="dsp_highpass_desc">20 Hz high-pass, so small drivers are not asked for sub-bass they cannot make.</string>
+    <string name="dsp_midnight">Midnight mode</string>
+    <string name="dsp_midnight_desc">Gentle peak compression for quiet late-night listening.</string>
+    <string name="dsp_ab_hold">Compare with the raw signal</string>
+    <string name="dsp_ab_hold_desc">Press and hold to hear the track without any processing.</string>
+    <string name="dsp_ab_badge">Hold to bypass</string>
+    <string name="dsp_passthrough_note">Neutral settings leave the audio bit-identical.</string>
+
+    <!-- Live Island lyric pill -->
+    <string name="live_island">Live Island</string>
+    <string name="live_island_desc">Show the current lyric line in a pill around the camera cut-out.</string>
+    <string name="live_island_offset">Vertical position</string>
+    <string name="live_island_offset_desc">Nudge the pill up or down to clear taller cut-outs.</string>
+    <string name="live_island_permission">Allow display over other apps so the pill can appear above the player.</string>
     <string name="audio_quality_lossless">Lossless</string>
     <string name="queue">Queue</string>
     <string name="persistent_queue">Persistent queue</string>
