@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
@@ -125,17 +127,36 @@ fun SongListItem(
                         SymbolIcon(symbol = sf("music.note"), contentDescription = null, size = 24.dp, tint = LocalContentColor.current.copy(alpha = 0.6f))
                     }
                 } else {
-                    ItemThumbnail(
-                        thumbnailUrl = song.song.thumbnailUrl,
-                        sharedArtworkId = song.album?.id ?: song.song.albumId,
-                        albumIndex = albumIndex,
-                        isSelected = isSelected,
-                        isActive = isActive,
-                        isPlaying = isPlaying,
-                        shape = ListRowArtShape,
-                        targetSizePx = thumbnailPx(ListThumbnailSize),
-                        modifier = Modifier.size(ListThumbnailSize)
-                    )
+                    Box(Modifier.size(ListThumbnailSize)) {
+                        ItemThumbnail(
+                            thumbnailUrl = song.song.thumbnailUrl,
+                            sharedArtworkId = song.album?.id ?: song.song.albumId,
+                            albumIndex = albumIndex,
+                            isSelected = isSelected,
+                            isActive = isActive,
+                            isPlaying = isPlaying,
+                            shape = ListRowArtShape,
+                            targetSizePx = thumbnailPx(ListThumbnailSize),
+                            modifier = Modifier.size(ListThumbnailSize)
+                        )
+                        // The active row's living 3-bar mark, over the corner of its art.
+                        if (isPlaying) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomStart)
+                                    .padding(3.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black.copy(alpha = 0.55f))
+                                    .padding(horizontal = 4.dp, vertical = 3.dp),
+                            ) {
+                                NowPlayingBars(
+                                    playing = true,
+                                    tint = Color(0xFFE7C8A0),
+                                    modifier = Modifier.size(width = 12.dp, height = 9.dp),
+                                )
+                            }
+                        }
+                    }
                 }
             },
             trailingContent = trailingContent,
