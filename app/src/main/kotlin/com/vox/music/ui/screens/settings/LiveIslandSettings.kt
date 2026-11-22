@@ -119,7 +119,7 @@ fun LiveIslandSettings(
                             description = {
                                 Column(Modifier.fillMaxWidth()) {
                                     Text(
-                                        "${yOffset.roundToInt()} dp · " +
+                                        "$yOffset dp · " +
                                             stringResource(R.string.live_island_offset_desc),
                                     )
                                     Slider(

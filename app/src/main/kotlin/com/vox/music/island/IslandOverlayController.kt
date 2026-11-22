@@ -28,10 +28,6 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
-import coil3.ImageLoader
-import coil3.request.ImageRequest
-import coil3.request.allowHardware
-import coil3.toBitmap
 import com.vox.music.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -41,7 +37,6 @@ class IslandOverlayController(
     private val onOpenPlayer: () -> Unit,
 ) {
     private val windowManager: WindowManager? = context.getSystemService(WindowManager::class.java)
-    private val imageLoader by lazy { ImageLoader.Builder(context).crossfade(false).build() }
     private val density = context.resources.displayMetrics.density
 
     private var root: View? = null
@@ -215,12 +210,13 @@ class IslandOverlayController(
         }
         val bitmap = withContext(Dispatchers.IO) {
             runCatching {
-                val request = ImageRequest.Builder(context)
-                    .data(url)
-                    .size(dp(28), dp(28))
-                    .allowHardware(false)
-                    .build()
-                imageLoader.execute(request).image?.toBitmap()
+                val connection = java.net.URL(url).openConnection().apply {
+                    connectTimeout = 6_000
+                    readTimeout = 6_000
+                }
+                connection.getInputStream().use {
+                    android.graphics.BitmapFactory.decodeStream(it)
+                }
             }.getOrNull()
         }
         if (loadedArtUrl == url) target.setImageBitmap(bitmap)

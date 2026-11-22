@@ -336,7 +336,6 @@
     <string name="discord_use_details">Use details instead of state</string>
     <string name="discord_use_details_description">Show song title prominently instead of artist names</string>
 
-    <string name="audio_quality_max">Max (beta)</string>
     <string name="enable_similar_content">Enable similar content</string>
     <string name="similar_content_desc">Automatically add more similar songs when the end of the queue is reached</string>
     <string name="persistent_shuffle_title">Persistent shuffle</string>
@@ -1169,11 +1168,8 @@
     <string name="lossless_settings">Lossless streaming</string>
     <string name="lossless_streaming_enabled">Enabled — FLAC</string>
     <string name="lossless_streaming_disabled">Disabled</string>
-    <string name="enable_tidal_streaming">Enable lossless streaming</string>
-    <string name="enable_tidal_streaming_desc">Stream 16-bit FLAC from public lossless servers instead of YouTube. Off by default. If a song has no lossless match, playback silently falls back to YouTube so audio never breaks. These public servers are community-run — availability is not guaranteed; use at your own discretion. No account or credentials are stored. Currently affects streaming only, not downloads.</string>
     <string name="tidal_instance_url">Custom server URL (optional)</string>
     <string name="tidal_instance_url_hint">https://your-server.example.com</string>
-    <string name="tidal_beta_info">Beta. Leave the server URL empty to use the automatic public servers. To self-host, paste your own server\'s base URL above — it is tried first.</string>
 
     <!-- Spotify Import -->
     <string name="spotify">Spotify</string>

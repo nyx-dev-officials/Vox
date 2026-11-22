@@ -16,18 +16,12 @@ package com.vox.music.island
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.LruCache
-import coil3.ImageLoader
-import coil3.request.ImageRequest
-import coil3.request.allowHardware
-import coil3.toBitmap
 import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class IslandArtworkData(context: Context) {
 
-    private val appContext = context.applicationContext
-    private val imageLoader by lazy { ImageLoader.Builder(appContext).crossfade(false).build() }
 
     /** Keyed by URL; a track that comes back gets its bytes from memory. */
     private val cache = object : LruCache<String, ByteArray>(6 * 1024 * 1024) {
@@ -40,12 +34,13 @@ class IslandArtworkData(context: Context) {
 
         val bytes = withContext(Dispatchers.IO) {
             runCatching {
-                val request = ImageRequest.Builder(appContext)
-                    .data(url)
-                    .size(Edge, Edge)
-                    .allowHardware(false)
-                    .build()
-                val decoded = imageLoader.execute(request).image?.toBitmap() ?: return@runCatching null
+                val connection = java.net.URL(url).openConnection().apply {
+                    connectTimeout = 8_000
+                    readTimeout = 8_000
+                }
+                val decoded = connection.getInputStream().use {
+                    android.graphics.BitmapFactory.decodeStream(it)
+                } ?: return@runCatching null
                 val square = if (decoded.width == Edge && decoded.height == Edge) {
                     decoded
                 } else {
