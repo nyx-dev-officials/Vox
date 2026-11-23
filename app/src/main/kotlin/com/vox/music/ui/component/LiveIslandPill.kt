@@ -22,6 +22,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -101,7 +102,10 @@ private fun IslandContent(
             slideOutVertically(Motion.gate(reduceMotion, tween(200))) { -it / 2 },
         modifier = modifier
             .statusBarsPadding()
-            .padding(top = 8.dp + yOffset.dp),
+            .padding(top = 8.dp)
+            // The offset slider allows -40..40 dp. Feeding that into padding would throw
+            // "Padding must be non-negative" below -8 dp, so shift the positioned pill instead.
+            .offset(y = yOffset.dp),
     ) {
         // AnimatedVisibility's content scope is not a BoxScope, so the pill owns
         // its own row and the caller only positions the wrapper.
