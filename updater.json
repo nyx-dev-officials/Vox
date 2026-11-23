@@ -1,40 +1,36 @@
 {
   "schemaVersion": 1,
   "packageName": "com.vox.music",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "channel": "stable",
-  "versionCode": 200109999,
-  "description": "Playback recovery release for the stall and missing-badge regression reported in 2.0.9.",
+  "versionCode": 200119999,
+  "description": "Crash fix for 2.0.10.",
   "changelog": [
     {
-      "title": "Vox 2.0.10",
+      "title": "Vox 2.0.11",
       "items": [
-        "Playback recovery release for the stall and missing-badge regression reported in 2.0.9."
+        "Crash fix for 2.0.10."
       ]
     },
     {
-      "title": "Playback",
+      "title": "Fixed",
       "items": [
-        "**Fallback chain now actually runs.** When the primary InnerTube request threw (HTTP failure, parse failure, or a rejected client version), the whole resolution aborted before any fallback client was tried. That left ExoPlayer with no stream, and the quality badge vanished because no format was ever recorded. A failed primary request is now treated as a failed attempt: the resolver seeds its response from the first fallback client that answers, then continues down the existing chain.",
-        "**Tidal-only no longer blocks unconfigured devices.** `TIDAL_ONLY` used to fail every track outright. It now fails hard only when Tidal can actually answer (a logged-in session or a user-supplied proxy). Otherwise it logs a warning and falls back to InnerTube.",
-        "Primary client order is unchanged. `ANDROID_VR` remains first for speed and format coverage, with `IOS` and the rest of the chain available when it does not answer."
+        "**Live Island offset crash.** The island offset slider allows -40 to 40 dp, but the pill passed `8.dp + offset` into `Modifier.padding`. Any offset below -8 dp produced a negative padding value and crashed Compose during layout (`IllegalArgumentException: Padding must be non-negative`) whenever a lyric pill was visible. The pill now keeps its 8 dp baseline padding and applies the user's offset as a visual `Modifier.offset`, which accepts negative values and preserves the full slider range."
       ]
     },
     {
       "title": "Notes",
       "items": [
-        "Badge recovery depends on resolution succeeding; it is the same code path and has no separate fix.",
-        "Verified locally with `:app:compileUniversalFossDebugKotlin`. Device playback and the DASH path are not verified in this release.",
-        "If playback still fails after this build, capture `adb logcat -s YTPlayerUtils PlaybackLogManager` while tapping a song; the log now states which client seeded the response and where the chain stopped."
+        "Verified with `:app:compileUniversalFossDebugKotlin`. Not device-tested here."
       ]
     }
   ],
   "assets": [
     {
       "name": "vox-universal-foss.apk",
-      "size": 124922939,
-      "sha256": "64c0479020194a50267f0905c87bd8f73117dba0c3c152c0dad512a26909cd45",
-      "versionCode": 200109999,
+      "size": 124906552,
+      "sha256": "8dec44615acad273f9deb8749b243b6c9f5846d7353e0e15ccf3a9869826f175",
+      "versionCode": 200119999,
       "variant": "foss",
       "abis": [
         "arm64-v8a",
