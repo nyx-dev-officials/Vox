@@ -1,34 +1,40 @@
 {
   "schemaVersion": 1,
   "packageName": "com.vox.music",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "channel": "stable",
-  "versionCode": 200099999,
-  "description": "Maintenance & performance release following 2.0.8.",
+  "versionCode": 200109999,
+  "description": "Playback recovery release for the stall and missing-badge regression reported in 2.0.9.",
   "changelog": [
     {
-      "title": "Vox 2.0.9",
+      "title": "Vox 2.0.10",
       "items": [
-        "Maintenance & performance release following 2.0.8."
+        "Playback recovery release for the stall and missing-badge regression reported in 2.0.9."
       ]
     },
     {
-      "title": "What's Changed",
+      "title": "Playback",
       "items": [
-        "**Tidal Max Engine**: Official PKCE login, hi-res resolver, Innertube fallback, and Audiophile tone stage.",
-        "**Player Studio & Visuals**: Player Studio with custom skins, live three-bar playing indicator, and Live Island overlay refinements.",
-        "**Lyrics & Share**: Lyric signatures, carousel export, verse-tagged copy, and two-mode artwork card.",
-        "**Performance & Diagnostics**: Storage and diagnostics screens, battery/burn-in guards, and Coil 3 island image loading fixes.",
-        "**Signing & Compatibility**: Verified v1 + v2 APK signature schemes for complete support across modern and legacy OEM Android devices (ColorOS / Oppo, etc.)."
+        "**Fallback chain now actually runs.** When the primary InnerTube request threw (HTTP failure, parse failure, or a rejected client version), the whole resolution aborted before any fallback client was tried. That left ExoPlayer with no stream, and the quality badge vanished because no format was ever recorded. A failed primary request is now treated as a failed attempt: the resolver seeds its response from the first fallback client that answers, then continues down the existing chain.",
+        "**Tidal-only no longer blocks unconfigured devices.** `TIDAL_ONLY` used to fail every track outright. It now fails hard only when Tidal can actually answer (a logged-in session or a user-supplied proxy). Otherwise it logs a warning and falls back to InnerTube.",
+        "Primary client order is unchanged. `ANDROID_VR` remains first for speed and format coverage, with `IOS` and the rest of the chain available when it does not answer."
+      ]
+    },
+    {
+      "title": "Notes",
+      "items": [
+        "Badge recovery depends on resolution succeeding; it is the same code path and has no separate fix.",
+        "Verified locally with `:app:compileUniversalFossDebugKotlin`. Device playback and the DASH path are not verified in this release.",
+        "If playback still fails after this build, capture `adb logcat -s YTPlayerUtils PlaybackLogManager` while tapping a song; the log now states which client seeded the response and where the chain stopped."
       ]
     }
   ],
   "assets": [
     {
       "name": "vox-universal-foss.apk",
-      "size": 124906551,
-      "sha256": "2ba93a245a681824996d08f9d07eb63973d27bffe4645172ecdd2257eb0a4b42",
-      "versionCode": 200099999,
+      "size": 124922939,
+      "sha256": "64c0479020194a50267f0905c87bd8f73117dba0c3c152c0dad512a26909cd45",
+      "versionCode": 200109999,
       "variant": "foss",
       "abis": [
         "arm64-v8a",
