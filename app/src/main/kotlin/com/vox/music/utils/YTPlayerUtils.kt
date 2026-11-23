@@ -42,6 +42,7 @@ import com.vox.music.constants.TidalEngineMode
 import com.vox.music.constants.TidalEngineModeKey
 import com.vox.music.constants.TidalQualityCap
 import com.vox.music.constants.TidalQualityCapKey
+import com.vox.music.utils.tidal.TidalAuth
 import com.vox.music.utils.tidal.TidalEngine
 import com.music.spine.ModuleManager
 import org.json.JSONArray
@@ -421,6 +422,10 @@ object YTPlayerUtils {
             }.getOrDefault(TidalEngineMode.HYBRID)
             val tidalEnabled = context.dataStore.get(EnableTidalStreamingKey, false) &&
                 engineMode != TidalEngineMode.INNERTUBE_ONLY
+            // Tidal-only routing can only be enforced when Tidal can actually answer: a
+            // logged-in official session, or a user-supplied proxy host.
+            val tidalActionable = TidalAuth.isLoggedIn(context) ||
+                context.dataStore.get(TidalInstanceUrlKey, "").isNotBlank()
 
             if (!forceStandardAudio && !requireYouTube && !forceSelectedQuality && allowLossless && tidalEnabled) {
                 Timber.tag(TAG).d("Lossless enabled (${engineMode.name}) — trying TIDAL for videoId=$videoId")
@@ -495,8 +500,11 @@ object YTPlayerUtils {
                 }.getOrNull()
 
                 if (tidalResult != null) return Result.success(tidalResult)
-                if (engineMode == TidalEngineMode.TIDAL_ONLY) {
+                if (engineMode == TidalEngineMode.TIDAL_ONLY && tidalActionable) {
                     return Result.failure(IOException("Tidal could not serve this track and Tidal-only mode is on"))
+                }
+                if (engineMode == TidalEngineMode.TIDAL_ONLY) {
+                    Timber.tag(TAG).w("TIDAL_ONLY has no credentials or proxy configured - falling back to InnerTube")
                 }
                 Timber.tag(TAG).d("TIDAL intercept failed or returned null — trying next source")
             }
@@ -797,8 +805,34 @@ object YTPlayerUtils {
 
         Timber.tag(logTag).d("Attempting to get player response using MAIN_CLIENT: ${MAIN_CLIENT.clientName}")
         PlaybackLogManager.log(PlaybackLogLevel.DEBUG, "Trying ${MAIN_CLIENT.clientName} (Main)")
-        var mainPlayerResponse =
+        // A throw here used to abort the whole resolution before any fallback ran, which left
+        // playback stuck with no stream and no format for the badge. Treat a failed primary as
+        // "try fallbacks" instead, and seed the primary response from the first one that answers.
+        val mainOutcome = runCatching {
             YouTube.player(videoId, playlistId, MAIN_CLIENT, signatureTimestampFor(MAIN_CLIENT), poToken?.playerRequestPoToken).getOrThrow()
+        }
+        val mainClientFailed = mainOutcome.getOrNull() == null
+        var mainPlayerResponse: PlayerResponse = mainOutcome.getOrNull() ?: run {
+            val cause = mainOutcome.exceptionOrNull()
+            Timber.tag(logTag).e(cause, "MAIN_CLIENT request failed - trying fallback clients for the primary response")
+            PlaybackLogManager.log(
+                PlaybackLogLevel.WARNING,
+                "Primary client request failed",
+                cause?.message ?: "no response",
+            )
+            var seeded: PlayerResponse? = null
+            for (fallback in STREAM_FALLBACK_CLIENTS) {
+                if (fallback.loginRequired && !isLoggedIn && YouTube.cookie == null) continue
+                seeded = runCatching {
+                    YouTube.player(videoId, playlistId, fallback, signatureTimestampFor(fallback), null).getOrNull()
+                }.getOrNull()
+                if (seeded != null) {
+                    Timber.tag(logTag).d("Primary response seeded by fallback client: ${fallback.clientName}")
+                    break
+                }
+            }
+            seeded ?: throw Exception("Bad stream player response - all clients failed")
+        }
 
         var usedAgeRestrictedClient: YouTubeClient? = null
         val wasOriginallyAgeRestricted: Boolean
@@ -839,6 +873,7 @@ object YTPlayerUtils {
         // Uploads start at TVHTML5; age-restricted videos skip the main client.
         // Other tracks try the main client first.
         val startIndex = when {
+            mainClientFailed -> 0
             isPrivateTrack -> STREAM_FALLBACK_CLIENTS.indexOf(TVHTML5).coerceAtLeast(0)
             isAgeRestricted -> 0
             else -> -1

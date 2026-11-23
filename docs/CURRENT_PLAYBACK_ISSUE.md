@@ -1,7 +1,7 @@
 # ISSUE_REPORT_PLAYBACK_AND_BADGE_FAILURE.md — Active Incident Report
 
-> **STATUS**: OPEN / UNDER INVESTIGATION  
-> **AFFECTED VERSIONS**: 2.0.9+  
+> **STATUS**: FIXED IN 2.0.10 — device verification pending  
+> **AFFECTED VERSIONS**: 2.0.9  
 > **COMPONENT**: Audio Playback Engine & Stream Resolution (`YTPlayerUtils.kt`, `MusicService.kt`, `AudioQualityBadge.kt`)
 
 ---
